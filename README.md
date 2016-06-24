@@ -1,6 +1,8 @@
 FazlandElasticaBundle
 =================
 
+[![Build Status](https://travis-ci.org/fazland/FazlandElasticaBundle.svg?branch=master)](https://travis-ci.org/fazland/FazlandElasticaBundle)
+
 This bundle is started from FosElasticaBundle but it works with ElasticSearch 2.* .
 
 contributions fixing issues or improvements are welcome!
