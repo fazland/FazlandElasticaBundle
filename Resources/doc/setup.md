@@ -144,7 +144,7 @@ externally, the Elasticsearch index must be updated manually. This can be achiev
 running the console command:
 
 ```bash
-$ php app/console fos:elastica:populate
+$ php app/console fazland:elastica:populate
 ```
 
 The command will also create all indexes and types defined if they do not already exist

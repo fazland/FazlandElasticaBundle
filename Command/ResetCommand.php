@@ -30,7 +30,7 @@ class ResetCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('fos:elastica:reset')
+            ->setName('fazland:elastica:reset')
             ->addOption('index', null, InputOption::VALUE_OPTIONAL, 'The index to reset')
             ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'The type to reset')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Force index deletion if same name as alias')

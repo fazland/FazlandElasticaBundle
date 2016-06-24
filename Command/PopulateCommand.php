@@ -50,7 +50,7 @@ class PopulateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('fos:elastica:populate')
+            ->setName('fazland:elastica:populate')
             ->addOption('index', null, InputOption::VALUE_OPTIONAL, 'The index to repopulate')
             ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'The type to repopulate')
             ->addOption('no-reset', null, InputOption::VALUE_NONE, 'Do not reset index before populating')

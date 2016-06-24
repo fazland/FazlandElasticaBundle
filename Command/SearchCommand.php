@@ -21,7 +21,7 @@ class SearchCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('fos:elastica:search')
+            ->setName('fazland:elastica:search')
             ->addArgument('type', InputArgument::REQUIRED, 'The type to search in')
             ->addArgument('query', InputArgument::REQUIRED, 'The text to search')
             ->addOption('index', null, InputOption::VALUE_REQUIRED, 'The index to search in')
