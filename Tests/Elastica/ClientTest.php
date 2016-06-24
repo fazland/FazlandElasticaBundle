@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Client;
+namespace Fazland\ElasticaBundle\Tests\Client;
 
 use Elastica\Request;
 use Elastica\Transport\NullTransport;
@@ -15,7 +15,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $connection->expects($this->any())->method('getTransportObject')->will($this->returnValue($transport));
         $connection->expects($this->any())->method('toArray')->will($this->returnValue(array()));
 
-        $logger = $this->getMock('FOS\ElasticaBundle\Logger\ElasticaLogger');
+        $logger = $this->getMock('Fazland\ElasticaBundle\Logger\ElasticaLogger');
         $logger
             ->expects($this->once())
             ->method('logQuery')
@@ -28,7 +28,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
                 $this->isType('array')
             );
 
-        $client = $this->getMockBuilder('FOS\ElasticaBundle\Elastica\Client')
+        $client = $this->getMockBuilder('Fazland\ElasticaBundle\Elastica\Client')
             ->setMethods(array('getConnection'))
             ->getMock();
 

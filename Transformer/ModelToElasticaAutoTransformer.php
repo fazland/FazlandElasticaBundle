@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Transformer;
+namespace Fazland\ElasticaBundle\Transformer;
 
-use FOS\ElasticaBundle\Event\TransformEvent;
+use Fazland\ElasticaBundle\Event\TransformEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Elastica\Document;

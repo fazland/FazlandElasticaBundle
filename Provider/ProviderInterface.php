@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Provider;
+namespace Fazland\ElasticaBundle\Provider;
 
 /**
  * Insert application domain objects into elastica types.

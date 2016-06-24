@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Paginator;
+namespace Fazland\ElasticaBundle\Paginator;
 
 use Elastica\ResultSet;
 use Elastica\Result;

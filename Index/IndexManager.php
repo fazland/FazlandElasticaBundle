@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Index;
+namespace Fazland\ElasticaBundle\Index;
 
-use FOS\ElasticaBundle\Elastica\Index;
+use Fazland\ElasticaBundle\Elastica\Index;
 
 class IndexManager
 {

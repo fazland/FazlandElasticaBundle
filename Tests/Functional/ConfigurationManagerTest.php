@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace FOS\ElasticaBundle\Tests\Functional;
+namespace Fazland\ElasticaBundle\Tests\Functional;
 
 use Symfony\Bundle\FrameworkBundle\Client;
 
@@ -27,8 +27,8 @@ class ConfigurationManagerTest extends WebTestCase
 
         $this->assertEquals('index', $index->getName());
         $this->assertGreaterThanOrEqual(2, count($index->getTypes()));
-        $this->assertInstanceOf('FOS\\ElasticaBundle\\Configuration\\TypeConfig', $index->getType('type'));
-        $this->assertInstanceOf('FOS\\ElasticaBundle\\Configuration\\TypeConfig', $index->getType('parent'));
+        $this->assertInstanceOf('Fazland\\ElasticaBundle\\Configuration\\TypeConfig', $index->getType('type'));
+        $this->assertInstanceOf('Fazland\\ElasticaBundle\\Configuration\\TypeConfig', $index->getType('parent'));
     }
 
     protected function setUp()
@@ -48,11 +48,11 @@ class ConfigurationManagerTest extends WebTestCase
     /**
      * @param Client $client
      *
-     * @return \FOS\ElasticaBundle\Configuration\ConfigManager
+     * @return \Fazland\ElasticaBundle\Configuration\ConfigManager
      */
     private function getManager(Client $client)
     {
-        $manager = $client->getContainer()->get('fos_elastica.config_manager');
+        $manager = $client->getContainer()->get('fazland_elastica.config_manager');
 
         return $manager;
     }

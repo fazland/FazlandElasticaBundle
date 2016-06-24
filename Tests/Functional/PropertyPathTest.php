@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace FOS\ElasticaBundle\Tests\Functional;
+namespace Fazland\ElasticaBundle\Tests\Functional;
 
 use Elastica\Query\Match;
 
@@ -21,14 +21,14 @@ class PropertyPathTest extends WebTestCase
     public function testContainerSource()
     {
         $client = $this->createClient(array('test_case' => 'ORM'));
-        /** @var \FOS\ElasticaBundle\Persister\ObjectPersister $persister */
-        $persister = $client->getContainer()->get('fos_elastica.object_persister.index.property_paths_type');
+        /** @var \Fazland\ElasticaBundle\Persister\ObjectPersister $persister */
+        $persister = $client->getContainer()->get('fazland_elastica.object_persister.index.property_paths_type');
         $obj = new TypeObj();
         $obj->coll = 'Hello';
         $persister->insertOne($obj);
 
         /** @var \Elastica\Index $elClient */
-        $index = $client->getContainer()->get('fos_elastica.index.index');
+        $index = $client->getContainer()->get('fazland_elastica.index.index');
         $index->flush(true);
 
         $query = new Match();

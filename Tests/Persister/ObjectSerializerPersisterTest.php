@@ -1,9 +1,9 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\ObjectSerializerPersister;
+namespace Fazland\ElasticaBundle\Tests\ObjectSerializerPersister;
 
-use FOS\ElasticaBundle\Persister\ObjectSerializerPersister;
-use FOS\ElasticaBundle\Transformer\ModelToElasticaIdentifierTransformer;
+use Fazland\ElasticaBundle\Persister\ObjectSerializerPersister;
+use Fazland\ElasticaBundle\Transformer\ModelToElasticaIdentifierTransformer;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class POPO
@@ -35,7 +35,7 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
         $typeMock->expects($this->once())
             ->method('updateDocuments');
 
-        $serializerMock = $this->getMockBuilder('FOS\ElasticaBundle\Serializer\Callback')->getMock();
+        $serializerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Serializer\Callback')->getMock();
         $serializerMock->expects($this->once())->method('serialize');
 
         $objectPersister = new ObjectSerializerPersister($typeMock, $transformer, 'SomeClass', array($serializerMock, 'serialize'));
@@ -55,7 +55,7 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
         $typeMock->expects($this->once())
             ->method('addDocuments');
 
-        $serializerMock = $this->getMockBuilder('FOS\ElasticaBundle\Serializer\Callback')->getMock();
+        $serializerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Serializer\Callback')->getMock();
         $serializerMock->expects($this->once())->method('serialize');
 
         $objectPersister = new ObjectSerializerPersister($typeMock, $transformer, 'SomeClass', array($serializerMock, 'serialize'));
@@ -75,7 +75,7 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
         $typeMock->expects($this->never())
             ->method('addDocument');
 
-        $serializerMock = $this->getMockBuilder('FOS\ElasticaBundle\Serializer\Callback')->getMock();
+        $serializerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Serializer\Callback')->getMock();
         $serializerMock->expects($this->once())->method('serialize');
 
         $objectPersister = new ObjectSerializerPersister($typeMock, $transformer, 'SomeClass', array($serializerMock, 'serialize'));
@@ -99,7 +99,7 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
         $typeMock->expects($this->once())
             ->method('addDocuments');
 
-        $serializerMock = $this->getMockBuilder('FOS\ElasticaBundle\Serializer\Callback')->getMock();
+        $serializerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Serializer\Callback')->getMock();
         $serializerMock->expects($this->exactly(2))->method('serialize');
 
         $objectPersister = new ObjectSerializerPersister($typeMock, $transformer, 'SomeClass', array($serializerMock, 'serialize'));

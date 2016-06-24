@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\DataCollector;
+namespace Fazland\ElasticaBundle\Tests\DataCollector;
 
-use FOS\ElasticaBundle\DataCollector\ElasticaDataCollector;
+use Fazland\ElasticaBundle\DataCollector\ElasticaDataCollector;
 
 /**
  * @author Richard Miller <info@limethinking.co.uk>
@@ -21,8 +21,8 @@ class ElasticaDataCollectorTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        /** @var $loggerMock \PHPUnit_Framework_MockObject_MockObject|\FOS\ElasticaBundle\Logger\ElasticaLogger */
-        $loggerMock = $this->getMockBuilder('FOS\ElasticaBundle\Logger\ElasticaLogger')
+        /** @var $loggerMock \PHPUnit_Framework_MockObject_MockObject|\Fazland\ElasticaBundle\Logger\ElasticaLogger */
+        $loggerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Logger\ElasticaLogger')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -49,8 +49,8 @@ class ElasticaDataCollectorTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        /** @var $loggerMock \PHPUnit_Framework_MockObject_MockObject|\FOS\ElasticaBundle\Logger\ElasticaLogger */
-        $loggerMock = $this->getMockBuilder('FOS\ElasticaBundle\Logger\ElasticaLogger')
+        /** @var $loggerMock \PHPUnit_Framework_MockObject_MockObject|\Fazland\ElasticaBundle\Logger\ElasticaLogger */
+        $loggerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Logger\ElasticaLogger')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -77,8 +77,8 @@ class ElasticaDataCollectorTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        /** @var $loggerMock \PHPUnit_Framework_MockObject_MockObject|\FOS\ElasticaBundle\Logger\ElasticaLogger */
-        $loggerMock = $this->getMockBuilder('FOS\ElasticaBundle\Logger\ElasticaLogger')
+        /** @var $loggerMock \PHPUnit_Framework_MockObject_MockObject|\Fazland\ElasticaBundle\Logger\ElasticaLogger */
+        $loggerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Logger\ElasticaLogger')
             ->disableOriginalConstructor()
             ->getMock();
 

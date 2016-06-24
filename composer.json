@@ -1,15 +1,16 @@
 {
-    "name": "friendsofsymfony/elastica-bundle",
+    "name": "fazland/elastica-bundle",
     "type": "symfony-bundle",
     "description": "Elasticsearch PHP integration for your Symfony2 project using Elastica",
     "keywords": ["doctrine2", "elastica", "elasticsearch", "mongodb", "propel", "search"],
-    "homepage": "https://github.com/FriendsOfSymfony/FOSElasticaBundle",
+    "homepage": "https://github.com/Fazland/FazlandElasticaBundle",
     "license": "MIT",
     "authors": [
-        { "name": "FriendsOfSymfony Community", "homepage": "https://github.com/FriendsOfSymfony/FOSElasticaBundle/contributors" },
+        { "name": "Fazland Community", "homepage": "https://github.com/Fazland/FazlandElasticaBundle/contributors" },
         { "name": "Tim Nagel", "email": "tim@nagel.com.au" },
         { "name": "Richard Miller", "email": "richard.miller@limethinking.co.uk" },
-        { "name": "Jeremy Mikola", "email": "jmikola@gmail.com" }
+        { "name": "Jeremy Mikola", "email": "jmikola@gmail.com" },
+        { "name": "Giovanni Albero", "email": "giovanni.albero@fazland.com" }
     ],
     "require": {
         "php": ">=5.4.0",
@@ -36,7 +37,7 @@
         "symfony/twig-bundle": "~2.3|~3.0"
     },
     "autoload": {
-        "psr-4": { "FOS\\ElasticaBundle\\": "" }
+        "psr-4": { "Fazland\\ElasticaBundle\\": "" }
     },
     "extra": {
         "branch-alias": {

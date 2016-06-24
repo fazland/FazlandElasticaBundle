@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Infinite Networks Pty Ltd <http://www.infinite.net.au>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Event;
+namespace Fazland\ElasticaBundle\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 
@@ -21,12 +21,12 @@ use Symfony\Component\EventDispatcher\Event;
 class TypeResetEvent extends IndexEvent
 {
     /**
-     * @Event("FOS\ElasticaBundle\Event\TypeResetEvent")
+     * @Event("Fazland\ElasticaBundle\Event\TypeResetEvent")
      */
     const PRE_TYPE_RESET = 'elastica.index.type_pre_reset';
 
     /**
-     * @Event("FOS\ElasticaBundle\Event\TypeResetEvent")
+     * @Event("Fazland\ElasticaBundle\Event\TypeResetEvent")
      */
     const POST_TYPE_RESET = 'elastica.index.type_post_reset';
 

@@ -1,13 +1,13 @@
 <?php
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use FOS\ElasticaBundle\FOSElasticaBundle;
+use Fazland\ElasticaBundle\FazlandElasticaBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 
 return array(
     new FrameworkBundle(),
-    new FOSElasticaBundle(),
+    new FazlandElasticaBundle(),
     new DoctrineBundle(),
     new JMSSerializerBundle(),
 );

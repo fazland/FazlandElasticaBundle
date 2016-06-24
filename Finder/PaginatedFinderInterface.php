@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Finder;
+namespace Fazland\ElasticaBundle\Finder;
 
-use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
+use Fazland\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use Pagerfanta\Pagerfanta;
 use Elastica\Query;
 

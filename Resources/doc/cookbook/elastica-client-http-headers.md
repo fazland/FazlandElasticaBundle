@@ -8,7 +8,7 @@ They can be set using the headers configuration key:
 
 ```yaml
 # app/config/config.yml
-fos_elastica:
+fazland_elastica:
     clients:
         default:
             host: example.com

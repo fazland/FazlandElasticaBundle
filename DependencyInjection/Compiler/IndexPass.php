@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\DependencyInjection\Compiler;
+namespace Fazland\ElasticaBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -22,17 +22,17 @@ class IndexPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('fos_elastica.index_manager')) {
+        if (!$container->hasDefinition('fazland_elastica.index_manager')) {
             return;
         }
 
         $indexes = array();
-        foreach ($container->findTaggedServiceIds('fos_elastica.index') as $id => $tags) {
+        foreach ($container->findTaggedServiceIds('fazland_elastica.index') as $id => $tags) {
             foreach ($tags as $tag) {
                 $indexes[$tag['name']] = new Reference($id);
             }
         }
 
-        $container->getDefinition('fos_elastica.index_manager')->replaceArgument(0, $indexes);
+        $container->getDefinition('fazland_elastica.index_manager')->replaceArgument(0, $indexes);
     }
 }

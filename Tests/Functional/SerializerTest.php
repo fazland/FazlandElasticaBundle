@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace FOS\ElasticaBundle\Tests\Functional;
+namespace Fazland\ElasticaBundle\Tests\Functional;
 
 /**
  * @group functional
@@ -19,7 +19,7 @@ class SerializerTest extends WebTestCase
     public function testMappingIteratorToArrayField()
     {
         $client = $this->createClient(array('test_case' => 'Serializer'));
-        $persister = $client->getContainer()->get('fos_elastica.object_persister.index.type');
+        $persister = $client->getContainer()->get('fazland_elastica.object_persister.index.type');
 
         $object = new TypeObj();
         $object->id = 1;
@@ -40,8 +40,8 @@ class SerializerTest extends WebTestCase
         $client = $this->createClient(array('test_case' => 'Serializer'));
         $container = $client->getContainer();
 
-        $disabledNullPersister = $container->get('fos_elastica.object_persister.index.type_serialize_null_disabled');
-        $enabledNullPersister = $container->get('fos_elastica.object_persister.index.type_serialize_null_enabled');
+        $disabledNullPersister = $container->get('fazland_elastica.object_persister.index.type_serialize_null_disabled');
+        $enabledNullPersister = $container->get('fazland_elastica.object_persister.index.type_serialize_null_enabled');
 
         $object = new TypeObj();
         $object->id = 1;
@@ -50,12 +50,12 @@ class SerializerTest extends WebTestCase
         $enabledNullPersister->insertOne($object);
 
         // Tests that attributes with null values are not persisted into an Elasticsearch type without the serialize_null option
-        $disabledNullType = $container->get('fos_elastica.index.index.type_serialize_null_disabled');
+        $disabledNullType = $container->get('fazland_elastica.index.index.type_serialize_null_disabled');
         $documentData = $disabledNullType->getDocument(1)->getData();
         $this->assertArrayNotHasKey('field1', $documentData);
 
         // Tests that attributes with null values are persisted into an Elasticsearch type with the serialize_null option
-        $enabledNullType = $container->get('fos_elastica.index.index.type_serialize_null_enabled');
+        $enabledNullType = $container->get('fazland_elastica.index.index.type_serialize_null_enabled');
         $documentData = $enabledNullType->getDocument(1)->getData();
         $this->assertArrayHasKey('field1', $documentData);
         $this->assertEquals($documentData['field1'], null);
@@ -64,7 +64,7 @@ class SerializerTest extends WebTestCase
     public function testUnmappedType()
     {
         $client = $this->createClient(array('test_case' => 'Serializer'));
-        $resetter = $client->getContainer()->get('fos_elastica.resetter');
+        $resetter = $client->getContainer()->get('fazland_elastica.resetter');
         $resetter->resetIndex('index');
     }
 

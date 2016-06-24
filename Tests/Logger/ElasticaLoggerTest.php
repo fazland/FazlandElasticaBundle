@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Logger;
+namespace Fazland\ElasticaBundle\Tests\Logger;
 
-use FOS\ElasticaBundle\Logger\ElasticaLogger;
+use Fazland\ElasticaBundle\Logger\ElasticaLogger;
 
 /**
  * @author Richard Miller <info@limethinking.co.uk>

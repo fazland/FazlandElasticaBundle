@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace FOS\ElasticaBundle\Tests\Integration;
+namespace Fazland\ElasticaBundle\Tests\Integration;
 
 class MappingTest
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine\PHPCR;
+namespace Fazland\ElasticaBundle\Doctrine\PHPCR;
 
-use FOS\ElasticaBundle\Doctrine\AbstractProvider;
-use FOS\ElasticaBundle\Exception\InvalidArgumentTypeException;
+use Fazland\ElasticaBundle\Doctrine\AbstractProvider;
+use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 use Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder;
 use Doctrine\ODM\PHPCR\Query\Query;
 

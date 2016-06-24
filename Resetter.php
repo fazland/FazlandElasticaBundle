@@ -1,11 +1,11 @@
 <?php
 
-namespace FOS\ElasticaBundle;
+namespace Fazland\ElasticaBundle;
 
-use FOS\ElasticaBundle\Index\Resetter as BaseResetter;
+use Fazland\ElasticaBundle\Index\Resetter as BaseResetter;
 
 /**
- * @deprecated Use \FOS\ElasticaBundle\Index\Resetter
+ * @deprecated Use \Fazland\ElasticaBundle\Index\Resetter
  */
 class Resetter extends BaseResetter
 {

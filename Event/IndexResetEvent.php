@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Infinite Networks Pty Ltd <http://www.infinite.net.au>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Event;
+namespace Fazland\ElasticaBundle\Event;
 
 /**
  * Index ResetEvent.
@@ -19,12 +19,12 @@ namespace FOS\ElasticaBundle\Event;
 class IndexResetEvent extends IndexEvent
 {
     /**
-     * @Event("FOS\ElasticaBundle\Event\IndexResetEvent")
+     * @Event("Fazland\ElasticaBundle\Event\IndexResetEvent")
      */
     const PRE_INDEX_RESET = 'elastica.index.pre_reset';
 
     /**
-     * @Event("FOS\ElasticaBundle\Event\IndexResetEvent")
+     * @Event("Fazland\ElasticaBundle\Event\IndexResetEvent")
      */
     const POST_INDEX_RESET = 'elastica.index.post_reset';
 

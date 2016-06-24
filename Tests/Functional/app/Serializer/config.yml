@@ -11,24 +11,24 @@ doctrine:
 
 services:
     indexableService:
-        class: FOS\ElasticaBundle\Tests\Functional\app\ORM\IndexableService
+        class: Fazland\ElasticaBundle\Tests\Functional\app\ORM\IndexableService
 
 jms_serializer:
     metadata:
         auto_detection: true
         directories:
             type_obj:
-                namespace_prefix: "FOS\\ElasticaBundle\\Tests\\Functional"
+                namespace_prefix: "Fazland\\ElasticaBundle\\Tests\\Functional"
                 path: "%kernel.root_dir%/Serializer"
 
-fos_elastica:
+fazland_elastica:
     clients:
         default:
             url: http://localhost:9200
     serializer: ~
     indexes:
         index:
-            index_name: foselastica_ser_test_%kernel.environment%
+            index_name: fazlandelastica_ser_test_%kernel.environment%
             types:
                 type:
                     properties:
@@ -36,7 +36,7 @@ fos_elastica:
                         field1: ~
                     persistence:
                         driver: orm
-                        model: FOS\ElasticaBundle\Tests\Functional\TypeObj
+                        model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                     serializer:
                         groups: ['search', 'Default']
                         version: 1.1
@@ -45,7 +45,7 @@ fos_elastica:
                         field1: ~
                     persistence:
                         driver: orm
-                        model: FOS\ElasticaBundle\Tests\Functional\TypeObj
+                        model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                     serializer:
                         serialize_null: false
                 type_serialize_null_enabled:
@@ -53,13 +53,13 @@ fos_elastica:
                         field1: ~
                     persistence:
                         driver: orm
-                        model: FOS\ElasticaBundle\Tests\Functional\TypeObj
+                        model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                     serializer:
                         serialize_null: true
                 unmapped:
                     persistence:
                         driver: orm
-                        model: FOS\ElasticaBundle\Tests\Functional\TypeObj
+                        model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                     serializer:
                         groups: ['search', 'Default']
                         version: 1.1

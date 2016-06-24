@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Infinite Networks Pty Ltd <http://www.infinite.net.au>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Tests\Functional\app\ORM;
+namespace Fazland\ElasticaBundle\Tests\Functional\app\ORM;
 
 class IndexableService
 {

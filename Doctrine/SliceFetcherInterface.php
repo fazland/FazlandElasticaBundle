@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine;
+namespace Fazland\ElasticaBundle\Doctrine;
 
 /**
  * Fetches a slice of objects.

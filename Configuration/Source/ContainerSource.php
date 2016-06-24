@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Configuration\Source;
+namespace Fazland\ElasticaBundle\Configuration\Source;
 
-use FOS\ElasticaBundle\Configuration\IndexConfig;
-use FOS\ElasticaBundle\Configuration\TypeConfig;
+use Fazland\ElasticaBundle\Configuration\IndexConfig;
+use Fazland\ElasticaBundle\Configuration\TypeConfig;
 
 /**
  * Returns index and type configuration from the container.

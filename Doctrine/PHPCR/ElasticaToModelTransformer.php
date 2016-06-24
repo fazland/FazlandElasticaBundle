@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine\PHPCR;
+namespace Fazland\ElasticaBundle\Doctrine\PHPCR;
 
-use FOS\ElasticaBundle\Doctrine\AbstractElasticaToModelTransformer;
+use Fazland\ElasticaBundle\Doctrine\AbstractElasticaToModelTransformer;
 
 /**
  * Maps Elastica documents with Doctrine objects

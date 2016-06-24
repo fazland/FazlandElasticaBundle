@@ -8,23 +8,23 @@ framework:
 twig:
     debug: %kernel.debug%
 
-fos_elastica:
+fazland_elastica:
     clients:
         default:
             connections:
-                - url: http://%fos_elastica.host%:%fos_elastica.port%
-                - host: %fos_elastica.host%
-                  port: %fos_elastica.port%
+                - url: http://%fazland_elastica.host%:%fazland_elastica.port%
+                - host: %fazland_elastica.host%
+                  port: %fazland_elastica.port%
             connectionStrategy: RoundRobin
         second_server:
             connections:
-                - url: http://%fos_elastica.host%:%fos_elastica.port%
+                - url: http://%fazland_elastica.host%:%fazland_elastica.port%
             connection_strategy: RoundRobin
         third:
-            url: http://%fos_elastica.host%:%fos_elastica.port%
+            url: http://%fazland_elastica.host%:%fazland_elastica.port%
     indexes:
         index:
-            index_name: foselastica_basic_test_%kernel.environment%
+            index_name: fazlandelastica_basic_test_%kernel.environment%
             settings:
                 analysis:
                     analyzer:

@@ -5,7 +5,7 @@ You can define multiple endpoints for an Elastica client by specifying them as
 multiple connections in the client configuration:
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     clients:
         default:
             connections:

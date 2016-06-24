@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Paginator;
+namespace Fazland\ElasticaBundle\Paginator;
 
 interface PaginatorAdapterInterface
 {

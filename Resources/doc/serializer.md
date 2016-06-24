@@ -1,7 +1,7 @@
-Using a Serializer in FOSElasticaBundle
+Using a Serializer in FazlandElasticaBundle
 =======================================
 
-FOSElasticaBundle supports using a Serializer component to serialize your objects to JSON
+FazlandElasticaBundle supports using a Serializer component to serialize your objects to JSON
 which will be sent directly to the Elasticsearch server. Combined with automatic mapping
 it means types do not have to be mapped.
 
@@ -14,16 +14,16 @@ Enable the serializer configuration for the bundle:
 
 ```yaml
 #app/config/config.yml
-fos_elastica:
+fazland_elastica:
     serializer: ~
 ```
 
-The default configuration that comes with FOSElasticaBundle supports both the JMS Serializer
+The default configuration that comes with FazlandElasticaBundle supports both the JMS Serializer
 and the Symfony Serializer. If JMSSerializerBundle is installed, additional support for
 serialization groups, versions and null value serialization are added to the bundle. Example:
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     serializer:
         groups: [elastica, Default]
         version: '1.1'
@@ -37,7 +37,7 @@ A type does not need to have mappings defined when using a serializer. An exampl
 for a type in this case:
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             types:

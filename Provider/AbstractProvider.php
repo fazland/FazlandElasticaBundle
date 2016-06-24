@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Provider;
+namespace Fazland\ElasticaBundle\Provider;
 
-use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
+use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**

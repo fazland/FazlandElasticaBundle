@@ -1,15 +1,15 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
- * (c) FriendsOfSymfony <https://github.com/FriendsOfSymfony/FOSElasticaBundle/graphs/contributors>
+ * (c) Fazland <https://github.com/Fazland/FazlandElasticaBundle/graphs/contributors>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Transformer;
+namespace Fazland\ElasticaBundle\Transformer;
 
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 

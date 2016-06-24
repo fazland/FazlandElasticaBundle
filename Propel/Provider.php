@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Propel;
+namespace Fazland\ElasticaBundle\Propel;
 
-use FOS\ElasticaBundle\Provider\AbstractProvider;
+use Fazland\ElasticaBundle\Provider\AbstractProvider;
 
 /**
  * Propel provider.

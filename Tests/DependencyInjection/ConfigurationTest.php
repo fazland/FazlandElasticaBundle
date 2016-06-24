@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Resetter\DependencyInjection;
+namespace Fazland\ElasticaBundle\Tests\Resetter\DependencyInjection;
 
-use FOS\ElasticaBundle\DependencyInjection\Configuration;
+use Fazland\ElasticaBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\Definition\Processor;
 
 /**
@@ -100,9 +100,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(4, $configuration['clients']);
 
-        $this->assertEquals('fos_elastica.logger', $configuration['clients']['logging_enabled']['connections'][0]['logger']);
+        $this->assertEquals('fazland_elastica.logger', $configuration['clients']['logging_enabled']['connections'][0]['logger']);
         $this->assertFalse($configuration['clients']['logging_disabled']['connections'][0]['logger']);
-        $this->assertEquals('fos_elastica.logger', $configuration['clients']['logging_not_mentioned']['connections'][0]['logger']);
+        $this->assertEquals('fazland_elastica.logger', $configuration['clients']['logging_not_mentioned']['connections'][0]['logger']);
         $this->assertEquals('custom.service', $configuration['clients']['logging_custom']['connections'][0]['logger']);
     }
 

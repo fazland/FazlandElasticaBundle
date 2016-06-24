@@ -1,4 +1,4 @@
-FOSElasticaBundle Usage
+FazlandElasticaBundle Usage
 =======================
 
 Basic Searching with a Finder
@@ -13,7 +13,7 @@ documentation.
 > This example assumes you have defined an index `app` and a type `user` in your `config.yml`.
 
 ```php
-$finder = $this->container->get('fos_elastica.finder.app.user');
+$finder = $this->container->get('fazland_elastica.finder.app.user');
 
 // Option 1. Returns all users who have example.net in any of their mapped fields
 $results = $finder->find('example.net');
@@ -59,17 +59,17 @@ You can also define a finder that will work on the entire index. Adjust your ind
 configuration as per below:
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             finder: ~
 ```
 
-You can now use the index wide finder service `fos_elastica.finder.app`:
+You can now use the index wide finder service `fazland_elastica.finder.app`:
 
 ```php
-/** var FOS\ElasticaBundle\Finder\MappedFinder */
-$finder = $this->container->get('fos_elastica.finder.app');
+/** var Fazland\ElasticaBundle\Finder\MappedFinder */
+$finder = $this->container->get('fazland_elastica.finder.app');
 
 // Returns a mixed array of any objects mapped
 $results = $finder->find('bob');
@@ -82,22 +82,22 @@ In the case where you need many different methods for different searching terms,
 may be better to separate methods for each type into their own dedicated repository
 classes, just like Doctrine ORM's EntityRepository classes.
 
-The manager class that handles repositories has a service key of `fos_elastica.manager`.
+The manager class that handles repositories has a service key of `fazland_elastica.manager`.
 The manager will default to handling ORM entities, and the configuration must be changed
 for MongoDB users.
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     default_manager: mongodb
 ```
 
 An example for using a repository:
 
 ```php
-/** var FOS\ElasticaBundle\Manager\RepositoryManager */
-$repositoryManager = $this->container->get('fos_elastica.manager');
+/** var Fazland\ElasticaBundle\Manager\RepositoryManager */
+$repositoryManager = $this->container->get('fazland_elastica.manager');
 
-/** var FOS\ElasticaBundle\Repository */
+/** var Fazland\ElasticaBundle\Repository */
 $repository = $repositoryManager->getRepository('UserBundle:User');
 
 /** var array of Acme\UserBundle\Entity\User */
@@ -159,7 +159,7 @@ apply to queries against the `title` field.
 Assuming a type is configured as follows:
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             settings:
@@ -185,7 +185,7 @@ fos_elastica:
 The following code will execute a search against the Elasticsearch server:
 
 ```php
-$finder = $this->container->get('fos_elastica.finder.app.article');
+$finder = $this->container->get('fazland_elastica.finder.app.article');
 $boolQuery = new \Elastica\Query\BoolQuery();
 
 $fieldQuery = new \Elastica\Query\Match();

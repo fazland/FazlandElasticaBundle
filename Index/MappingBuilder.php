@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Infinite Networks Pty Ltd <http://www.infinite.net.au>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Index;
+namespace Fazland\ElasticaBundle\Index;
 
-use FOS\ElasticaBundle\Configuration\IndexConfig;
-use FOS\ElasticaBundle\Configuration\TypeConfig;
+use Fazland\ElasticaBundle\Configuration\IndexConfig;
+use Fazland\ElasticaBundle\Configuration\TypeConfig;
 
 class MappingBuilder
 {

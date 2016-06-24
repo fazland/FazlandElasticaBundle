@@ -5,19 +5,19 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="fos_elastica.object_persister.class">FOS\ElasticaBundle\Persister\ObjectPersister</parameter>
-        <parameter key="fos_elastica.object_serializer_persister.class">FOS\ElasticaBundle\Persister\ObjectSerializerPersister</parameter>
+        <parameter key="fazland_elastica.object_persister.class">Fazland\ElasticaBundle\Persister\ObjectPersister</parameter>
+        <parameter key="fazland_elastica.object_serializer_persister.class">Fazland\ElasticaBundle\Persister\ObjectSerializerPersister</parameter>
     </parameters>
 
     <services>
-        <service id="fos_elastica.object_persister" class="%fos_elastica.object_persister.class%" abstract="true">
+        <service id="fazland_elastica.object_persister" class="%fazland_elastica.object_persister.class%" abstract="true">
             <argument /> <!-- type -->
             <argument /> <!-- model to elastica transformer -->
             <argument /> <!-- model -->
             <argument /> <!-- properties mapping -->
         </service>
 
-        <service id="fos_elastica.object_serializer_persister" class="%fos_elastica.object_serializer_persister.class%" abstract="true">
+        <service id="fazland_elastica.object_serializer_persister" class="%fazland_elastica.object_serializer_persister.class%" abstract="true">
             <argument /> <!-- type -->
             <argument /> <!-- model to elastica transformer -->
             <argument /> <!-- model -->

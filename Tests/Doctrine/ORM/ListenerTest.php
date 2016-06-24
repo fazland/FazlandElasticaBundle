@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Doctrine\ORM;
+namespace Fazland\ElasticaBundle\Tests\Doctrine\ORM;
 
-use FOS\ElasticaBundle\Tests\Doctrine\ListenerTest as BaseListenerTest;
+use Fazland\ElasticaBundle\Tests\Doctrine\ListenerTest as BaseListenerTest;
 
 class ListenerTest extends BaseListenerTest
 {
@@ -18,7 +18,7 @@ class ListenerTest extends BaseListenerTest
 
     protected function getListenerClass()
     {
-        return 'FOS\ElasticaBundle\Doctrine\Listener';
+        return 'Fazland\ElasticaBundle\Doctrine\Listener';
     }
 
     protected function getObjectManagerClass()

@@ -1,9 +1,9 @@
 <?php
 
-namespace FOS\ElasticaBundle\Manager;
+namespace Fazland\ElasticaBundle\Manager;
 
 use Doctrine\Common\Annotations\Reader;
-use FOS\ElasticaBundle\Finder\FinderInterface;
+use Fazland\ElasticaBundle\Finder\FinderInterface;
 use RuntimeException;
 
 /**
@@ -64,7 +64,7 @@ class RepositoryManager implements RepositoryManagerInterface
         }
 
         $refClass   = new \ReflectionClass($entityName);
-        $annotation = $this->reader->getClassAnnotation($refClass, 'FOS\\ElasticaBundle\\Annotation\\Search');
+        $annotation = $this->reader->getClassAnnotation($refClass, 'Fazland\\ElasticaBundle\\Annotation\\Search');
         if ($annotation) {
             $this->entities[$entityName]['repositoryName']
                 = $annotation->repositoryClass;
@@ -72,7 +72,7 @@ class RepositoryManager implements RepositoryManagerInterface
             return $annotation->repositoryClass;
         }
 
-        return 'FOS\ElasticaBundle\Repository';
+        return 'Fazland\ElasticaBundle\Repository';
     }
 
     /**

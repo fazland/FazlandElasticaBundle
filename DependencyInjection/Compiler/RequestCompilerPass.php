@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\DependencyInjection\Compiler;
+namespace Fazland\ElasticaBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -23,11 +23,11 @@ final class RequestCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('fos_elastica.paginator.subscriber')) {
+        if (!$container->hasDefinition('fazland_elastica.paginator.subscriber')) {
             return;
         }
 
-        $definition = $container->getDefinition('fos_elastica.paginator.subscriber');
+        $definition = $container->getDefinition('fazland_elastica.paginator.subscriber');
         if ($container->hasDefinition('request_stack')) {
             $arguments = array(new Reference('request_stack', ContainerInterface::NULL_ON_INVALID_REFERENCE, false));
         } else {

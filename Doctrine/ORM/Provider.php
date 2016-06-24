@@ -1,10 +1,10 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine\ORM;
+namespace Fazland\ElasticaBundle\Doctrine\ORM;
 
 use Doctrine\ORM\QueryBuilder;
-use FOS\ElasticaBundle\Doctrine\AbstractProvider;
-use FOS\ElasticaBundle\Exception\InvalidArgumentTypeException;
+use Fazland\ElasticaBundle\Doctrine\AbstractProvider;
+use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 
 class Provider extends AbstractProvider
 {

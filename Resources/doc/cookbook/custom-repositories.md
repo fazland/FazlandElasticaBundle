@@ -1,7 +1,7 @@
 ##### Custom Repositories
 
 As well as the default repository you can create a custom repository for an entity and add
-methods for particular searches. These need to extend `FOS\ElasticaBundle\Repository` to have
+methods for particular searches. These need to extend `Fazland\ElasticaBundle\Repository` to have
 access to the finder:
 
 ```php
@@ -9,7 +9,7 @@ access to the finder:
 
 namespace Acme\ElasticaBundle\SearchRepository;
 
-use FOS\ElasticaBundle\Repository;
+use Fazland\ElasticaBundle\Repository;
 
 class UserRepository extends Repository
 {
@@ -24,7 +24,7 @@ class UserRepository extends Repository
 To use the custom repository specify it in the mapping for the entity:
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     clients:
         default: { host: localhost, port: 9200 }
     indexes:
@@ -45,10 +45,10 @@ fos_elastica:
 Then the custom queries will be available when using the repository returned from the manager:
 
 ```php
-/** var FOS\ElasticaBundle\Manager\RepositoryManager */
-$repositoryManager = $container->get('fos_elastica.manager');
+/** var Fazland\ElasticaBundle\Manager\RepositoryManager */
+$repositoryManager = $container->get('fazland_elastica.manager');
 
-/** var FOS\ElasticaBundle\Repository */
+/** var Fazland\ElasticaBundle\Repository */
 $repository = $repositoryManager->getRepository('UserBundle:User');
 
 /** var array of Acme\UserBundle\Entity\User */
@@ -62,7 +62,7 @@ Alternatively you can specify the custom repository using an annotation in the e
 
 namespace Application\UserBundle\Entity;
 
-use FOS\ElasticaBundle\Annotation\Search;
+use Fazland\ElasticaBundle\Annotation\Search;
 
 /**
  * @Search(repositoryClass="Acme\ElasticaBundle\SearchRepository\UserRepository")

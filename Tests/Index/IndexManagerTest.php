@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Index;
+namespace Fazland\ElasticaBundle\Tests\Index;
 
-use FOS\ElasticaBundle\Index\IndexManager;
+use Fazland\ElasticaBundle\Index\IndexManager;
 
 class IndexManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,7 +16,7 @@ class IndexManagerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         foreach (array('index1', 'index2', 'index3') as $indexName) {
-            $index = $this->getMockBuilder('FOS\\ElasticaBundle\\Elastica\\Index')
+            $index = $this->getMockBuilder('Fazland\\ElasticaBundle\\Elastica\\Index')
                 ->disableOriginalConstructor()
                 ->getMock();
 

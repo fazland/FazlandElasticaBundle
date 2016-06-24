@@ -1,15 +1,15 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
- * (c) FriendsOfSymfony <https://github.com/FriendsOfSymfony/FOSElasticaBundle/graphs/contributors>
+ * (c) Fazland <https://github.com/Fazland/FazlandElasticaBundle/graphs/contributors>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Event;
+namespace Fazland\ElasticaBundle\Event;
 
 /**
  * Index Populate Event.
@@ -19,12 +19,12 @@ namespace FOS\ElasticaBundle\Event;
 class IndexPopulateEvent extends IndexEvent
 {
     /**
-     * @Event("FOS\ElasticaBundle\Event\IndexPopulateEvent")
+     * @Event("Fazland\ElasticaBundle\Event\IndexPopulateEvent")
      */
     const PRE_INDEX_POPULATE = 'elastica.index.index_pre_populate';
 
     /**
-     * @Event("FOS\ElasticaBundle\Event\IndexPopulateEvent")
+     * @Event("Fazland\ElasticaBundle\Event\IndexPopulateEvent")
      */
     const POST_INDEX_POPULATE = 'elastica.index.index_post_populate';
 

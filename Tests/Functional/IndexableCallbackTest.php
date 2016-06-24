@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace FOS\ElasticaBundle\Tests\Functional;
+namespace Fazland\ElasticaBundle\Tests\Functional;
 
 /**
  * @group functional
@@ -27,8 +27,8 @@ class IndexableCallbackTest extends WebTestCase
     {
         $client = $this->createClient(array('test_case' => 'ORM'));
 
-        /** @var \FOS\ElasticaBundle\Provider\Indexable $in */
-        $in = $client->getContainer()->get('fos_elastica.indexable');
+        /** @var \Fazland\ElasticaBundle\Provider\Indexable $in */
+        $in = $client->getContainer()->get('fazland_elastica.indexable');
 
         $this->assertTrue($in->isObjectIndexable('index', 'type', new TypeObj()));
         $this->assertTrue($in->isObjectIndexable('index', 'type2', new TypeObj()));

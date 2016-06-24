@@ -4,7 +4,7 @@ Type configuration
 Custom Property Paths
 ---------------------
 
-Since FOSElasticaBundle 3.1.0, it is now possible to define custom property paths
+Since FazlandElasticaBundle 3.1.0, it is now possible to define custom property paths
 to be used for data retrieval from the underlying model.
 
 ```yaml
@@ -29,10 +29,10 @@ populate this value by listening to the `POST_TRANSFORM` event emitted by this b
 See [cookbook/custom-properties.md](cookbook/custom-properties.md) for more information
 about this event.
 
-Handling missing results with FOSElasticaBundle
+Handling missing results with FazlandElasticaBundle
 -----------------------------------------------
 
-By default, FOSElasticaBundle will throw an exception if the results returned from
+By default, FazlandElasticaBundle will throw an exception if the results returned from
 Elasticsearch are different from the results it finds from the chosen persistence
 provider. This may pose problems for a large index where updates do not occur instantly
 or another process has removed the results from your persistence provider without
@@ -59,7 +59,7 @@ applied when dynamic introduction of fields / objects happens.
 [Documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/dynamic-templates.html)
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             types:
@@ -79,13 +79,13 @@ fos_elastica:
                         username: { type: string }
 ```
 
-Nested objects in FOSElasticaBundle
+Nested objects in FazlandElasticaBundle
 -----------------------------------
 
 Note that object can autodetect properties
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             types:
@@ -111,7 +111,7 @@ Parent fields
 -------------
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             types:
@@ -197,7 +197,7 @@ analyzer, you could write:
 Testing if an object should be indexed
 --------------------------------------
 
-FOSElasticaBundle can be configured to automatically index changes made for
+FazlandElasticaBundle can be configured to automatically index changes made for
 different kinds of objects if your persistence backend supports these methods,
 but in some cases you might want to run an external service or call a property
 on the object to see if it should be indexed.
@@ -281,8 +281,8 @@ persistence configuration.
 
 ### Turning on the persistence backend logger in production
 
-FOSElasticaBundle will turn of your persistence backend's logging configuration by default
-when Symfony2 is not in debug mode. You can force FOSElasticaBundle to always disable
+FazlandElasticaBundle will turn of your persistence backend's logging configuration by default
+when Symfony2 is not in debug mode. You can force FazlandElasticaBundle to always disable
 logging by setting debug_logging to false, to leave logging alone by setting it to true,
 or leave it set to its default value which will mirror %kernel.debug%.
 
@@ -328,7 +328,7 @@ You can also choose to only listen for some of the events:
 Flushing Method
 ---------------
 
-FOSElasticaBundle, since 3.0.0 performs its indexing in the postFlush Doctrine event
+FazlandElasticaBundle, since 3.0.0 performs its indexing in the postFlush Doctrine event
 instead of prePersist and preUpdate which means that indexing will only occur when there
 has been a successful flush. This new default makes more sense but in the instance where
 you want to perform indexing before the flush is confirmed you may set the `immediate`
@@ -343,7 +343,7 @@ option on a type persistence configuration to `true`.
 Logging Errors
 --------------
 
-By default FOSElasticaBundle will not catch errors thrown by Elastica/ElasticSearch.
+By default FazlandElasticaBundle will not catch errors thrown by Elastica/ElasticSearch.
 Configure a logger per listener if you would rather catch and log these.
 
 ```yaml

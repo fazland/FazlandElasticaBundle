@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\DataCollector;
+namespace Fazland\ElasticaBundle\DataCollector;
 
-use FOS\ElasticaBundle\Logger\ElasticaLogger;
+use Fazland\ElasticaBundle\Logger\ElasticaLogger;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

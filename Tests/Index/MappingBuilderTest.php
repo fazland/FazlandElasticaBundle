@@ -1,9 +1,9 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Index;
+namespace Fazland\ElasticaBundle\Tests\Index;
 
-use FOS\ElasticaBundle\Configuration\TypeConfig;
-use FOS\ElasticaBundle\Index\MappingBuilder;
+use Fazland\ElasticaBundle\Configuration\TypeConfig;
+use Fazland\ElasticaBundle\Index\MappingBuilder;
 
 class MappingBuilderTest extends \PHPUnit_Framework_TestCase
 {

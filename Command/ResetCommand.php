@@ -1,13 +1,13 @@
 <?php
 
-namespace FOS\ElasticaBundle\Command;
+namespace Fazland\ElasticaBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use FOS\ElasticaBundle\IndexManager;
-use FOS\ElasticaBundle\Resetter;
+use Fazland\ElasticaBundle\IndexManager;
+use Fazland\ElasticaBundle\Resetter;
 
 /**
  * Reset search indexes.
@@ -43,8 +43,8 @@ class ResetCommand extends ContainerAwareCommand
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $this->indexManager = $this->getContainer()->get('fos_elastica.index_manager');
-        $this->resetter = $this->getContainer()->get('fos_elastica.resetter');
+        $this->indexManager = $this->getContainer()->get('fazland_elastica.index_manager');
+        $this->resetter = $this->getContainer()->get('fazland_elastica.resetter');
     }
 
     /**

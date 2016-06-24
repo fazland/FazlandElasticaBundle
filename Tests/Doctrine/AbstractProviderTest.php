@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Doctrine;
+namespace Fazland\ElasticaBundle\Tests\Doctrine;
 
 use Elastica\Bulk\ResponseSet;
 use Elastica\Response;
@@ -288,11 +288,11 @@ class AbstractProviderTest extends \PHPUnit_Framework_TestCase
     /**
      * @param boolean $setSliceFetcher Whether or not to set the slice fetcher.
      *
-     * @return \FOS\ElasticaBundle\Doctrine\AbstractProvider|\PHPUnit_Framework_MockObject_MockObject
+     * @return \Fazland\ElasticaBundle\Doctrine\AbstractProvider|\PHPUnit_Framework_MockObject_MockObject
      */
     private function getMockAbstractProvider($setSliceFetcher = true)
     {
-        return $this->getMockForAbstractClass('FOS\ElasticaBundle\Doctrine\AbstractProvider', array(
+        return $this->getMockForAbstractClass('Fazland\ElasticaBundle\Doctrine\AbstractProvider', array(
             $this->objectPersister,
             $this->indexable,
             $this->objectClass,
@@ -339,27 +339,27 @@ class AbstractProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \FOS\ElasticaBundle\Persister\ObjectPersisterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return \Fazland\ElasticaBundle\Persister\ObjectPersisterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function getMockObjectPersister()
     {
-        return $this->getMock('FOS\ElasticaBundle\Persister\ObjectPersisterInterface');
+        return $this->getMock('Fazland\ElasticaBundle\Persister\ObjectPersisterInterface');
     }
 
     /**
-     * @return \FOS\ElasticaBundle\Provider\IndexableInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return \Fazland\ElasticaBundle\Provider\IndexableInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function getMockIndexable()
     {
-        return $this->getMock('FOS\ElasticaBundle\Provider\IndexableInterface');
+        return $this->getMock('Fazland\ElasticaBundle\Provider\IndexableInterface');
     }
 
     /**
-     * @return \FOS\ElasticaBundle\Doctrine\SliceFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return \Fazland\ElasticaBundle\Doctrine\SliceFetcherInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function getMockSliceFetcher()
     {
-        return $this->getMock('FOS\ElasticaBundle\Doctrine\SliceFetcherInterface');
+        return $this->getMock('Fazland\ElasticaBundle\Doctrine\SliceFetcherInterface');
     }
 }
 

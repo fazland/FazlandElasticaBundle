@@ -1,9 +1,9 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Transformer\ModelToElasticaAutoTransformer;
+namespace Fazland\ElasticaBundle\Tests\Transformer\ModelToElasticaAutoTransformer;
 
-use FOS\ElasticaBundle\Event\TransformEvent;
-use FOS\ElasticaBundle\Transformer\ModelToElasticaAutoTransformer;
+use Fazland\ElasticaBundle\Event\TransformEvent;
+use Fazland\ElasticaBundle\Transformer\ModelToElasticaAutoTransformer;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class POPO
@@ -149,11 +149,11 @@ class ModelToElasticaAutoTransformerTest extends \PHPUnit_Framework_TestCase
             ->withConsecutive(
                 array(
                     TransformEvent::PRE_TRANSFORM,
-                    $this->isInstanceOf('FOS\ElasticaBundle\Event\TransformEvent')
+                    $this->isInstanceOf('Fazland\ElasticaBundle\Event\TransformEvent')
                 ),
                 array(
                     TransformEvent::POST_TRANSFORM,
-                    $this->isInstanceOf('FOS\ElasticaBundle\Event\TransformEvent')
+                    $this->isInstanceOf('Fazland\ElasticaBundle\Event\TransformEvent')
                 )
             );
 

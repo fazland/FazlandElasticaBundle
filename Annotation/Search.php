@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Annotation;
+namespace Fazland\ElasticaBundle\Annotation;
 
 /**
  * Annotation class for setting search repository.

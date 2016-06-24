@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Elastica;
+namespace Fazland\ElasticaBundle\Elastica;
 
 use Elastica\Index as BaseIndex;
 

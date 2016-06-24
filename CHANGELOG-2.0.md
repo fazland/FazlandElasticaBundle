@@ -5,9 +5,9 @@ This changelog references the relevant changes (bug and security fixes) done
 in 2.0 minor versions.
 
 To get the diff for a specific change, go to
-https://github.com/FriendsOfSymfony/FOSElasticaBundle/commit/XXX where XXX is
+https://github.com/Fazland/FazlandElasticaBundle/commit/XXX where XXX is
 the commit hash. To get the diff between two versions, go to
-https://github.com/FriendsOfSymfony/FOSElasticaBundle/compare/v2.0.0...v2.0.1
+https://github.com/Fazland/FazlandElasticaBundle/compare/v2.0.0...v2.0.1
 
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline v2.0.0...2.0.x`

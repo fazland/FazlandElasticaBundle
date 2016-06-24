@@ -1,11 +1,11 @@
 <?php
 
-namespace FOS\ElasticaBundle;
+namespace Fazland\ElasticaBundle;
 
-use FOS\ElasticaBundle\Elastica\Index;
+use Fazland\ElasticaBundle\Elastica\Index;
 
 /**
- * @deprecated Use \FOS\ElasticaBundle\Elastica\TransformingIndex
+ * @deprecated Use \Fazland\ElasticaBundle\Elastica\TransformingIndex
  */
 class DynamicIndex extends Index
 {

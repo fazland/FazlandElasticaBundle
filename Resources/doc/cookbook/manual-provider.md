@@ -1,7 +1,7 @@
 Manual provider
 ===============
 
-Create a service with the tag "fos_elastica.provider" and attributes for the
+Create a service with the tag "fazland_elastica.provider" and attributes for the
 index and type for which the service will provide.
 
 ```yaml
@@ -10,18 +10,18 @@ services:
     acme.search_provider.user:
         class: Acme\UserBundle\Provider\UserProvider
         arguments:
-            - @fos_elastica.index.app.user
+            - @fazland_elastica.index.app.user
         tags:
-            - { name: fos_elastica.provider, index: app, type: user }
+            - { name: fazland_elastica.provider, index: app, type: user }
 ```
 
-Its class must implement `FOS\ElasticaBundle\Provider\ProviderInterface`.
+Its class must implement `Fazland\ElasticaBundle\Provider\ProviderInterface`.
 
 ```php
 
 namespace Acme\UserBundle\Provider;
 
-use FOS\ElasticaBundle\Provider\ProviderInterface;
+use Fazland\ElasticaBundle\Provider\ProviderInterface;
 use Elastica\Type;
 use Elastica\Document;
 
@@ -53,4 +53,4 @@ class UserProvider implements ProviderInterface
 }
 ```
 
-You will find a more complete implementation example in `src/FOS/ElasticaBundle/Doctrine/AbstractProvider.php`.
+You will find a more complete implementation example in `src/Fazland/ElasticaBundle/Doctrine/AbstractProvider.php`.

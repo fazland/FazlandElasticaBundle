@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Logger;
+namespace Fazland\ElasticaBundle\Logger;
 
 use Psr\Log\LoggerInterface;
 

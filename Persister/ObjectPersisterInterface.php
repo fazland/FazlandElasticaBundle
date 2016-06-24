@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Persister;
+namespace Fazland\ElasticaBundle\Persister;
 
 /**
  * Inserts, replaces and deletes single documents in an elastica type

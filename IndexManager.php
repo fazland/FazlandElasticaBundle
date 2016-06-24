@@ -1,11 +1,11 @@
 <?php
 
-namespace FOS\ElasticaBundle;
+namespace Fazland\ElasticaBundle;
 
-use FOS\ElasticaBundle\Index\IndexManager as BaseIndexManager;
+use Fazland\ElasticaBundle\Index\IndexManager as BaseIndexManager;
 
 /**
- * @deprecated Use \FOS\ElasticaBundle\Index\IndexManager
+ * @deprecated Use \Fazland\ElasticaBundle\Index\IndexManager
  */
 class IndexManager extends BaseIndexManager
 {

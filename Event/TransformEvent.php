@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Infinite Networks Pty Ltd <http://www.infinite.net.au>
  *
@@ -9,21 +9,21 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Event;
+namespace Fazland\ElasticaBundle\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 
 class TransformEvent extends Event
 {
     /**
-     * @Event("FOS\ElasticaBundle\Event\TransformEvent")
+     * @Event("Fazland\ElasticaBundle\Event\TransformEvent")
      */
-    const PRE_TRANSFORM = 'fos_elastica.pre_transform';
+    const PRE_TRANSFORM = 'fazland_elastica.pre_transform';
 
     /**
-     * @Event("FOS\ElasticaBundle\Event\TransformEvent")
+     * @Event("Fazland\ElasticaBundle\Event\TransformEvent")
      */
-    const POST_TRANSFORM = 'fos_elastica.post_transform';
+    const POST_TRANSFORM = 'fazland_elastica.post_transform';
 
     /**
      * @var mixed

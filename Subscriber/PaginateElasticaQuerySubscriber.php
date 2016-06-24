@@ -1,9 +1,9 @@
 <?php
 
-namespace FOS\ElasticaBundle\Subscriber;
+namespace Fazland\ElasticaBundle\Subscriber;
 
-use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
-use FOS\ElasticaBundle\Paginator\PartialResultsInterface;
+use Fazland\ElasticaBundle\Paginator\PaginatorAdapterInterface;
+use Fazland\ElasticaBundle\Paginator\PartialResultsInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;

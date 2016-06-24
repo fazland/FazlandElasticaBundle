@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace FOS\ElasticaBundle\Tests\Functional;
+namespace Fazland\ElasticaBundle\Tests\Functional;
 
 /**
  * @group functional
@@ -20,13 +20,13 @@ class ClientTest extends WebTestCase
     {
         $client = $this->createClient(array('test_case' => 'Basic'));
 
-        $es = $client->getContainer()->get('fos_elastica.client.default');
+        $es = $client->getContainer()->get('fazland_elastica.client.default');
         $this->assertInstanceOf('Elastica\\Connection\\Strategy\\RoundRobin', $es->getConnectionStrategy());
 
-        $es = $client->getContainer()->get('fos_elastica.client.second_server');
+        $es = $client->getContainer()->get('fazland_elastica.client.second_server');
         $this->assertInstanceOf('Elastica\\Connection\\Strategy\\RoundRobin', $es->getConnectionStrategy());
 
-        $es = $client->getContainer()->get('fos_elastica.client.third');
+        $es = $client->getContainer()->get('fazland_elastica.client.third');
         $this->assertInstanceOf('Elastica\\Connection\\Strategy\\Simple', $es->getConnectionStrategy());
     }
 

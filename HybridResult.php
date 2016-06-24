@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle;
+namespace Fazland\ElasticaBundle;
 
 use Elastica\Result;
 

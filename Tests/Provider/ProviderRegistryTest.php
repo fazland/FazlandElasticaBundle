@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Provider;
+namespace Fazland\ElasticaBundle\Tests\Provider;
 
-use FOS\ElasticaBundle\Provider\ProviderRegistry;
+use Fazland\ElasticaBundle\Provider\ProviderRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ProviderRegistryTest extends \PHPUnit_Framework_TestCase

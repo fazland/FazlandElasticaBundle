@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Configuration\Source;
+namespace Fazland\ElasticaBundle\Configuration\Source;
 
 /**
  * Represents a source of index and type information (ie, the Container configuration or
@@ -20,7 +20,7 @@ interface SourceInterface
     /**
      * Should return all configuration available from the data source.
      *
-     * @return \FOS\ElasticaBundle\Configuration\IndexConfig[]
+     * @return \Fazland\ElasticaBundle\Configuration\IndexConfig[]
      */
     public function getConfiguration();
 }

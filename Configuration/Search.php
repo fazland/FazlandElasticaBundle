@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Configuration;
+namespace Fazland\ElasticaBundle\Configuration;
 
-use FOS\ElasticaBundle\Annotation\Search as BaseSearch;
+use Fazland\ElasticaBundle\Annotation\Search as BaseSearch;
 
 /**
  * Annotation class for setting search repository.
  *
  * @Annotation
  *
- * @deprecated Use FOS\ElasticaBundle\Annotation\Search instead
+ * @deprecated Use Fazland\ElasticaBundle\Annotation\Search instead
  * @Target("CLASS")
  */
 class Search extends BaseSearch

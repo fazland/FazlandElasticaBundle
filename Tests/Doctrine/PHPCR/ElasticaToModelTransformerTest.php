@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Doctrine\PHPCR;
+namespace Fazland\ElasticaBundle\Tests\Doctrine\PHPCR;
 
-use FOS\ElasticaBundle\Doctrine\PHPCR\ElasticaToModelTransformer;
+use Fazland\ElasticaBundle\Doctrine\PHPCR\ElasticaToModelTransformer;
 
 class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,7 +37,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 
         $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass);
 
-        $class = new \ReflectionClass('FOS\ElasticaBundle\Doctrine\PHPCR\ElasticaToModelTransformer');
+        $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\PHPCR\ElasticaToModelTransformer');
         $method = $class->getMethod('findByIdentifiers');
         $method->setAccessible(true);
 

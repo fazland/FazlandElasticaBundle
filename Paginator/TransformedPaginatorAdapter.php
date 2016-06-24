@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Paginator;
+namespace Fazland\ElasticaBundle\Paginator;
 
-use FOS\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 use Elastica\SearchableInterface;
 use Elastica\Query;
 

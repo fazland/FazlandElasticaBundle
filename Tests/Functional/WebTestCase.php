@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace FOS\ElasticaBundle\Tests\Functional;
+namespace Fazland\ElasticaBundle\Tests\Functional;
 
 use Symfony\Bundle\FrameworkBundle\Tests\Functional\WebTestCase as BaseWebTestCase;
 
@@ -19,7 +19,7 @@ class WebTestCase extends BaseWebTestCase
     {
         require_once __DIR__.'/app/AppKernel.php';
 
-        return 'FOS\ElasticaBundle\Tests\Functional\app\AppKernel';
+        return 'Fazland\ElasticaBundle\Tests\Functional\app\AppKernel';
     }
 
     protected static function createKernel(array $options = array())
@@ -33,7 +33,7 @@ class WebTestCase extends BaseWebTestCase
         return new $class(
             $options['test_case'],
             isset($options['root_config']) ? $options['root_config'] : 'config.yml',
-            isset($options['environment']) ? $options['environment'] : 'foselasticabundle'.strtolower($options['test_case']),
+            isset($options['environment']) ? $options['environment'] : 'fazlandelasticabundle'.strtolower($options['test_case']),
             isset($options['debug']) ? $options['debug'] : true
         );
     }

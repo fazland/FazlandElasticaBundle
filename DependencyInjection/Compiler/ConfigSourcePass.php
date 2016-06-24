@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\DependencyInjection\Compiler;
+namespace Fazland\ElasticaBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -22,15 +22,15 @@ class ConfigSourcePass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('fos_elastica.config_manager')) {
+        if (!$container->hasDefinition('fazland_elastica.config_manager')) {
             return;
         }
 
         $sources = array();
-        foreach (array_keys($container->findTaggedServiceIds('fos_elastica.config_source')) as $id) {
+        foreach (array_keys($container->findTaggedServiceIds('fazland_elastica.config_source')) as $id) {
             $sources[] = new Reference($id);
         }
 
-        $container->getDefinition('fos_elastica.config_manager')->replaceArgument(0, $sources);
+        $container->getDefinition('fazland_elastica.config_manager')->replaceArgument(0, $sources);
     }
 }

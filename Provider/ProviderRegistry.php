@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Provider;
+namespace Fazland\ElasticaBundle\Provider;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;

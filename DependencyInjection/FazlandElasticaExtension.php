@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\DependencyInjection;
+namespace Fazland\ElasticaBundle\DependencyInjection;
 
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Config\FileLocator;
 use InvalidArgumentException;
 
-class FOSElasticaExtension extends Extension
+class FazlandElasticaExtension extends Extension
 {
     /**
      * Definition of elastica clients as configured by this extension.
@@ -67,12 +67,12 @@ class FOSElasticaExtension extends Extension
         }
 
         $this->loadClients($config['clients'], $container);
-        $container->setAlias('fos_elastica.client', sprintf('fos_elastica.client.%s', $config['default_client']));
+        $container->setAlias('fazland_elastica.client', sprintf('fazland_elastica.client.%s', $config['default_client']));
 
         $this->loadIndexes($config['indexes'], $container);
-        $container->setAlias('fos_elastica.index', sprintf('fos_elastica.index.%s', $config['default_index']));
+        $container->setAlias('fazland_elastica.index', sprintf('fazland_elastica.index.%s', $config['default_index']));
 
-        $container->getDefinition('fos_elastica.config_source.container')->replaceArgument(0, $this->indexConfigs);
+        $container->getDefinition('fazland_elastica.config_source.container')->replaceArgument(0, $this->indexConfigs);
 
         $this->loadIndexManager($container);
 
@@ -101,9 +101,9 @@ class FOSElasticaExtension extends Extension
     private function loadClients(array $clients, ContainerBuilder $container)
     {
         foreach ($clients as $name => $clientConfig) {
-            $clientId = sprintf('fos_elastica.client.%s', $name);
+            $clientId = sprintf('fazland_elastica.client.%s', $name);
 
-            $clientDef = new DefinitionDecorator('fos_elastica.client_prototype');
+            $clientDef = new DefinitionDecorator('fazland_elastica.client_prototype');
             $clientDef->replaceArgument(0, $clientConfig);
 
             $logger = $clientConfig['connections'][0]['logger'];
@@ -111,7 +111,7 @@ class FOSElasticaExtension extends Extension
                 $clientDef->addMethodCall('setLogger', array(new Reference($logger)));
             }
 
-            $clientDef->addTag('fos_elastica.client');
+            $clientDef->addTag('fazland_elastica.client');
 
             $container->setDefinition($clientId, $clientDef);
 
@@ -137,20 +137,20 @@ class FOSElasticaExtension extends Extension
         $indexableCallbacks = array();
 
         foreach ($indexes as $name => $index) {
-            $indexId = sprintf('fos_elastica.index.%s', $name);
+            $indexId = sprintf('fazland_elastica.index.%s', $name);
             $indexName = isset($index['index_name']) ? $index['index_name'] : $name;
 
-            $indexDef = new DefinitionDecorator('fos_elastica.index_prototype');
+            $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
             $indexDef->replaceArgument(0, $indexName);
-            $indexDef->addTag('fos_elastica.index', array(
+            $indexDef->addTag('fazland_elastica.index', array(
                 'name' => $name,
             ));
 
             if (method_exists($indexDef, 'setFactory')) {
-                $indexDef->setFactory(array(new Reference('fos_elastica.client'), 'getIndex'));
+                $indexDef->setFactory(array(new Reference('fazland_elastica.client'), 'getIndex'));
             } else {
                 // To be removed when dependency on Symfony DependencyInjection is bumped to 2.6
-                $indexDef->setFactoryService('fos_elastica.client');
+                $indexDef->setFactoryService('fazland_elastica.client');
                 $indexDef->setFactoryMethod('getIndex');
             }
 
@@ -161,7 +161,7 @@ class FOSElasticaExtension extends Extension
                     $indexDef->setFactory(array($client, 'getIndex'));
                 } else {
                     // To be removed when dependency on Symfony DependencyInjection is bumped to 2.6
-                    $indexDef->setFactoryService('fos_elastica.client');
+                    $indexDef->setFactoryService('fazland_elastica.client');
                     $indexDef->setFactoryMethod('getIndex');
                 }
             }
@@ -185,7 +185,7 @@ class FOSElasticaExtension extends Extension
             $this->loadTypes((array) $index['types'], $container, $this->indexConfigs[$name], $indexableCallbacks);
         }
 
-        $indexable = $container->getDefinition('fos_elastica.indexable');
+        $indexable = $container->getDefinition('fazland_elastica.indexable');
         $indexable->replaceArgument(0, $indexableCallbacks);
     }
 
@@ -203,12 +203,12 @@ class FOSElasticaExtension extends Extension
         /* Note: transformer services may conflict with "collection.index", if
          * an index and type names were "collection" and an index, respectively.
          */
-        $transformerId = sprintf('fos_elastica.elastica_to_model_transformer.collection.%s', $name);
-        $transformerDef = new DefinitionDecorator('fos_elastica.elastica_to_model_transformer.collection');
+        $transformerId = sprintf('fazland_elastica.elastica_to_model_transformer.collection.%s', $name);
+        $transformerDef = new DefinitionDecorator('fazland_elastica.elastica_to_model_transformer.collection');
         $container->setDefinition($transformerId, $transformerDef);
 
-        $finderId = sprintf('fos_elastica.finder.%s', $name);
-        $finderDef = new DefinitionDecorator('fos_elastica.finder');
+        $finderId = sprintf('fazland_elastica.finder.%s', $name);
+        $finderDef = new DefinitionDecorator('fazland_elastica.finder');
         $finderDef->replaceArgument(0, $index);
         $finderDef->replaceArgument(1, new Reference($transformerId));
 
@@ -229,7 +229,7 @@ class FOSElasticaExtension extends Extension
             $indexName = $indexConfig['name'];
 
             $typeId = sprintf('%s.%s', $indexConfig['reference'], $name);
-            $typeDef = new DefinitionDecorator('fos_elastica.type_prototype');
+            $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
             $typeDef->replaceArgument(0, $name);
 
             if (method_exists($typeDef, 'setFactory')) {
@@ -292,9 +292,9 @@ class FOSElasticaExtension extends Extension
                 $indexableCallbacks[sprintf('%s/%s', $indexName, $name)] = $type['indexable_callback'];
             }
 
-            if ($container->hasDefinition('fos_elastica.serializer_callback_prototype')) {
+            if ($container->hasDefinition('fazland_elastica.serializer_callback_prototype')) {
                 $typeSerializerId = sprintf('%s.serializer.callback', $typeId);
-                $typeSerializerDef = new DefinitionDecorator('fos_elastica.serializer_callback_prototype');
+                $typeSerializerDef = new DefinitionDecorator('fazland_elastica.serializer_callback_prototype');
 
                 if (isset($type['serializer']['groups'])) {
                     $typeSerializerDef->addMethodCall('setGroups', array($type['serializer']['groups']));
@@ -363,10 +363,10 @@ class FOSElasticaExtension extends Extension
         /* Note: transformer services may conflict with "prototype.driver", if
          * the index and type names were "prototype" and a driver, respectively.
          */
-        $abstractId = sprintf('fos_elastica.elastica_to_model_transformer.prototype.%s', $typeConfig['driver']);
-        $serviceId = sprintf('fos_elastica.elastica_to_model_transformer.%s.%s', $indexName, $typeName);
+        $abstractId = sprintf('fazland_elastica.elastica_to_model_transformer.prototype.%s', $typeConfig['driver']);
+        $serviceId = sprintf('fazland_elastica.elastica_to_model_transformer.%s.%s', $indexName, $typeName);
         $serviceDef = new DefinitionDecorator($abstractId);
-        $serviceDef->addTag('fos_elastica.elastica_to_model_transformer', array('type' => $typeName, 'index' => $indexName));
+        $serviceDef->addTag('fazland_elastica.elastica_to_model_transformer', array('type' => $typeName, 'index' => $indexName));
 
         // Doctrine has a mandatory service as first argument
         $argPos = ('propel' === $typeConfig['driver']) ? 0 : 1;
@@ -396,11 +396,11 @@ class FOSElasticaExtension extends Extension
             return $typeConfig['model_to_elastica_transformer']['service'];
         }
 
-        $abstractId = $container->hasDefinition('fos_elastica.serializer_callback_prototype') ?
-            'fos_elastica.model_to_elastica_identifier_transformer' :
-            'fos_elastica.model_to_elastica_transformer';
+        $abstractId = $container->hasDefinition('fazland_elastica.serializer_callback_prototype') ?
+            'fazland_elastica.model_to_elastica_identifier_transformer' :
+            'fazland_elastica.model_to_elastica_transformer';
 
-        $serviceId = sprintf('fos_elastica.model_to_elastica_transformer.%s.%s', $indexName, $typeName);
+        $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $indexName, $typeName);
         $serviceDef = new DefinitionDecorator($abstractId);
         $serviceDef->replaceArgument(0, array(
             'identifier' => $typeConfig['identifier'],
@@ -434,12 +434,12 @@ class FOSElasticaExtension extends Extension
             $typeConfig['model'],
         );
 
-        if ($container->hasDefinition('fos_elastica.serializer_callback_prototype')) {
-            $abstractId = 'fos_elastica.object_serializer_persister';
+        if ($container->hasDefinition('fazland_elastica.serializer_callback_prototype')) {
+            $abstractId = 'fazland_elastica.object_serializer_persister';
             $callbackId = sprintf('%s.%s.serializer.callback', $this->indexConfigs[$indexName]['reference'], $typeName);
             $arguments[] = array(new Reference($callbackId), 'serialize');
         } else {
-            $abstractId = 'fos_elastica.object_persister';
+            $abstractId = 'fazland_elastica.object_persister';
             $mapping = $this->indexConfigs[$indexName]['types'][$typeName]['mapping'];
             $argument = $mapping['properties'];
             if (isset($mapping['_parent'])) {
@@ -448,7 +448,7 @@ class FOSElasticaExtension extends Extension
             $arguments[] = $argument;
         }
 
-        $serviceId = sprintf('fos_elastica.object_persister.%s.%s', $indexName, $typeName);
+        $serviceId = sprintf('fazland_elastica.object_persister.%s.%s', $indexName, $typeName);
         $serviceDef = new DefinitionDecorator($abstractId);
         foreach ($arguments as $i => $argument) {
             $serviceDef->replaceArgument($i, $argument);
@@ -479,9 +479,9 @@ class FOSElasticaExtension extends Extension
         /* Note: provider services may conflict with "prototype.driver", if the
          * index and type names were "prototype" and a driver, respectively.
          */
-        $providerId = sprintf('fos_elastica.provider.%s.%s', $indexName, $typeName);
-        $providerDef = new DefinitionDecorator('fos_elastica.provider.prototype.'.$typeConfig['driver']);
-        $providerDef->addTag('fos_elastica.provider', array('index' => $indexName, 'type' => $typeName));
+        $providerId = sprintf('fazland_elastica.provider.%s.%s', $indexName, $typeName);
+        $providerDef = new DefinitionDecorator('fazland_elastica.provider.prototype.'.$typeConfig['driver']);
+        $providerDef->addTag('fazland_elastica.provider', array('index' => $indexName, 'type' => $typeName));
         $providerDef->replaceArgument(0, new Reference($objectPersisterId));
         $providerDef->replaceArgument(2, $typeConfig['model']);
         // Propel provider can simply ignore Doctrine-specific options
@@ -514,8 +514,8 @@ class FOSElasticaExtension extends Extension
         /* Note: listener services may conflict with "prototype.driver", if the
          * index and type names were "prototype" and a driver, respectively.
          */
-        $abstractListenerId = sprintf('fos_elastica.listener.prototype.%s', $typeConfig['driver']);
-        $listenerId = sprintf('fos_elastica.listener.%s.%s', $indexName, $typeName);
+        $abstractListenerId = sprintf('fazland_elastica.listener.prototype.%s', $typeConfig['driver']);
+        $listenerId = sprintf('fazland_elastica.listener.%s.%s', $indexName, $typeName);
         $listenerDef = new DefinitionDecorator($abstractListenerId);
         $listenerDef->replaceArgument(0, new Reference($objectPersisterId));
         $listenerDef->replaceArgument(2, array(
@@ -605,14 +605,14 @@ class FOSElasticaExtension extends Extension
         if (isset($typeConfig['finder']['service'])) {
             $finderId = $typeConfig['finder']['service'];
         } else {
-            $finderId = sprintf('fos_elastica.finder.%s.%s', $indexName, $typeName);
-            $finderDef = new DefinitionDecorator('fos_elastica.finder');
+            $finderId = sprintf('fazland_elastica.finder.%s.%s', $indexName, $typeName);
+            $finderDef = new DefinitionDecorator('fazland_elastica.finder');
             $finderDef->replaceArgument(0, $typeRef);
             $finderDef->replaceArgument(1, new Reference($elasticaToModelId));
             $container->setDefinition($finderId, $finderDef);
         }
 
-        $managerId = sprintf('fos_elastica.manager.%s', $typeConfig['driver']);
+        $managerId = sprintf('fazland_elastica.manager.%s', $typeConfig['driver']);
         $managerDef = $container->getDefinition($managerId);
         $arguments = array( $typeConfig['model'], new Reference($finderId));
         if (isset($typeConfig['repository'])) {
@@ -634,7 +634,7 @@ class FOSElasticaExtension extends Extension
             return $index['reference'];
         }, $this->indexConfigs);
 
-        $managerDef = $container->getDefinition('fos_elastica.index_manager');
+        $managerDef = $container->getDefinition('fazland_elastica.index_manager');
         $managerDef->replaceArgument(0, $indexRefs);
     }
 
@@ -663,9 +663,9 @@ class FOSElasticaExtension extends Extension
      */
     private function loadSerializer($config, ContainerBuilder $container)
     {
-        $container->setAlias('fos_elastica.serializer', $config['serializer']);
+        $container->setAlias('fazland_elastica.serializer', $config['serializer']);
 
-        $serializer = $container->getDefinition('fos_elastica.serializer_callback_prototype');
+        $serializer = $container->getDefinition('fazland_elastica.serializer_callback_prototype');
         $serializer->setClass($config['callback_class']);
 
         $callbackClassImplementedInterfaces = class_implements($config['callback_class']);
@@ -694,7 +694,7 @@ class FOSElasticaExtension extends Extension
             $defaultManagerService = $this->loadedDrivers[0];
         }
 
-        $container->setAlias('fos_elastica.manager', sprintf('fos_elastica.manager.%s', $defaultManagerService));
+        $container->setAlias('fazland_elastica.manager', sprintf('fazland_elastica.manager.%s', $defaultManagerService));
     }
 
     /**

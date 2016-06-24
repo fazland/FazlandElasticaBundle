@@ -1,17 +1,17 @@
 <?php
 
-namespace FOS\ElasticaBundle;
+namespace Fazland\ElasticaBundle;
 
-use FOS\ElasticaBundle\DependencyInjection\Compiler\ConfigSourcePass;
-use FOS\ElasticaBundle\DependencyInjection\Compiler\IndexPass;
-use FOS\ElasticaBundle\DependencyInjection\Compiler\RegisterProvidersPass;
-use FOS\ElasticaBundle\DependencyInjection\Compiler\RequestCompilerPass;
-use FOS\ElasticaBundle\DependencyInjection\Compiler\TransformerPass;
+use Fazland\ElasticaBundle\DependencyInjection\Compiler\ConfigSourcePass;
+use Fazland\ElasticaBundle\DependencyInjection\Compiler\IndexPass;
+use Fazland\ElasticaBundle\DependencyInjection\Compiler\RegisterProvidersPass;
+use Fazland\ElasticaBundle\DependencyInjection\Compiler\RequestCompilerPass;
+use Fazland\ElasticaBundle\DependencyInjection\Compiler\TransformerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class FOSElasticaBundle extends Bundle
+class FazlandElasticaBundle extends Bundle
 {
     /**
      * {@inheritdoc}

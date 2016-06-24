@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Tests\Functional\app;
+namespace Fazland\ElasticaBundle\Tests\Functional\app;
 
 // get the autoload file
 $dir = __DIR__;

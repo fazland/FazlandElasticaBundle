@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Doctrine\ORM;
+namespace Fazland\ElasticaBundle\Tests\Doctrine\ORM;
 
-use FOS\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer;
+use Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer;
 
 class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 {
@@ -47,7 +47,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
             'query_builder_method' => 'customQueryBuilderCreator',
         ));
 
-        $class = new \ReflectionClass('FOS\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
+        $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
         $method = $class->getMethod('getEntityQueryBuilder');
         $method->setAccessible(true);
 
@@ -73,7 +73,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 
         $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass);
 
-        $class = new \ReflectionClass('FOS\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
+        $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
         $method = $class->getMethod('getEntityQueryBuilder');
         $method->setAccessible(true);
 
@@ -114,7 +114,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
             )
         ));
 
-        $class = new \ReflectionClass('FOS\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
+        $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
         $method = $class->getMethod('findByIdentifiers');
         $method->setAccessible(true);
 

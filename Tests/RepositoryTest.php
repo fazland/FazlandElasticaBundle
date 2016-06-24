@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests;
+namespace Fazland\ElasticaBundle\Tests;
 
-use FOS\ElasticaBundle\Repository;
+use Fazland\ElasticaBundle\Repository;
 
 /**
  * @author Richard Miller <info@limethinking.co.uk>
@@ -60,11 +60,11 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
      * @param mixed $testLimit
      * @param string $method
      *
-     * @return \FOS\ElasticaBundle\Finder\TransformedFinder
+     * @return \Fazland\ElasticaBundle\Finder\TransformedFinder
      */
     private function getFinderMock($testQuery, $testLimit = null, $method = 'find')
     {
-        $finderMock = $this->getMockBuilder('FOS\ElasticaBundle\Finder\TransformedFinder')
+        $finderMock = $this->getMockBuilder('Fazland\ElasticaBundle\Finder\TransformedFinder')
             ->disableOriginalConstructor()
             ->getMock();
         $finderMock->expects($this->once())

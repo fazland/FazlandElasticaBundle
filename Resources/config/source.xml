@@ -5,9 +5,9 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="fos_elastica.config_source.container" class="FOS\ElasticaBundle\Configuration\Source\ContainerSource" public="false">
+        <service id="fazland_elastica.config_source.container" class="Fazland\ElasticaBundle\Configuration\Source\ContainerSource" public="false">
             <argument type="collection" /> <!-- index configs -->
-            <tag name="fos_elastica.config_source" />
+            <tag name="fazland_elastica.config_source" />
         </service>
     </services>
 </container>

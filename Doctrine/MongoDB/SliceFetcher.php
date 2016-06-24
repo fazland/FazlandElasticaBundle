@@ -1,10 +1,10 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine\MongoDB;
+namespace Fazland\ElasticaBundle\Doctrine\MongoDB;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
-use FOS\ElasticaBundle\Exception\InvalidArgumentTypeException;
-use FOS\ElasticaBundle\Doctrine\SliceFetcherInterface;
+use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
+use Fazland\ElasticaBundle\Doctrine\SliceFetcherInterface;
 
 /**
  * Fetches a slice of objects.

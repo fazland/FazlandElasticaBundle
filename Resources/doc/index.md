@@ -1,7 +1,7 @@
-FOSElasticaBundle Documentation
+FazlandElasticaBundle Documentation
 ===============================
 
-Available documentation for FOSElasticaBundle
+Available documentation for FazlandElasticaBundle
 ---------------------------------------------
 
 * [Setup](setup.md)

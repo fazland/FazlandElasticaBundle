@@ -1,11 +1,11 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine;
+namespace Fazland\ElasticaBundle\Doctrine;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
-use FOS\ElasticaBundle\HybridResult;
-use FOS\ElasticaBundle\Transformer\AbstractElasticaToModelTransformer as BaseTransformer;
-use FOS\ElasticaBundle\Transformer\HighlightableModelInterface;
+use Fazland\ElasticaBundle\HybridResult;
+use Fazland\ElasticaBundle\Transformer\AbstractElasticaToModelTransformer as BaseTransformer;
+use Fazland\ElasticaBundle\Transformer\HighlightableModelInterface;
 
 /**
  * Maps Elastica documents with Doctrine objects

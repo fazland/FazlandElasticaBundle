@@ -1,19 +1,19 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Index;
+namespace Fazland\ElasticaBundle\Tests\Index;
 
 use Elastica\Exception\ResponseException;
 use Elastica\Request;
 use Elastica\Response;
 use Elastica\Type;
 use Elastica\Type\Mapping;
-use FOS\ElasticaBundle\Configuration\IndexConfig;
-use FOS\ElasticaBundle\Configuration\TypeConfig;
-use FOS\ElasticaBundle\Elastica\Index;
-use FOS\ElasticaBundle\Event\IndexResetEvent;
-use FOS\ElasticaBundle\Event\TypeResetEvent;
-use FOS\ElasticaBundle\Index\AliasProcessor;
-use FOS\ElasticaBundle\Index\Resetter;
+use Fazland\ElasticaBundle\Configuration\IndexConfig;
+use Fazland\ElasticaBundle\Configuration\TypeConfig;
+use Fazland\ElasticaBundle\Elastica\Index;
+use Fazland\ElasticaBundle\Event\IndexResetEvent;
+use Fazland\ElasticaBundle\Event\TypeResetEvent;
+use Fazland\ElasticaBundle\Index\AliasProcessor;
+use Fazland\ElasticaBundle\Index\Resetter;
 
 class ResetterTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,8 +40,8 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(array($indexName)));
 
         $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent'))
+            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
+            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent'))
         ));
 
         $this->elasticaClient->expects($this->exactly(2))
@@ -60,8 +60,8 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
         $this->mockIndex('index1', $indexConfig);
 
         $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent'))
+            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
+            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent'))
         ));
 
         $this->elasticaClient->expects($this->exactly(2))
@@ -81,8 +81,8 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
         ));
         $this->mockIndex('index1', $indexConfig);
         $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent'))
+            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
+            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent'))
         ));
 
         $this->elasticaClient->expects($this->exactly(2))
@@ -103,8 +103,8 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
         ));
         $index = $this->mockIndex('index1', $indexConfig);
         $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent'))
+            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
+            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent'))
         ));
 
         $this->aliasProcessor->expects($this->once())
@@ -144,10 +144,10 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
         $this->mockType('type', 'index', $typeConfig, $indexConfig);
 
         $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(TypeResetEvent::PRE_TYPE_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\TypeResetEvent')),
-            array(TypeResetEvent::POST_TYPE_RESET, $this->isInstanceOf('FOS\\ElasticaBundle\\Event\\TypeResetEvent'))
+            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
+            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
+            array(TypeResetEvent::PRE_TYPE_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\TypeResetEvent')),
+            array(TypeResetEvent::POST_TYPE_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\TypeResetEvent'))
         ));
 
         $this->elasticaClient->expects($this->exactly(3))
@@ -284,10 +284,10 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->aliasProcessor = $this->getMockBuilder('FOS\\ElasticaBundle\\Index\\AliasProcessor')
+        $this->aliasProcessor = $this->getMockBuilder('Fazland\\ElasticaBundle\\Index\\AliasProcessor')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->configManager = $this->getMockBuilder('FOS\\ElasticaBundle\\Configuration\\ConfigManager')
+        $this->configManager = $this->getMockBuilder('Fazland\\ElasticaBundle\\Configuration\\ConfigManager')
             ->disableOriginalConstructor()
             ->getMock();
         $this->dispatcher = $this->getMockBuilder('Symfony\\Component\\EventDispatcher\\EventDispatcherInterface')
@@ -295,10 +295,10 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
         $this->elasticaClient = $this->getMockBuilder('Elastica\\Client')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->indexManager = $this->getMockBuilder('FOS\\ElasticaBundle\\Index\\IndexManager')
+        $this->indexManager = $this->getMockBuilder('Fazland\\ElasticaBundle\\Index\\IndexManager')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->mappingBuilder = $this->getMockBuilder('FOS\\ElasticaBundle\\Index\\MappingBuilder')
+        $this->mappingBuilder = $this->getMockBuilder('Fazland\\ElasticaBundle\\Index\\MappingBuilder')
             ->disableOriginalConstructor()
             ->getMock();
 

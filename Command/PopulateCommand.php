@@ -1,17 +1,17 @@
 <?php
 
-namespace FOS\ElasticaBundle\Command;
+namespace Fazland\ElasticaBundle\Command;
 
-use FOS\ElasticaBundle\Event\IndexPopulateEvent;
-use FOS\ElasticaBundle\Event\TypePopulateEvent;
+use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
+use Fazland\ElasticaBundle\Event\TypePopulateEvent;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use FOS\ElasticaBundle\IndexManager;
-use FOS\ElasticaBundle\Provider\ProviderRegistry;
-use FOS\ElasticaBundle\Resetter;
+use Fazland\ElasticaBundle\IndexManager;
+use Fazland\ElasticaBundle\Provider\ProviderRegistry;
+use Fazland\ElasticaBundle\Resetter;
 use Symfony\Component\Console\Helper\ProgressBar;
 
 /**
@@ -69,9 +69,9 @@ class PopulateCommand extends ContainerAwareCommand
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dispatcher = $this->getContainer()->get('event_dispatcher');
-        $this->indexManager = $this->getContainer()->get('fos_elastica.index_manager');
-        $this->providerRegistry = $this->getContainer()->get('fos_elastica.provider_registry');
-        $this->resetter = $this->getContainer()->get('fos_elastica.resetter');
+        $this->indexManager = $this->getContainer()->get('fazland_elastica.index_manager');
+        $this->providerRegistry = $this->getContainer()->get('fazland_elastica.provider_registry');
+        $this->resetter = $this->getContainer()->get('fazland_elastica.resetter');
         $this->progressClosureBuilder = new ProgressClosureBuilder();
 
         if (!$input->getOption('no-overwrite-format') && class_exists('Symfony\\Component\\Console\\Helper\\ProgressBar')) {

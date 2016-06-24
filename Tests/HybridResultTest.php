@@ -1,9 +1,9 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Resetter;
+namespace Fazland\ElasticaBundle\Tests\Resetter;
 
 use Elastica\Result;
-use FOS\ElasticaBundle\HybridResult;
+use Fazland\ElasticaBundle\HybridResult;
 
 class HybridResultTest extends \PHPUnit_Framework_TestCase
 {

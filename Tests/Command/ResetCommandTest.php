@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Command;
+namespace Fazland\ElasticaBundle\Tests\Command;
 
-use FOS\ElasticaBundle\Command\ResetCommand;
+use Fazland\ElasticaBundle\Command\ResetCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\DependencyInjection\Container;
@@ -17,19 +17,19 @@ class ResetCommandTest extends \PHPUnit_Framework_TestCase
     {
         $container = new Container();
 
-        $this->resetter = $this->getMockBuilder('\FOS\ElasticaBundle\Resetter')
+        $this->resetter = $this->getMockBuilder('\Fazland\ElasticaBundle\Resetter')
             ->disableOriginalConstructor()
             ->setMethods(array('resetIndex', 'resetIndexType'))
             ->getMock();
 
-        $container->set('fos_elastica.resetter', $this->resetter);
+        $container->set('fazland_elastica.resetter', $this->resetter);
 
-        $this->indexManager = $this->getMockBuilder('\FOS\ElasticaBundle\IndexManager')
+        $this->indexManager = $this->getMockBuilder('\Fazland\ElasticaBundle\IndexManager')
             ->disableOriginalConstructor()
             ->setMethods(array('getAllIndexes'))
             ->getMock();
 
-        $container->set('fos_elastica.index_manager', $this->indexManager);
+        $container->set('fazland_elastica.index_manager', $this->indexManager);
 
         $this->command = new ResetCommand();
         $this->command->setContainer($container);

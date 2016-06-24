@@ -1,15 +1,15 @@
 Hints on result hydration
 ===============
 
-When using Doctrine as your persistance driver, you may configure FOSElasticaBundle to use
+When using Doctrine as your persistance driver, you may configure FazlandElasticaBundle to use
 [query hints](http://doctrine-orm.readthedocs.org/en/latest/reference/dql-doctrine-query-language.html#query-hints) when hydrating your objects.
 
-To configure FOSElasticaBundle to use hints when hydrating objects, add an entry
+To configure FazlandElasticaBundle to use hints when hydrating objects, add an entry
 to the `hints` array of `elastica_to_model_transformer` configuration section.
 Each entry must contain a `name` of the hint and a `value` to use.
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         website:
             types:

@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Transformer\ModelToElasticaIdentifierTransformer;
+namespace Fazland\ElasticaBundle\Tests\Transformer\ModelToElasticaIdentifierTransformer;
 
-use FOS\ElasticaBundle\Transformer\ModelToElasticaIdentifierTransformer;
+use Fazland\ElasticaBundle\Transformer\ModelToElasticaIdentifierTransformer;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class POPO

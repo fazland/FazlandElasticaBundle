@@ -1,10 +1,10 @@
 <?php
 
-namespace FOS\ElasticaBundle\Elastica;
+namespace Fazland\ElasticaBundle\Elastica;
 
 use Elastica\Client as BaseClient;
 use Elastica\Request;
-use FOS\ElasticaBundle\Logger\ElasticaLogger;
+use Fazland\ElasticaBundle\Logger\ElasticaLogger;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
@@ -40,7 +40,7 @@ class Client extends BaseClient
     public function request($path, $method = Request::GET, $data = array(), array $query = array())
     {
         if ($this->stopwatch) {
-            $this->stopwatch->start('es_request', 'fos_elastica');
+            $this->stopwatch->start('es_request', 'fazland_elastica');
         }
 
         $start = microtime(true);

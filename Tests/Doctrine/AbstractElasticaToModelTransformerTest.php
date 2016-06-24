@@ -1,9 +1,9 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Doctrine;
+namespace Fazland\ElasticaBundle\Tests\Doctrine;
 
 use Elastica\Result;
-use FOS\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer;
+use Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
@@ -24,7 +24,7 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
     public function testIgnoreMissingOptionDuringTransformHybrid()
     {
         $transformer = $this->getMock(
-            'FOS\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer',
+            'Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer',
             array('findByIdentifiers'),
             array($this->registry, $this->objectClass, array('ignore_missing' => true))
         );

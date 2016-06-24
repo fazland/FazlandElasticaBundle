@@ -1,11 +1,11 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine;
+namespace Fazland\ElasticaBundle\Doctrine;
 
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
-use FOS\ElasticaBundle\Persister\ObjectPersister;
-use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
-use FOS\ElasticaBundle\Provider\IndexableInterface;
+use Fazland\ElasticaBundle\Persister\ObjectPersister;
+use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
+use Fazland\ElasticaBundle\Provider\IndexableInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;

@@ -1,10 +1,10 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Resetter;
+namespace Fazland\ElasticaBundle\Tests\Resetter;
 
-use FOS\ElasticaBundle\FOSElasticaBundle;
+use Fazland\ElasticaBundle\FazlandElasticaBundle;
 
-class FOSElasticaBundleTest extends \PHPUnit_Framework_TestCase
+class FazlandElasticaBundleTest extends \PHPUnit_Framework_TestCase
 {
     public function testCompilerPassesAreRegistered()
     {
@@ -16,7 +16,7 @@ class FOSElasticaBundleTest extends \PHPUnit_Framework_TestCase
             ->method('addCompilerPass')
             ->with($this->isInstanceOf('Symfony\\Component\\DependencyInjection\\Compiler\\CompilerPassInterface'));
 
-        $bundle = new FOSElasticaBundle();
+        $bundle = new FazlandElasticaBundle();
         $bundle->build($container);
     }
 }

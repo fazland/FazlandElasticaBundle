@@ -36,7 +36,7 @@ class AppKernel extends Kernel
     {
         $bundles = array(
             // ...
-            new FOS\ElasticaBundle\FOSElasticaBundle(),
+            new Fazland\ElasticaBundle\FazlandElasticaBundle(),
         );
 
         // ...
@@ -47,14 +47,14 @@ class AppKernel extends Kernel
 C: Basic Bundle Configuration
 -----------------------------
 
-The basic minimal configuration for FOSElasticaBundle is one client with one Elasticsearch
+The basic minimal configuration for FazlandElasticaBundle is one client with one Elasticsearch
 index. In almost all cases, an application will only need a single index. An index can
 be considered comparable to a Doctrine Entity Manager, where the index will hold multiple
 type definitions.
 
 ```yaml
 #app/config/config.yml
-fos_elastica:
+fazland_elastica:
     clients:
         default: { host: localhost, port: 9200 }
     indexes:
@@ -62,7 +62,7 @@ fos_elastica:
 ```
 
 In this example, an Elastica index (an instance of `Elastica\Index`) is available as a
-service with the key `fos_elastica.index.app`.
+service with the key `fazland_elastica.index.app`.
 
 You may want the index `app` to be named something else on ElasticSearch depending on
 if your application is running in a different env or other conditions that suit your
@@ -71,20 +71,20 @@ Symfony application, use the example below:
 
 ```yaml
 #app/config/config.yml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             index_name: app_%kernel.environment%
 ```
 
-In this case, the service `fos_elastica.index.app` will relate to an ElasticSearch index
+In this case, the service `fazland_elastica.index.app` will relate to an ElasticSearch index
 that varies depending on your kernel's environment. For example, in dev it will relate to
 `app_dev`.
 
 D: Defining index types
 -----------------------
 
-By default, FOSElasticaBundle requires each type that is to be indexed to be mapped.
+By default, FazlandElasticaBundle requires each type that is to be indexed to be mapped.
 It is possible to use a serializer to avoid this requirement. To use a serializer, see
 the [serializer documentation](serializer.md)
 
@@ -92,7 +92,7 @@ An Elasticsearch type needs to be defined with each field of a related PHP objec
 will end up being indexed.
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             types:
@@ -105,9 +105,9 @@ fos_elastica:
 ```
 
 Each defined type is made available as a service, and in this case the service key is
-`fos_elastica.index.app.user` and is an instance of `Elastica\Type`.
+`fazland_elastica.index.app.user` and is an instance of `Elastica\Type`.
 
-FOSElasticaBundle requires a provider for each type that will notify when an object
+FazlandElasticaBundle requires a provider for each type that will notify when an object
 that maps to a type has been modified. The bundle ships with support for Doctrine and
 Propel objects.
 

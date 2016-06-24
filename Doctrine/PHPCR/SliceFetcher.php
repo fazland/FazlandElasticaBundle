@@ -1,10 +1,10 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine\PHPCR;
+namespace Fazland\ElasticaBundle\Doctrine\PHPCR;
 
 use Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder;
-use FOS\ElasticaBundle\Exception\InvalidArgumentTypeException;
-use FOS\ElasticaBundle\Doctrine\SliceFetcherInterface;
+use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
+use Fazland\ElasticaBundle\Doctrine\SliceFetcherInterface;
 
 /**
  * Fetches a slice of objects.

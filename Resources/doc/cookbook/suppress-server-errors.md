@@ -7,7 +7,7 @@ issuing a request will result in an `Elastica\Exception\Connection` being thrown
 Depending on your needs, it may be desirable to suppress these exceptions and
 allow searches to fail silently.
 
-One way to achieve this is to override the `fos_elastica.client.class` service
+One way to achieve this is to override the `fazland_elastica.client.class` service
 container parameter with a custom class. In the following example, we override
 the `Client::request()` method and return the equivalent of an empty search
 response if an exception occurred.
@@ -23,7 +23,7 @@ namespace Acme\ElasticaBundle;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Request;
 use Elastica\Response;
-use FOS\ElasticaBundle\Elastica\Client as BaseClient;
+use Fazland\ElasticaBundle\Elastica\Client as BaseClient;
 
 class Client extends BaseClient
 {
@@ -55,5 +55,5 @@ You must update a parameter in your `app/config/config.yml` file to point to you
 
 ```yaml
 parameters:
-    fos_elastica.client.class: Acme\ElasticaBundle\Client
+    fazland_elastica.client.class: Acme\ElasticaBundle\Client
 ```

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace FOS\ElasticaBundle\Tests\Functional;
+namespace Fazland\ElasticaBundle\Tests\Functional;
 
 use Symfony\Bundle\FrameworkBundle\Client;
 
@@ -80,7 +80,7 @@ class MappingToElasticaTest extends WebTestCase
     public function testMappingIteratorToArrayField()
     {
         $client = $this->createClient(array('test_case' => 'ORM'));
-        $persister = $client->getContainer()->get('fos_elastica.object_persister.index.type');
+        $persister = $client->getContainer()->get('fazland_elastica.object_persister.index.type');
 
         $object = new TypeObj();
         $object->id = 1;
@@ -96,11 +96,11 @@ class MappingToElasticaTest extends WebTestCase
     /**
      * @param Client $client
      *
-     * @return \FOS\ElasticaBundle\Resetter $resetter
+     * @return \Fazland\ElasticaBundle\Resetter $resetter
      */
     private function getResetter(Client $client)
     {
-        return $client->getContainer()->get('fos_elastica.resetter');
+        return $client->getContainer()->get('fazland_elastica.resetter');
     }
 
     /**
@@ -111,7 +111,7 @@ class MappingToElasticaTest extends WebTestCase
      */
     private function getType(Client $client, $type = 'type')
     {
-        return $client->getContainer()->get('fos_elastica.index.index.'.$type);
+        return $client->getContainer()->get('fazland_elastica.index.index.'.$type);
     }
 
     protected function setUp()

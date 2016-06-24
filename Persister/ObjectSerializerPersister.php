@@ -1,10 +1,10 @@
 <?php
 
-namespace FOS\ElasticaBundle\Persister;
+namespace Fazland\ElasticaBundle\Persister;
 
 use Elastica\Document;
 use Elastica\Type;
-use FOS\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
+use Fazland\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
 
 /**
  * Inserts, replaces and deletes single objects in an elastica type, making use

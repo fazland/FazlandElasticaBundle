@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Manager;
+namespace Fazland\ElasticaBundle\Manager;
 
-use FOS\ElasticaBundle\Finder\FinderInterface;
+use Fazland\ElasticaBundle\Finder\FinderInterface;
 
 /**
  * @author Richard Miller <info@limethinking.co.uk>

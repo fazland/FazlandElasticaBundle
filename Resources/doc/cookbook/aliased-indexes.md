@@ -1,17 +1,17 @@
 Aliased Indexes
 ===============
 
-You can set up FOSElasticaBundle to use aliases for indexes which allows you to run an
+You can set up FazlandElasticaBundle to use aliases for indexes which allows you to run an
 index population without resetting the index currently being used by the application.
 
 > *Note*: When you're using an alias, resetting an individual type will still cause a
 > reset for that type.
 
-To configure FOSElasticaBundle to use aliases for an index, set the use_alias option to
+To configure FazlandElasticaBundle to use aliases for an index, set the use_alias option to
 true.
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             use_alias: true
@@ -32,7 +32,7 @@ $ curl -XDELETE 'http://localhost:9200/app/'
    current index to the new index_name, which will then be replaced when you run a repopulate.
 
 ```yaml
-fos_elastica:
+fazland_elastica:
     indexes:
         app:
             use_alias: true

@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\Doctrine;
+namespace Fazland\ElasticaBundle\Tests\Doctrine;
 
 /**
  * See concrete MongoDB/ORM instances of this abstract test.
@@ -218,7 +218,7 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
      */
     private function getMockPersister($object, $indexName, $typeName)
     {
-        $mock = $this->getMockBuilder('FOS\ElasticaBundle\Persister\ObjectPersister')
+        $mock = $this->getMockBuilder('Fazland\ElasticaBundle\Persister\ObjectPersister')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -254,7 +254,7 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
      */
     private function getMockIndexable($indexName, $typeName, $object, $return = null)
     {
-        $mock = $this->getMock('FOS\ElasticaBundle\Provider\IndexableInterface');
+        $mock = $this->getMock('Fazland\ElasticaBundle\Provider\IndexableInterface');
 
         if (null !== $return) {
             $mock->expects($this->once())
@@ -267,7 +267,7 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-namespace FOS\ElasticaBundle\Tests\Doctrine\Listener;
+namespace Fazland\ElasticaBundle\Tests\Doctrine\Listener;
 
 class Entity
 {

@@ -7,7 +7,7 @@ UPGRADE FROM 2.1 to 3.0
 
     ```yml
     serializer:
-        callback_class: FOS\ElasticaBundle\Serializer\Callback
+        callback_class: Fazland\ElasticaBundle\Serializer\Callback
         serializer: serializer
     ```
 
@@ -18,7 +18,7 @@ UPGRADE FROM 2.1 to 3.0
 
     ```yml
     serializer:
-        callback_class: FOS\ElasticaBundle\Serializer\Callback
+        callback_class: Fazland\ElasticaBundle\Serializer\Callback
         serializer: serializer
     indexes:
         acme:

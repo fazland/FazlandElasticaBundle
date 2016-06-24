@@ -5,9 +5,9 @@ This changelog references the relevant changes (bug and security fixes) done
 in 3.0 minor versions.
 
 To get the diff for a specific change, go to
-https://github.com/FriendsOfSymfony/FOSElasticaBundle/commit/XXX where XXX is
+https://github.com/Fazland/FazlandElasticaBundle/commit/XXX where XXX is
 the commit hash. To get the diff between two versions, go to
-https://github.com/FriendsOfSymfony/FOSElasticaBundle/compare/v3.0.0...v3.0.1
+https://github.com/Fazland/FazlandElasticaBundle/compare/v3.0.0...v3.0.1
 
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline v3.0.0...3.0.x`
@@ -60,11 +60,11 @@ To generate a changelog summary since the last version, run
    changes.
  * AbstractProvider constructor change: Second argument is now an `IndexableInterface`
    instance.
- * Annotation @Search moved to FOS\ElasticaBundle\Annotation\Search with FOS\ElasticaBundle\Configuration\Search deprecated
- * Deprecated FOS\ElasticaBundle\Client in favour of FOS\ElasticaBundle\Elastica\Client
- * Deprecated FOS\ElasticaBundle\DynamicIndex in favour of FOS\ElasticaBundle\Elastica\Index
- * Deprecated FOS\ElasticaBundle\IndexManager in favour of FOS\ElasticaBundle\Index\IndexManager
- * Deprecated FOS\ElasticaBundle\Resetter in favour of FOS\ElasticaBundle\Index\Resetter
+ * Annotation @Search moved to Fazland\ElasticaBundle\Annotation\Search with Fazland\ElasticaBundle\Configuration\Search deprecated
+ * Deprecated Fazland\ElasticaBundle\Client in favour of Fazland\ElasticaBundle\Elastica\Client
+ * Deprecated Fazland\ElasticaBundle\DynamicIndex in favour of Fazland\ElasticaBundle\Elastica\Index
+ * Deprecated Fazland\ElasticaBundle\IndexManager in favour of Fazland\ElasticaBundle\Index\IndexManager
+ * Deprecated Fazland\ElasticaBundle\Resetter in favour of Fazland\ElasticaBundle\Index\Resetter
 
 * 3.0.0-ALPHA5 (2014-05-23)
 
@@ -84,7 +84,7 @@ To generate a changelog summary since the last version, run
  * #415: BC BREAK: document indexing occurs in postFlush rather than the pre* events previously.
  * 7d13823: Dropped (broken) support for Symfony <2.3
  * #496: Added support for HTTP headers
- * #528: FOSElasticaBundle will disable Doctrine logging when populating for a large increase in speed
+ * #528: FazlandElasticaBundle will disable Doctrine logging when populating for a large increase in speed
 
 * 3.0.0-ALPHA2 (2014-03-17)
 

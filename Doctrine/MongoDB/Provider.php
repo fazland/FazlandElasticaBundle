@@ -1,10 +1,10 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine\MongoDB;
+namespace Fazland\ElasticaBundle\Doctrine\MongoDB;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
-use FOS\ElasticaBundle\Doctrine\AbstractProvider;
-use FOS\ElasticaBundle\Exception\InvalidArgumentTypeException;
+use Fazland\ElasticaBundle\Doctrine\AbstractProvider;
+use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 
 class Provider extends AbstractProvider
 {

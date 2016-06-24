@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Exception;
+namespace Fazland\ElasticaBundle\Exception;
 
 class AliasIsIndexException extends \Exception
 {

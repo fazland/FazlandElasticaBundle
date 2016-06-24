@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\DependencyInjection;
+namespace Fazland\ElasticaBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -35,7 +35,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('fos_elastica', 'array');
+        $rootNode = $treeBuilder->root('fazland_elastica', 'array');
 
         $this->addClientsSection($rootNode);
         $this->addIndexesSection($rootNode);
@@ -52,7 +52,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('serializer')
                     ->treatNullLike(array())
                     ->children()
-                        ->scalarNode('callback_class')->defaultValue('FOS\ElasticaBundle\Serializer\Callback')->end()
+                        ->scalarNode('callback_class')->defaultValue('Fazland\ElasticaBundle\Serializer\Callback')->end()
                         ->scalarNode('serializer')->defaultValue('serializer')->end()
                     ->end()
                 ->end()
@@ -119,9 +119,9 @@ class Configuration implements ConfigurationInterface
                                         ->scalarNode('port')->end()
                                         ->scalarNode('proxy')->end()
                                         ->scalarNode('logger')
-                                            ->defaultValue($this->debug ? 'fos_elastica.logger' : false)
-                                            ->treatNullLike('fos_elastica.logger')
-                                            ->treatTrueLike('fos_elastica.logger')
+                                            ->defaultValue($this->debug ? 'fazland_elastica.logger' : false)
+                                            ->treatNullLike('fazland_elastica.logger')
+                                            ->treatTrueLike('fazland_elastica.logger')
                                         ->end()
                                         ->booleanNode('compression')->defaultValue(false)->end()
                                         ->arrayNode('headers')
@@ -531,8 +531,8 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode('immediate')->defaultFalse()->end()
                         ->scalarNode('logger')
                             ->defaultFalse()
-                            ->treatNullLike('fos_elastica.logger')
-                            ->treatTrueLike('fos_elastica.logger')
+                            ->treatNullLike('fazland_elastica.logger')
+                            ->treatTrueLike('fazland_elastica.logger')
                         ->end()
                         ->scalarNode('service')->end()
                     ->end()

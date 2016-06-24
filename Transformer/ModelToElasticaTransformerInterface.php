@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Transformer;
+namespace Fazland\ElasticaBundle\Transformer;
 
 /**
  * Maps Elastica documents with model objects.

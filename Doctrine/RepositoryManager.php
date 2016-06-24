@@ -1,10 +1,10 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine;
+namespace Fazland\ElasticaBundle\Doctrine;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use FOS\ElasticaBundle\Manager\RepositoryManager as BaseManager;
+use Fazland\ElasticaBundle\Manager\RepositoryManager as BaseManager;
 
 /**
  * @author Richard Miller <info@limethinking.co.uk>

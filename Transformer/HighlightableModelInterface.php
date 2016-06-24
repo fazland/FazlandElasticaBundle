@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Transformer;
+namespace Fazland\ElasticaBundle\Transformer;
 
 /**
  * Indicates that the model should have elastica highlights injected.

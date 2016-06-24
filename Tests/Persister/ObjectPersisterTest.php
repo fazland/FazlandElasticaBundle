@@ -1,9 +1,9 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\ObjectPersister;
+namespace Fazland\ElasticaBundle\Tests\ObjectPersister;
 
-use FOS\ElasticaBundle\Persister\ObjectPersister;
-use FOS\ElasticaBundle\Transformer\ModelToElasticaAutoTransformer;
+use Fazland\ElasticaBundle\Persister\ObjectPersister;
+use Fazland\ElasticaBundle\Transformer\ModelToElasticaAutoTransformer;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class POPO

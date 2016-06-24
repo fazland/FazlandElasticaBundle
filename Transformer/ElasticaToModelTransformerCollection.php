@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Transformer;
+namespace Fazland\ElasticaBundle\Transformer;
 
-use FOS\ElasticaBundle\HybridResult;
+use Fazland\ElasticaBundle\HybridResult;
 use Elastica\Document;
 
 /**

@@ -1,4 +1,4 @@
-fos_elastica:
+fazland_elastica:
     clients:
         default:
             url: http://localhost:9200

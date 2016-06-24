@@ -1,10 +1,10 @@
 <?php
 
-namespace FOS\ElasticaBundle\Persister;
+namespace Fazland\ElasticaBundle\Persister;
 
 use Psr\Log\LoggerInterface;
 use Elastica\Exception\BulkException;
-use FOS\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
+use Fazland\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
 use Elastica\Type;
 use Elastica\Document;
 

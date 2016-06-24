@@ -1,13 +1,13 @@
 <?php
 
-namespace FOS\ElasticaBundle\Index;
+namespace Fazland\ElasticaBundle\Index;
 
 use Elastica\Index;
 use Elastica\Exception\ResponseException;
 use Elastica\Type\Mapping;
-use FOS\ElasticaBundle\Configuration\ConfigManager;
-use FOS\ElasticaBundle\Event\IndexResetEvent;
-use FOS\ElasticaBundle\Event\TypeResetEvent;
+use Fazland\ElasticaBundle\Configuration\ConfigManager;
+use Fazland\ElasticaBundle\Event\IndexResetEvent;
+use Fazland\ElasticaBundle\Event\TypeResetEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**

@@ -1,11 +1,11 @@
 <?php
 
-namespace FOS\ElasticaBundle\Finder;
+namespace Fazland\ElasticaBundle\Finder;
 
 use Elastica\Document;
-use FOS\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
-use FOS\ElasticaBundle\Paginator\TransformedPaginatorAdapter;
-use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
+use Fazland\ElasticaBundle\Paginator\TransformedPaginatorAdapter;
+use Fazland\ElasticaBundle\Paginator\FantaPaginatorAdapter;
 use Pagerfanta\Pagerfanta;
 use Elastica\SearchableInterface;
 use Elastica\Query;

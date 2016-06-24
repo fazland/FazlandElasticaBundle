@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Paginator;
+namespace Fazland\ElasticaBundle\Paginator;
 
-use FOS\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 use Elastica\ResultSet;
 
 /**
@@ -14,7 +14,7 @@ class TransformedPartialResults extends RawPartialResults
 
     /**
      * @param ResultSet                                                           $resultSet
-     * @param \FOS\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface $transformer
+     * @param \Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface $transformer
      */
     public function __construct(ResultSet $resultSet, ElasticaToModelTransformerInterface $transformer)
     {

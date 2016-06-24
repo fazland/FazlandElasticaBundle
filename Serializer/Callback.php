@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\ElasticaBundle\Serializer;
+namespace Fazland\ElasticaBundle\Serializer;
 
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;

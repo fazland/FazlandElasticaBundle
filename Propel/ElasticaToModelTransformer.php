@@ -1,11 +1,11 @@
 <?php
 
-namespace FOS\ElasticaBundle\Propel;
+namespace Fazland\ElasticaBundle\Propel;
 
-use FOS\ElasticaBundle\HybridResult;
-use FOS\ElasticaBundle\Transformer\AbstractElasticaToModelTransformer;
-use FOS\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
-use FOS\ElasticaBundle\Transformer\HighlightableModelInterface;
+use Fazland\ElasticaBundle\HybridResult;
+use Fazland\ElasticaBundle\Transformer\AbstractElasticaToModelTransformer;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
+use Fazland\ElasticaBundle\Transformer\HighlightableModelInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**

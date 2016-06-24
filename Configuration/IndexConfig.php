@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Configuration;
+namespace Fazland\ElasticaBundle\Configuration;
 
 class IndexConfig
 {
@@ -107,7 +107,7 @@ class IndexConfig
     }
 
     /**
-     * @return \FOS\ElasticaBundle\Configuration\TypeConfig[]
+     * @return \Fazland\ElasticaBundle\Configuration\TypeConfig[]
      */
     public function getTypes()
     {

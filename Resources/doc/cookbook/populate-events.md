@@ -31,7 +31,7 @@ And _optimize should be called:
 curl -XPOST 'http://localhost:9200/test/_optimize?max_num_segments=5'
 ```
 
-Everything seems to be straightforward, but you'll how this can be achieved with FOSElasticaBundle? 
+Everything seems to be straightforward, but you'll how this can be achieved with FazlandElasticaBundle?
 For this purpose `PRE_INDEX_POPULATE`, `POST_INDEX_POPULATE`, `PRE_TYPE_POPULATE` and `POST_TYPE_POPULATE` were introduced, they allow you to monitor and hook into the process.
  
 Now let's implement `PopulateListener` by creating `AppBundle\EventListener\PopulateListener`:
@@ -40,8 +40,8 @@ Now let's implement `PopulateListener` by creating `AppBundle\EventListener\Popu
 <?php
 namespace AppBundle\EventListener;
 
-use FOS\ElasticaBundle\Event\IndexPopulateEvent;
-use FOS\ElasticaBundle\Index\IndexManager;
+use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
+use Fazland\ElasticaBundle\Index\IndexManager;
 
 class PopulateListener
 {
@@ -81,7 +81,7 @@ Declare your listener and register event(s):
 <service id="app.event_listener.populate_listener" class="AppBundle\EventListener\PopulateListener">
     <tag name="kernel.event_listener" event="elastica.index.index_pre_populate" method="preIndexPopulate"/>
     <tag name="kernel.event_listener" event="elastica.index.index_post_populate" method="postIndexPopulate"/>
-    <argument type="service" id="fos_elastica.index_manager"/>
+    <argument type="service" id="fazland_elastica.index_manager"/>
 </service>
 ```
 

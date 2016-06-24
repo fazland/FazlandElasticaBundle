@@ -1,8 +1,8 @@
 <?php
 
-namespace FOS\ElasticaBundle\Tests\DependencyInjection\Compiler;
+namespace Fazland\ElasticaBundle\Tests\DependencyInjection\Compiler;
 
-use FOS\ElasticaBundle\DependencyInjection\Compiler\RegisterProvidersPass;
+use Fazland\ElasticaBundle\DependencyInjection\Compiler\RegisterProvidersPass;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -15,12 +15,13 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
 
         $registryDefinition = new Definition();
 
-        $container->setDefinition('fos_elastica.provider_registry', $registryDefinition);
-        $container->setAlias('fos_elastica.index', 'fos_elastica.index.foo');
+        $container->setDefinition('fazland_elastica.provider_registry', $registryDefinition);
+        $container->setAlias('fazland_elastica.index', 'fazland_elastica.index.foo');
 
         $container->setDefinition('provider.foo.a', $this->createProviderDefinition(array('type' => 'a')));
         $container->setDefinition('provider.foo.b', $this->createProviderDefinition(array('index' => 'foo', 'type' => 'b')));
         $container->setDefinition('provider.bar.a', $this->createProviderDefinition(array('index' => 'bar', 'type' => 'a')));
+
 
         $pass->process($container);
 
@@ -39,8 +40,8 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
         $container = new ContainerBuilder();
         $pass = new RegisterProvidersPass();
 
-        $container->setDefinition('fos_elastica.provider_registry', new Definition());
-        $container->setAlias('fos_elastica.index', 'fos_elastica.index.foo');
+        $container->setDefinition('fazland_elastica.provider_registry', new Definition());
+        $container->setAlias('fazland_elastica.index', 'fazland_elastica.index.foo');
 
         $providerDef = $this->createProviderDefinition();
         $providerDef->setClass('stdClass');
@@ -58,8 +59,8 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
         $container = new ContainerBuilder();
         $pass = new RegisterProvidersPass();
 
-        $container->setDefinition('fos_elastica.provider_registry', new Definition());
-        $container->setAlias('fos_elastica.index', 'fos_elastica.index.foo');
+        $container->setDefinition('fazland_elastica.provider_registry', new Definition());
+        $container->setAlias('fazland_elastica.index', 'fazland_elastica.index.foo');
 
         $container->setDefinition('provider.foo.a', $this->createProviderDefinition());
 
@@ -68,10 +69,10 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
 
     private function createProviderDefinition(array $attributes = array())
     {
-        $provider = $this->getMock('FOS\ElasticaBundle\Provider\ProviderInterface');
+        $provider = $this->getMock('Fazland\ElasticaBundle\Provider\ProviderInterface');
 
         $definition = new Definition(get_class($provider));
-        $definition->addTag('fos_elastica.provider', $attributes);
+        $definition->addTag('fazland_elastica.provider', $attributes);
 
         return $definition;
     }

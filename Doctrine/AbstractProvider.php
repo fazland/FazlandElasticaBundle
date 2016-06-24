@@ -1,12 +1,12 @@
 <?php
 
-namespace FOS\ElasticaBundle\Doctrine;
+namespace Fazland\ElasticaBundle\Doctrine;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Elastica\Exception\Bulk\ResponseException as BulkResponseException;
-use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
-use FOS\ElasticaBundle\Provider\AbstractProvider as BaseAbstractProvider;
-use FOS\ElasticaBundle\Provider\IndexableInterface;
+use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
+use Fazland\ElasticaBundle\Provider\AbstractProvider as BaseAbstractProvider;
+use Fazland\ElasticaBundle\Provider\IndexableInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class AbstractProvider extends BaseAbstractProvider

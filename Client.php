@@ -1,11 +1,11 @@
 <?php
 
-namespace FOS\ElasticaBundle;
+namespace Fazland\ElasticaBundle;
 
-use FOS\ElasticaBundle\Elastica\Client as BaseClient;
+use Fazland\ElasticaBundle\Elastica\Client as BaseClient;
 
 /**
- * @deprecated Use \FOS\ElasticaBundle\Elastica\LoggingClient
+ * @deprecated Use \Fazland\ElasticaBundle\Elastica\LoggingClient
  */
 class Client extends BaseClient
 {

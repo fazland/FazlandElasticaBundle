@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSElasticaBundle project.
+ * This file is part of the FazlandElasticaBundle project.
  *
  * (c) Tim Nagel <tim@nagel.com.au>
  *
@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace FOS\ElasticaBundle\Tests\Index;
+namespace Fazland\ElasticaBundle\Tests\Index;
 
 use Elastica\Exception\ResponseException;
 use Elastica\Request;
 use Elastica\Response;
-use FOS\ElasticaBundle\Configuration\IndexConfig;
-use FOS\ElasticaBundle\Index\AliasProcessor;
+use Fazland\ElasticaBundle\Configuration\IndexConfig;
+use Fazland\ElasticaBundle\Index\AliasProcessor;
 
 class AliasProcessorTest extends \PHPUnit_Framework_TestCase
 {
@@ -33,7 +33,7 @@ class AliasProcessorTest extends \PHPUnit_Framework_TestCase
     public function testSetRootName($name, $configArray, $resultStartsWith)
     {
         $indexConfig = new IndexConfig($name, array(), $configArray);
-        $index = $this->getMockBuilder('FOS\\ElasticaBundle\\Elastica\\Index')
+        $index = $this->getMockBuilder('Fazland\\ElasticaBundle\\Elastica\\Index')
             ->disableOriginalConstructor()
             ->getMock();
         $index->expects($this->once())
@@ -102,7 +102,7 @@ class AliasProcessorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FOS\ElasticaBundle\Exception\AliasIsIndexException
+     * @expectedException \Fazland\ElasticaBundle\Exception\AliasIsIndexException
      */
     public function testSwitchAliasThrowsWhenAliasIsAnIndex()
     {
@@ -203,7 +203,7 @@ class AliasProcessorTest extends \PHPUnit_Framework_TestCase
 
     private function getMockedIndex($name)
     {
-        $index = $this->getMockBuilder('FOS\\ElasticaBundle\\Elastica\\Index')
+        $index = $this->getMockBuilder('Fazland\\ElasticaBundle\\Elastica\\Index')
             ->disableOriginalConstructor()
             ->getMock();
 
