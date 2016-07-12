@@ -17,6 +17,7 @@ class TypeObj
     public $coll;
     public $field1;
     public $field2;
+    public $field3;
 
     public function isIndexable()
     {

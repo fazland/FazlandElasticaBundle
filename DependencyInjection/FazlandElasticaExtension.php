@@ -672,6 +672,18 @@ class FazlandElasticaExtension extends Extension
         if (isset($callbackClassImplementedInterfaces['Symfony\Component\DependencyInjection\ContainerAwareInterface'])) {
             $serializer->addMethodCall('setContainer', array(new Reference('service_container')));
         }
+
+        if (isset($config['groups'])) {
+            $serializer->addMethodCall('setGroups', array($config['groups']));
+        }
+
+        if (isset($config['serialize_null'])) {
+            $serializer->addMethodCall('setSerializeNull', array($config['serialize_null']));
+        }
+
+        if (isset($config['version'])) {
+            $serializer->addMethodCall('setVersion', array($config['version']));
+        }
     }
 
     /**

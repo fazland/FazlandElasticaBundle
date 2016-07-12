@@ -2,6 +2,12 @@ Fazland\ElasticaBundle\Tests\Functional\TypeObj:
     properties:
         field1:
             type: string
+        field2:
+            type: string
+            groups: [ elasticadefault ]
+        field3:
+            type: string
+            groups: [ elasticadefault ]
     virtualProperties:
         getSerializableColl:
             serializedName: coll

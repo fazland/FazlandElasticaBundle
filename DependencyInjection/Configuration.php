@@ -54,6 +54,14 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('callback_class')->defaultValue('Fazland\ElasticaBundle\Serializer\Callback')->end()
                         ->scalarNode('serializer')->defaultValue('serializer')->end()
+                        ->arrayNode('groups')
+                            ->treatNullLike(array())
+                            ->prototype('scalar')->end()
+                        ->end()
+                        ->scalarNode('version')->end()
+                        ->booleanNode('serialize_null')
+                            ->defaultFalse()
+                        ->end()
                     ->end()
                 ->end()
             ->end()
@@ -587,7 +595,6 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('serializer');
 
         $node
-            ->addDefaultsIfNotSet()
             ->children()
                 ->arrayNode('groups')
                     ->treatNullLike(array())

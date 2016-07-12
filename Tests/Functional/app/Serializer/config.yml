@@ -25,7 +25,10 @@ fazland_elastica:
     clients:
         default:
             url: http://localhost:9200
-    serializer: ~
+    serializer:
+        groups: ['elasticadefault']
+        version: '1.1'
+        serialize_null: true
     indexes:
         index:
             index_name: fazlandelastica_ser_test_%kernel.environment%
@@ -63,3 +66,10 @@ fazland_elastica:
                     serializer:
                         groups: ['search', 'Default']
                         version: 1.1
+                serializer_default_config:
+                    properties:
+                        field2: ~
+                        field3: ~
+                    persistence:
+                        driver: orm
+                        model: Fazland\ElasticaBundle\Tests\Functional\TypeObj

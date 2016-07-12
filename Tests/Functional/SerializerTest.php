@@ -61,6 +61,31 @@ class SerializerTest extends WebTestCase
         $this->assertEquals($documentData['field1'], null);
     }
 
+    /**
+     * Tests that the serialize_null configuration attribute works
+     */
+    public function testWithDefaultConfiguration()
+    {
+        $client = $this->createClient(array('test_case' => 'Serializer'));
+        $container = $client->getContainer();
+
+        $defaultConfigPersister = $container->get('fazland_elastica.object_persister.index.serializer_default_config');
+
+        $object = new TypeObj();
+        $object->id = 1;
+        $object->field2 = 'FooBar';
+        $object->field3 = null;
+        $defaultConfigPersister->insertOne($object);
+
+        // Tests that attributes with null values are not persisted into an Elasticsearch type without the serialize_null option
+        $disabledNullType = $container->get('fazland_elastica.index.index.serializer_default_config');
+        $documentData = $disabledNullType->getDocument(1)->getData();
+        $this->assertArrayHasKey('field2', $documentData);
+        $this->assertEquals($documentData['field2'], 'FooBar');
+        $this->assertArrayHasKey('field3', $documentData);
+        $this->assertEquals($documentData['field3'], null);
+    }
+
     public function testUnmappedType()
     {
         $client = $this->createClient(array('test_case' => 'Serializer'));
