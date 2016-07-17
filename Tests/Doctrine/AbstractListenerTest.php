@@ -239,10 +239,6 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
             ->method('getIndex')
             ->will($this->returnValue($index));
 
-        $mock->expects($this->any())
-            ->method('getType')
-            ->will($this->returnValue($type));
-
         return $mock;
     }
 
