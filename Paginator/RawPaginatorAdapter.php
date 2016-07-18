@@ -33,11 +33,6 @@ class RawPaginatorAdapter implements PaginatorAdapterInterface
     private $totalHits;
 
     /**
-     * @var array for the facets
-     */
-    private $facets;
-
-    /**
      * @var array for the aggregations
      */
     private $aggregations;
@@ -88,11 +83,6 @@ class RawPaginatorAdapter implements PaginatorAdapterInterface
 
         $resultSet = $this->searchable->search($query, $this->options);
         $this->totalHits = $resultSet->getTotalHits();
-
-        if (method_exists($resultSet, 'getFacets')) {
-            $this->facets = $resultSet->getFacets();
-        }
-        
         $this->aggregations = $resultSet->getAggregations();
 
         return $resultSet;
@@ -124,18 +114,6 @@ class RawPaginatorAdapter implements PaginatorAdapterInterface
         return $this->query->hasParam('size') && !$genuineTotal
             ? min($this->totalHits, (integer) $this->query->getParam('size'))
             : $this->totalHits;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFacets()
-    {
-        if (! isset($this->facets)) {
-            $this->facets = $this->searchable->search($this->query)->getFacets();
-        }
-
-        return $this->facets;
     }
 
     /**
