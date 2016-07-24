@@ -36,20 +36,26 @@ $pagination = $paginator->paginate($results, $page, 10);
 Faceted Searching
 -----------------
 
-When searching with facets, the facets can be retrieved when using the paginated
+Facets have been removed from ElasticSearch 2.0. Please remove every reference to
+facets and use aggregations instead
+
+Aggregations
+------------
+
+When searching with aggregations, they can be retrieved when using the paginated
 methods on the finder.
 
 ```php
 $query = new \Elastica\Query();
-$facet = new \Elastica\Facet\Terms('tags');
-$facet->setField('companyGroup');
-$query->addFacet($facet);
+$agg = new \Elastica\Aggregation\Terms('tags');
+$agg->setField('companyGroup');
+$query->addAggregation($agg);
 
 $companies = $finder->findPaginated($query);
 $companies->setMaxPerPage($params['limit']);
 $companies->setCurrentPage($params['page']);
 
-$facets = $companies->getAdapter()->getFacets();
+$aggs = $companies->getAdapter()->getAggregations();
 ```
 
 Searching the entire index
