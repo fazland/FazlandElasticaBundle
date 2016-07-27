@@ -20,7 +20,7 @@
         </service>
 
         <service id="fazland_elastica.manager.propel" class="Fazland\ElasticaBundle\Doctrine\RepositoryManager">
-            <argument type="service" id="annotation_reader"/>
+            <argument type="service" id="fazland_elastica.repository_manager" />
         </service>
     </services>
 </container>

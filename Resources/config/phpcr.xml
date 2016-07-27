@@ -43,7 +43,7 @@
 
         <service id="fazland_elastica.manager.phpcr" class="%fazland_elastica.manager.phpcr.class%">
             <argument type="service" id="doctrine_phpcr" />
-            <argument type="service" id="annotation_reader" />
+            <argument type="service" id="fazland_elastica.repository_manager" />
         </service>
     </services>
 </container>

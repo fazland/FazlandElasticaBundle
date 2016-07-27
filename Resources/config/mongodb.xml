@@ -43,7 +43,7 @@
 
         <service id="fazland_elastica.manager.mongodb" class="%fazland_elastica.manager.mongodb.class%">
             <argument type="service" id="doctrine_mongodb"/>
-            <argument type="service" id="annotation_reader"/>
+            <argument type="service" id="fazland_elastica.repository_manager" />
         </service>
     </services>
 </container>
