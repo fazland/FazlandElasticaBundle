@@ -623,7 +623,7 @@ class FazlandElasticaExtension extends Extension
 
         $managerId = sprintf('fazland_elastica.manager.%s', $typeConfig['driver']);
         $container->getDefinition($managerId)
-            ->addMethodCall('addEntity', [$indexTypeName]);
+            ->addMethodCall('addEntity', [$typeConfig['model'], $indexTypeName]);
 
         return $finderId;
     }
