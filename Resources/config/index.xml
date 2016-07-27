@@ -12,9 +12,12 @@
         <parameter key="fazland_elastica.index_manager.class">Fazland\ElasticaBundle\Index\IndexManager</parameter>
         <parameter key="fazland_elastica.resetter.class">Fazland\ElasticaBundle\Index\Resetter</parameter>
         <parameter key="fazland_elastica.type.class">Elastica\Type</parameter>
+        <parameter key="fazland_elastica.repository_manager.class">Fazland\ElasticaBundle\Manager\RepositoryManager</parameter>
     </parameters>
 
     <services>
+        <service id="fazland_elastica.repository_manager" class="%fazland_elastica.repository_manager.class%" />
+
         <service id="fazland_elastica.alias_processor" class="%fazland_elastica.alias_processor.class%" />
 
         <service id="fazland_elastica.indexable" class="%fazland_elastica.indexable.class%">
