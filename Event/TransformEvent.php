@@ -11,6 +11,7 @@
 
 namespace Fazland\ElasticaBundle\Event;
 
+use Elastica\Type;
 use Symfony\Component\EventDispatcher\Event;
 
 class TransformEvent extends Event
@@ -41,15 +42,22 @@ class TransformEvent extends Event
     private $object;
 
     /**
+     * @var Type
+     */
+    private $type;
+
+    /**
      * @param mixed $document
      * @param array $fields
      * @param mixed $object
+     * @param Type $type
      */
-    public function __construct($document, array $fields, $object)
+    public function __construct($document, array $fields, $object, Type $type)
     {
         $this->document = $document;
         $this->fields = $fields;
         $this->object = $object;
+        $this->type = $type;
     }
 
     /**
@@ -74,6 +82,14 @@ class TransformEvent extends Event
     public function getObject()
     {
         return $this->object;
+    }
+
+    /**
+     * @return Type
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**

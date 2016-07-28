@@ -330,7 +330,7 @@ class FazlandElasticaExtension extends Extension
         }
 
         $elasticaToModelTransformerId = $this->loadElasticaToModelTransformer($typeConfig, $container, $indexName, $typeName);
-        $modelToElasticaTransformerId = $this->loadModelToElasticaTransformer($typeConfig, $container, $indexName, $typeName);
+        $modelToElasticaTransformerId = $this->loadModelToElasticaTransformer($typeConfig, $container, $typeRef, $indexName, $typeName);
         $objectPersisterId = $this->loadObjectPersister($typeConfig, $typeRef, $container, $indexName, $typeName, $modelToElasticaTransformerId);
 
         if (isset($typeConfig['provider'])) {
@@ -383,14 +383,15 @@ class FazlandElasticaExtension extends Extension
     /**
      * Creates and loads a ModelToElasticaTransformer for an index/type.
      *
-     * @param array            $typeConfig
+     * @param array $typeConfig
      * @param ContainerBuilder $container
-     * @param string           $indexName
-     * @param string           $typeName
+     * @param Reference $typeRef
+     * @param string $indexName
+     * @param string $typeName
      *
      * @return string
      */
-    private function loadModelToElasticaTransformer(array $typeConfig, ContainerBuilder $container, $indexName, $typeName)
+    private function loadModelToElasticaTransformer(array $typeConfig, ContainerBuilder $container, Reference $typeRef, $indexName, $typeName)
     {
         if (isset($typeConfig['model_to_elastica_transformer']['service'])) {
             return $typeConfig['model_to_elastica_transformer']['service'];
@@ -402,9 +403,10 @@ class FazlandElasticaExtension extends Extension
 
         $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $indexName, $typeName);
         $serviceDef = new DefinitionDecorator($abstractId);
-        $serviceDef->replaceArgument(0, array(
+        $serviceDef->replaceArgument(1, array(
             'identifier' => $typeConfig['identifier'],
         ));
+        $serviceDef->replaceArgument(0, $typeRef);
         $container->setDefinition($serviceId, $serviceDef);
 
         return $serviceId;

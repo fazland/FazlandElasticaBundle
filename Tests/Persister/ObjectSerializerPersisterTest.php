@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Tests\ObjectSerializerPersister;
 
+use Elastica\Type;
 use Fazland\ElasticaBundle\Persister\ObjectSerializerPersister;
 use Fazland\ElasticaBundle\Transformer\ModelToElasticaIdentifierTransformer;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -26,8 +27,6 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
 {
     public function testThatCanReplaceObject()
     {
-        $transformer = $this->getTransformer();
-
         /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
         $typeMock = $this->getMockBuilder('Elastica\Type')
             ->disableOriginalConstructor()
@@ -35,6 +34,7 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
         $typeMock->expects($this->once())
             ->method('updateDocuments');
 
+        $transformer = $this->getTransformer($typeMock);
         $serializerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Serializer\Callback')->getMock();
         $serializerMock->expects($this->once())->method('serialize');
 
@@ -44,8 +44,6 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
 
     public function testThatCanInsertObject()
     {
-        $transformer = $this->getTransformer();
-
         /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
         $typeMock = $this->getMockBuilder('Elastica\Type')
             ->disableOriginalConstructor()
@@ -55,6 +53,7 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
         $typeMock->expects($this->once())
             ->method('addDocuments');
 
+        $transformer = $this->getTransformer($typeMock);
         $serializerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Serializer\Callback')->getMock();
         $serializerMock->expects($this->once())->method('serialize');
 
@@ -64,8 +63,6 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
 
     public function testThatCanDeleteObject()
     {
-        $transformer = $this->getTransformer();
-
         /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
         $typeMock = $this->getMockBuilder('Elastica\Type')
             ->disableOriginalConstructor()
@@ -75,6 +72,7 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
         $typeMock->expects($this->never())
             ->method('addDocument');
 
+        $transformer = $this->getTransformer($typeMock);
         $serializerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Serializer\Callback')->getMock();
         $serializerMock->expects($this->once())->method('serialize');
 
@@ -84,8 +82,6 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
 
     public function testThatCanInsertManyObjects()
     {
-        $transformer = $this->getTransformer();
-
         /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
         $typeMock = $this->getMockBuilder('Elastica\Type')
             ->disableOriginalConstructor()
@@ -99,6 +95,7 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
         $typeMock->expects($this->once())
             ->method('addDocuments');
 
+        $transformer = $this->getTransformer($typeMock);
         $serializerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Serializer\Callback')->getMock();
         $serializerMock->expects($this->exactly(2))->method('serialize');
 
@@ -107,11 +104,13 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param Type $type
+     *
      * @return ModelToElasticaIdentifierTransformer
      */
-    private function getTransformer()
+    private function getTransformer(Type $type)
     {
-        $transformer = new ModelToElasticaIdentifierTransformer();
+        $transformer = new ModelToElasticaIdentifierTransformer($type);
         $transformer->setPropertyAccessor(PropertyAccess::createPropertyAccessor());
 
         return $transformer;

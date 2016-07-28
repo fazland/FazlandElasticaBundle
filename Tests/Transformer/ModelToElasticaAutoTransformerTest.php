@@ -149,11 +149,15 @@ class ModelToElasticaAutoTransformerTest extends \PHPUnit_Framework_TestCase
             ->withConsecutive(
                 array(
                     TransformEvent::PRE_TRANSFORM,
-                    $this->isInstanceOf('Fazland\ElasticaBundle\Event\TransformEvent')
+                    $this->callback(function ($obj) {
+                        return $obj instanceof TransformEvent && null !== $obj->getType();
+                    })
                 ),
                 array(
                     TransformEvent::POST_TRANSFORM,
-                    $this->isInstanceOf('Fazland\ElasticaBundle\Event\TransformEvent')
+                    $this->callback(function ($obj) {
+                        return $obj instanceof TransformEvent && null !== $obj->getType();
+                    })
                 )
             );
 
@@ -480,7 +484,11 @@ class ModelToElasticaAutoTransformerTest extends \PHPUnit_Framework_TestCase
      */
     private function getTransformer($dispatcher = null)
     {
-        $transformer = new ModelToElasticaAutoTransformer(array(), $dispatcher);
+        $typeMock = $this->getMockBuilder('Elastica\Type')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $transformer = new ModelToElasticaAutoTransformer($typeMock, array(), $dispatcher);
         $transformer->setPropertyAccessor(PropertyAccess::createPropertyAccessor());
 
         return $transformer;

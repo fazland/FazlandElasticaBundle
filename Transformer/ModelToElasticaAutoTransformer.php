@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Transformer;
 
+use Elastica\Type;
 use Fazland\ElasticaBundle\Event\TransformEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -36,15 +37,22 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
     protected $propertyAccessor;
 
     /**
+     * @var Type
+     */
+    protected $type;
+
+    /**
      * Instanciates a new Mapper.
      *
-     * @param array                    $options
+     * @param array $options
+     * @param Type $type
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(array $options = array(), EventDispatcherInterface $dispatcher = null)
+    public function __construct(Type $type, array $options = array(), EventDispatcherInterface $dispatcher = null)
     {
         $this->options = array_merge($this->options, $options);
         $this->dispatcher = $dispatcher;
+        $this->type = $type;
     }
 
     /**
@@ -140,7 +148,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
         $document = new Document($identifier);
 
         if ($this->dispatcher) {
-            $event = new TransformEvent($document, $fields, $object);
+            $event = new TransformEvent($document, $fields, $object, $this->type);
             $this->dispatcher->dispatch(TransformEvent::PRE_TRANSFORM, $event);
 
             $document = $event->getDocument();
@@ -190,7 +198,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
         }
 
         if ($this->dispatcher) {
-            $event = new TransformEvent($document, $fields, $object);
+            $event = new TransformEvent($document, $fields, $object, $this->type);
             $this->dispatcher->dispatch(TransformEvent::POST_TRANSFORM, $event);
 
             $document = $event->getDocument();
