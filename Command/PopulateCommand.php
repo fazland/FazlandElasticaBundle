@@ -5,14 +5,14 @@ namespace Fazland\ElasticaBundle\Command;
 use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
 use Fazland\ElasticaBundle\Event\TypePopulateEvent;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\DialogHelper;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Fazland\ElasticaBundle\IndexManager;
+use Fazland\ElasticaBundle\Index\IndexManager;
 use Fazland\ElasticaBundle\Provider\ProviderRegistry;
-use Fazland\ElasticaBundle\Resetter;
-use Symfony\Component\Console\Helper\ProgressBar;
+use Fazland\ElasticaBundle\Index\Resetter;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Populate the search index.
@@ -30,11 +30,6 @@ class PopulateCommand extends ContainerAwareCommand
     private $indexManager;
 
     /**
-     * @var ProgressClosureBuilder
-     */
-    private $progressClosureBuilder;
-
-    /**
      * @var ProviderRegistry
      */
     private $providerRegistry;
@@ -43,6 +38,11 @@ class PopulateCommand extends ContainerAwareCommand
      * @var Resetter
      */
     private $resetter;
+
+    /**
+     * @var SymfonyStyle
+     */
+    private $io;
 
     /**
      * @see Symfony\Component\Console\Command\Command::configure()
@@ -72,14 +72,6 @@ class PopulateCommand extends ContainerAwareCommand
         $this->indexManager = $this->getContainer()->get('fazland_elastica.index_manager');
         $this->providerRegistry = $this->getContainer()->get('fazland_elastica.provider_registry');
         $this->resetter = $this->getContainer()->get('fazland_elastica.resetter');
-        $this->progressClosureBuilder = new ProgressClosureBuilder();
-
-        if (!$input->getOption('no-overwrite-format') && class_exists('Symfony\\Component\\Console\\Helper\\ProgressBar')) {
-            ProgressBar::setFormatDefinition('normal', " %current%/%max% [%bar%] %percent:3s%%\n%message%");
-            ProgressBar::setFormatDefinition('verbose', " %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%\n%message%");
-            ProgressBar::setFormatDefinition('very_verbose', " %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%\n%message%");
-            ProgressBar::setFormatDefinition('debug', " %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%\n%message%");
-        }
     }
 
     /**
@@ -87,6 +79,8 @@ class PopulateCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->io = new SymfonyStyle($input, $output);
+
         $index = $input->getOption('index');
         $type = $input->getOption('type');
         $reset = !$input->getOption('no-reset');
@@ -99,29 +93,26 @@ class PopulateCommand extends ContainerAwareCommand
             $options['batch_size'] = (int) $input->getOption('batch-size');
         }
 
-        if ($input->isInteractive() && $reset && $input->getOption('offset')) {
-            /** @var DialogHelper $dialog */
-            $dialog = $this->getHelperSet()->get('dialog');
-            if (!$dialog->askConfirmation($output, '<question>You chose to reset the index and start indexing with an offset. Do you really want to do that?</question>', true)) {
-                return;
-            }
-        }
-
         if (null === $index && null !== $type) {
             throw new \InvalidArgumentException('Cannot specify type option without an index.');
         }
 
+        if ($reset && $input->getOption('offset') &&
+            ! $this->io->confirm('You chose to reset the index and start indexing with an offset. Do you really want to do that?')) {
+            return;
+        }
+
         if (null !== $index) {
             if (null !== $type) {
-                $this->populateIndexType($output, $index, $type, $reset, $options);
+                $this->populateIndexType($index, $type, $reset, $options);
             } else {
-                $this->populateIndex($output, $index, $reset, $options);
+                $this->populateIndex($index, $reset, $options);
             }
         } else {
             $indexes = array_keys($this->indexManager->getAllIndexes());
 
             foreach ($indexes as $index) {
-                $this->populateIndex($output, $index, $reset, $options);
+                $this->populateIndex($index, $reset, $options);
             }
         }
     }
@@ -129,73 +120,85 @@ class PopulateCommand extends ContainerAwareCommand
     /**
      * Recreates an index, populates its types, and refreshes the index.
      *
-     * @param OutputInterface $output
      * @param string          $index
      * @param boolean         $reset
      * @param array           $options
      */
-    private function populateIndex(OutputInterface $output, $index, $reset, $options)
+    private function populateIndex($index, $reset, $options)
     {
         $event = new IndexPopulateEvent($index, $reset, $options);
         $this->dispatcher->dispatch(IndexPopulateEvent::PRE_INDEX_POPULATE, $event);
 
         if ($event->isReset()) {
-            $output->writeln(sprintf('<info>Resetting</info> <comment>%s</comment>', $index));
+            $this->io->note(sprintf('Resetting %s', $index));
             $this->resetter->resetIndex($index, true);
         }
 
         $types = array_keys($this->providerRegistry->getIndexProviders($index));
         foreach ($types as $type) {
-            $this->populateIndexType($output, $index, $type, false, $event->getOptions());
+            $this->populateIndexType($index, $type, false, $event->getOptions());
         }
 
         $this->dispatcher->dispatch(IndexPopulateEvent::POST_INDEX_POPULATE, $event);
 
-        $this->refreshIndex($output, $index);
+        $this->refreshIndex($index);
     }
 
     /**
      * Deletes/remaps an index type, populates it, and refreshes the index.
      *
-     * @param OutputInterface $output
      * @param string          $index
      * @param string          $type
      * @param boolean         $reset
      * @param array           $options
      */
-    private function populateIndexType(OutputInterface $output, $index, $type, $reset, $options)
+    private function populateIndexType($index, $type, $reset, $options)
     {
         $event = new TypePopulateEvent($index, $type, $reset, $options);
         $this->dispatcher->dispatch(TypePopulateEvent::PRE_TYPE_POPULATE, $event);
 
         if ($event->isReset()) {
-            $output->writeln(sprintf('<info>Resetting</info> <comment>%s/%s</comment>', $index, $type));
+            $this->io->note(sprintf('Resetting %s/%s', $index, $type));
             $this->resetter->resetIndexType($index, $type);
         }
 
         $provider = $this->providerRegistry->getProvider($index, $type);
-        $loggerClosure = $this->progressClosureBuilder->build($output, 'Populating', $index, $type);
-        $provider->populate($loggerClosure, $event->getOptions());
+
+        $progressBar = null;
+        $provider->populate(function ($increment, $totalObjects, $message = null) use (&$progressBar) {
+            if (null === $progressBar) {
+                $progressBar = $this->io->createProgressBar($totalObjects);
+            }
+
+            if (null !== $message) {
+                $progressBar->setMessage($message);
+            }
+
+            $progressBar->advance($increment);
+        }, $event->getOptions());
 
         $this->dispatcher->dispatch(TypePopulateEvent::POST_TYPE_POPULATE, $event);
 
-        $this->refreshIndex($output, $index, false);
+        if ($progressBar instanceof ProgressBar) {
+            $progressBar->clear();
+        }
+
+        $this->refreshIndex($index, false);
     }
 
     /**
      * Refreshes an index.
      *
-     * @param OutputInterface $output
      * @param string          $index
      * @param bool            $postPopulate
      */
-    private function refreshIndex(OutputInterface $output, $index, $postPopulate = true)
+    private function refreshIndex($index, $postPopulate = true)
     {
         if ($postPopulate) {
             $this->resetter->postPopulate($index);
         }
 
-        $output->writeln(sprintf('<info>Refreshing</info> <comment>%s</comment>', $index));
+        $this->io->note(sprintf('Refreshing %s', $index));
         $this->indexManager->getIndex($index)->refresh();
     }
 }
