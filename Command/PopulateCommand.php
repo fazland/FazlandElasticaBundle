@@ -4,14 +4,14 @@ namespace Fazland\ElasticaBundle\Command;
 
 use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
 use Fazland\ElasticaBundle\Event\TypePopulateEvent;
+use Fazland\ElasticaBundle\Index\IndexManager;
+use Fazland\ElasticaBundle\Index\Resetter;
+use Fazland\ElasticaBundle\Provider\ProviderRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Fazland\ElasticaBundle\Index\IndexManager;
-use Fazland\ElasticaBundle\Provider\ProviderRegistry;
-use Fazland\ElasticaBundle\Index\Resetter;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
@@ -64,7 +64,7 @@ class PopulateCommand extends ContainerAwareCommand
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
@@ -75,7 +75,7 @@ class PopulateCommand extends ContainerAwareCommand
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -84,11 +84,11 @@ class PopulateCommand extends ContainerAwareCommand
         $index = $input->getOption('index');
         $type = $input->getOption('type');
         $reset = !$input->getOption('no-reset');
-        $options = array(
+        $options = [
             'ignore_errors' => $input->getOption('ignore-errors'),
             'offset' => $input->getOption('offset'),
-            'sleep' => $input->getOption('sleep')
-        );
+            'sleep' => $input->getOption('sleep'),
+        ];
         if ($input->getOption('batch-size')) {
             $options['batch_size'] = (int) $input->getOption('batch-size');
         }
@@ -98,7 +98,7 @@ class PopulateCommand extends ContainerAwareCommand
         }
 
         if ($reset && $input->getOption('offset') &&
-            ! $this->io->confirm('You chose to reset the index and start indexing with an offset. Do you really want to do that?')) {
+            !$this->io->confirm('You chose to reset the index and start indexing with an offset. Do you really want to do that?')) {
             return;
         }
 
@@ -120,9 +120,9 @@ class PopulateCommand extends ContainerAwareCommand
     /**
      * Recreates an index, populates its types, and refreshes the index.
      *
-     * @param string          $index
-     * @param boolean         $reset
-     * @param array           $options
+     * @param string $index
+     * @param bool $reset
+     * @param array $options
      */
     private function populateIndex($index, $reset, $options)
     {
@@ -147,10 +147,10 @@ class PopulateCommand extends ContainerAwareCommand
     /**
      * Deletes/remaps an index type, populates it, and refreshes the index.
      *
-     * @param string          $index
-     * @param string          $type
-     * @param boolean         $reset
-     * @param array           $options
+     * @param string $index
+     * @param string $type
+     * @param bool $reset
+     * @param array $options
      */
     private function populateIndexType($index, $type, $reset, $options)
     {
@@ -189,8 +189,8 @@ class PopulateCommand extends ContainerAwareCommand
     /**
      * Refreshes an index.
      *
-     * @param string          $index
-     * @param bool            $postPopulate
+     * @param string $index
+     * @param bool $postPopulate
      */
     private function refreshIndex($index, $postPopulate = true)
     {
