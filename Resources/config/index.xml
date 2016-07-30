@@ -22,7 +22,9 @@
 
         <service id="fazland_elastica.indexable" class="%fazland_elastica.indexable.class%">
             <argument type="collection" /> <!-- array of indexable callbacks keyed by type name -->
-            <argument type="service" id="service_container" />
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
         </service>
 
         <service id="fazland_elastica.index_prototype" class="%fazland_elastica.index.class%" abstract="true">
