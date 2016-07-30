@@ -146,24 +146,11 @@ class FazlandElasticaExtension extends Extension
                 'name' => $name,
             ));
 
-            if (method_exists($indexDef, 'setFactory')) {
-                $indexDef->setFactory(array(new Reference('fazland_elastica.client'), 'getIndex'));
-            } else {
-                // To be removed when dependency on Symfony DependencyInjection is bumped to 2.6
-                $indexDef->setFactoryService('fazland_elastica.client');
-                $indexDef->setFactoryMethod('getIndex');
-            }
-
             if (isset($index['client'])) {
                 $client = $this->getClient($index['client']);
-
-                if (method_exists($indexDef, 'setFactory')) {
-                    $indexDef->setFactory(array($client, 'getIndex'));
-                } else {
-                    // To be removed when dependency on Symfony DependencyInjection is bumped to 2.6
-                    $indexDef->setFactoryService('fazland_elastica.client');
-                    $indexDef->setFactoryMethod('getIndex');
-                }
+                $indexDef->setFactory(array($client, 'getIndex'));
+            } else {
+                $indexDef->setFactory(array(new Reference('fazland_elastica.client'), 'getIndex'));
             }
 
             $container->setDefinition($indexId, $indexDef);
@@ -230,15 +217,8 @@ class FazlandElasticaExtension extends Extension
 
             $typeId = sprintf('%s.%s', $indexConfig['reference'], $name);
             $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
+            $typeDef->setFactory(array($indexConfig['reference'], 'getType'));
             $typeDef->replaceArgument(0, $name);
-
-            if (method_exists($typeDef, 'setFactory')) {
-                $typeDef->setFactory(array($indexConfig['reference'], 'getType'));
-            } else {
-                // To be removed when dependency on Symfony DependencyInjection is bumped to 2.6
-                $typeDef->setFactoryService((string) $indexConfig['reference']);
-                $typeDef->setFactoryMethod('getType');
-            }
 
             $container->setDefinition($typeId, $typeDef);
 
