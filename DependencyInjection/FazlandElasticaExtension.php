@@ -4,6 +4,7 @@ namespace Fazland\ElasticaBundle\DependencyInjection;
 
 use InvalidArgumentException;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -655,8 +656,7 @@ class FazlandElasticaExtension extends Extension
         $serializer = $container->getDefinition('fazland_elastica.serializer_callback_prototype');
         $serializer->setClass($config['callback_class']);
 
-        $callbackClassImplementedInterfaces = class_implements($config['callback_class']);
-        if (isset($callbackClassImplementedInterfaces['Symfony\Component\DependencyInjection\ContainerAwareInterface'])) {
+        if (is_subclass_of($config['callback_class'], ContainerAwareInterface::class)) {
             $serializer->addMethodCall('setContainer', [new Reference('service_container')]);
         }
 
@@ -685,9 +685,7 @@ class FazlandElasticaExtension extends Extension
             return;
         }
 
-        if (count($this->loadedDrivers) > 1
-            && in_array($defaultManager, $this->loadedDrivers)
-        ) {
+        if (count($this->loadedDrivers) > 1 && in_array($defaultManager, $this->loadedDrivers)) {
             $defaultManagerService = $defaultManager;
         } else {
             $defaultManagerService = $this->loadedDrivers[0];
