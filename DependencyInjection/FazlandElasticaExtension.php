@@ -2,13 +2,14 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection;
 
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use InvalidArgumentException;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\Config\FileLocator;
-use InvalidArgumentException;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class FazlandElasticaExtension extends Extension
 {
@@ -17,14 +18,14 @@ class FazlandElasticaExtension extends Extension
      *
      * @var array
      */
-    private $clients = array();
+    private $clients = [];
 
     /**
      * An array of indexes as configured by the extension.
      *
      * @var array
      */
-    private $indexConfigs = array();
+    private $indexConfigs = [];
 
     /**
      * If we've encountered a type mapped to a specific persistence driver, it will be loaded
@@ -32,7 +33,7 @@ class FazlandElasticaExtension extends Extension
      *
      * @var array
      */
-    private $loadedDrivers = array();
+    private $loadedDrivers = [];
 
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -46,7 +47,7 @@ class FazlandElasticaExtension extends Extension
             return;
         }
 
-        foreach (array('config', 'index', 'persister', 'provider', 'source', 'transformer') as $basename) {
+        foreach (['config', 'index', 'persister', 'provider', 'source', 'transformer'] as $basename) {
             $loader->load(sprintf('%s.xml', $basename));
         }
 
@@ -108,17 +109,17 @@ class FazlandElasticaExtension extends Extension
 
             $logger = $clientConfig['connections'][0]['logger'];
             if (false !== $logger) {
-                $clientDef->addMethodCall('setLogger', array(new Reference($logger)));
+                $clientDef->addMethodCall('setLogger', [new Reference($logger)]);
             }
 
             $clientDef->addTag('fazland_elastica.client');
 
             $container->setDefinition($clientId, $clientDef);
 
-            $this->clients[$name] = array(
+            $this->clients[$name] = [
                 'id' => $clientId,
                 'reference' => new Reference($clientId),
-            );
+            ];
         }
     }
 
@@ -134,7 +135,7 @@ class FazlandElasticaExtension extends Extension
      */
     private function loadIndexes(array $indexes, ContainerBuilder $container)
     {
-        $indexableCallbacks = array();
+        $indexableCallbacks = [];
 
         foreach ($indexes as $name => $index) {
             $indexId = sprintf('fazland_elastica.index.%s', $name);
@@ -142,41 +143,28 @@ class FazlandElasticaExtension extends Extension
 
             $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
             $indexDef->replaceArgument(0, $indexName);
-            $indexDef->addTag('fazland_elastica.index', array(
+            $indexDef->addTag('fazland_elastica.index', [
                 'name' => $name,
-            ));
-
-            if (method_exists($indexDef, 'setFactory')) {
-                $indexDef->setFactory(array(new Reference('fazland_elastica.client'), 'getIndex'));
-            } else {
-                // To be removed when dependency on Symfony DependencyInjection is bumped to 2.6
-                $indexDef->setFactoryService('fazland_elastica.client');
-                $indexDef->setFactoryMethod('getIndex');
-            }
+            ]);
 
             if (isset($index['client'])) {
                 $client = $this->getClient($index['client']);
-
-                if (method_exists($indexDef, 'setFactory')) {
-                    $indexDef->setFactory(array($client, 'getIndex'));
-                } else {
-                    // To be removed when dependency on Symfony DependencyInjection is bumped to 2.6
-                    $indexDef->setFactoryService('fazland_elastica.client');
-                    $indexDef->setFactoryMethod('getIndex');
-                }
+                $indexDef->setFactory([$client, 'getIndex']);
+            } else {
+                $indexDef->setFactory([new Reference('fazland_elastica.client'), 'getIndex']);
             }
 
             $container->setDefinition($indexId, $indexDef);
             $reference = new Reference($indexId);
 
-            $this->indexConfigs[$name] = array(
+            $this->indexConfigs[$name] = [
                 'elasticsearch_name' => $indexName,
                 'reference' => $reference,
                 'name' => $name,
                 'settings' => $index['settings'],
-                'type_prototype' => isset($index['type_prototype']) ? $index['type_prototype'] : array(),
+                'type_prototype' => isset($index['type_prototype']) ? $index['type_prototype'] : [],
                 'use_alias' => $index['use_alias'],
-            );
+            ];
 
             if ($index['finder']) {
                 $this->loadIndexFinder($container, $name, $reference);
@@ -230,25 +218,18 @@ class FazlandElasticaExtension extends Extension
 
             $typeId = sprintf('%s.%s', $indexConfig['reference'], $name);
             $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
+            $typeDef->setFactory([$indexConfig['reference'], 'getType']);
             $typeDef->replaceArgument(0, $name);
-
-            if (method_exists($typeDef, 'setFactory')) {
-                $typeDef->setFactory(array($indexConfig['reference'], 'getType'));
-            } else {
-                // To be removed when dependency on Symfony DependencyInjection is bumped to 2.6
-                $typeDef->setFactoryService((string) $indexConfig['reference']);
-                $typeDef->setFactoryMethod('getType');
-            }
 
             $container->setDefinition($typeId, $typeDef);
 
-            $typeConfig = array(
+            $typeConfig = [
                 'name' => $name,
-                'mapping' => array(), // An array containing anything that gets sent directly to ElasticSearch
-                'config' => array(),
-            );
+                'mapping' => [], // An array containing anything that gets sent directly to ElasticSearch
+                'config' => [],
+            ];
 
-            foreach (array(
+            foreach ([
                 'dynamic_templates',
                 'properties',
                 '_all',
@@ -259,13 +240,13 @@ class FazlandElasticaExtension extends Extension
                 '_source',
                 '_timestamp',
                 '_ttl',
-            ) as $field) {
+            ] as $field) {
                 if (isset($type[$field])) {
                     $typeConfig['mapping'][$field] = $type[$field];
                 }
             }
 
-            foreach (array(
+            foreach ([
                 'persistence',
                 'serializer',
                 'analyzer',
@@ -274,7 +255,7 @@ class FazlandElasticaExtension extends Extension
                 'date_detection',
                 'dynamic_date_formats',
                 'numeric_detection',
-            ) as $field) {
+            ] as $field) {
                 $typeConfig['config'][$field] = array_key_exists($field, $type) ?
                     $type[$field] :
                     null;
@@ -297,18 +278,18 @@ class FazlandElasticaExtension extends Extension
                 $typeSerializerDef = new DefinitionDecorator('fazland_elastica.serializer_callback_prototype');
 
                 if (isset($type['serializer']['groups'])) {
-                    $typeSerializerDef->addMethodCall('setGroups', array($type['serializer']['groups']));
+                    $typeSerializerDef->addMethodCall('setGroups', [$type['serializer']['groups']]);
                 }
 
                 if (isset($type['serializer']['serialize_null'])) {
-                    $typeSerializerDef->addMethodCall('setSerializeNull', array($type['serializer']['serialize_null']));
+                    $typeSerializerDef->addMethodCall('setSerializeNull', [$type['serializer']['serialize_null']]);
                 }
 
                 if (isset($type['serializer']['version'])) {
-                    $typeSerializerDef->addMethodCall('setVersion', array($type['serializer']['version']));
+                    $typeSerializerDef->addMethodCall('setVersion', [$type['serializer']['version']]);
                 }
 
-                $typeDef->addMethodCall('setSerializer', array(array(new Reference($typeSerializerId), 'serialize')));
+                $typeDef->addMethodCall('setSerializer', [[new Reference($typeSerializerId), 'serialize']]);
                 $container->setDefinition($typeSerializerId, $typeSerializerDef);
             }
         }
@@ -366,15 +347,15 @@ class FazlandElasticaExtension extends Extension
         $abstractId = sprintf('fazland_elastica.elastica_to_model_transformer.prototype.%s', $typeConfig['driver']);
         $serviceId = sprintf('fazland_elastica.elastica_to_model_transformer.%s.%s', $indexName, $typeName);
         $serviceDef = new DefinitionDecorator($abstractId);
-        $serviceDef->addTag('fazland_elastica.elastica_to_model_transformer', array('type' => $typeName, 'index' => $indexName));
+        $serviceDef->addTag('fazland_elastica.elastica_to_model_transformer', ['type' => $typeName, 'index' => $indexName]);
 
         // Doctrine has a mandatory service as first argument
         $argPos = ('propel' === $typeConfig['driver']) ? 0 : 1;
 
         $serviceDef->replaceArgument($argPos, $typeConfig['model']);
-        $serviceDef->replaceArgument($argPos + 1, array_merge($typeConfig['elastica_to_model_transformer'], array(
+        $serviceDef->replaceArgument($argPos + 1, array_merge($typeConfig['elastica_to_model_transformer'], [
             'identifier' => $typeConfig['identifier'],
-        )));
+        ]));
         $container->setDefinition($serviceId, $serviceDef);
 
         return $serviceId;
@@ -403,9 +384,9 @@ class FazlandElasticaExtension extends Extension
 
         $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $indexName, $typeName);
         $serviceDef = new DefinitionDecorator($abstractId);
-        $serviceDef->replaceArgument(1, array(
+        $serviceDef->replaceArgument(1, [
             'identifier' => $typeConfig['identifier'],
-        ));
+        ]);
         $serviceDef->replaceArgument(0, $typeRef);
         $container->setDefinition($serviceId, $serviceDef);
 
@@ -430,16 +411,16 @@ class FazlandElasticaExtension extends Extension
             return $typeConfig['persister']['service'];
         }
 
-        $arguments = array(
+        $arguments = [
             $typeRef,
             new Reference($transformerId),
             $typeConfig['model'],
-        );
+        ];
 
         if ($container->hasDefinition('fazland_elastica.serializer_callback_prototype')) {
             $abstractId = 'fazland_elastica.object_serializer_persister';
             $callbackId = sprintf('%s.%s.serializer.callback', $this->indexConfigs[$indexName]['reference'], $typeName);
-            $arguments[] = array(new Reference($callbackId), 'serialize');
+            $arguments[] = [new Reference($callbackId), 'serialize'];
         } else {
             $abstractId = 'fazland_elastica.object_persister';
             $mapping = $this->indexConfigs[$indexName]['types'][$typeName]['mapping'];
@@ -483,14 +464,14 @@ class FazlandElasticaExtension extends Extension
          */
         $providerId = sprintf('fazland_elastica.provider.%s.%s', $indexName, $typeName);
         $providerDef = new DefinitionDecorator('fazland_elastica.provider.prototype.'.$typeConfig['driver']);
-        $providerDef->addTag('fazland_elastica.provider', array('index' => $indexName, 'type' => $typeName));
+        $providerDef->addTag('fazland_elastica.provider', ['index' => $indexName, 'type' => $typeName]);
         $providerDef->replaceArgument(0, new Reference($objectPersisterId));
         $providerDef->replaceArgument(2, $typeConfig['model']);
         // Propel provider can simply ignore Doctrine-specific options
-        $providerDef->replaceArgument(3, array_merge(array_diff_key($typeConfig['provider'], array('service' => 1)), array(
+        $providerDef->replaceArgument(3, array_merge(array_diff_key($typeConfig['provider'], ['service' => 1]), [
             'indexName' => $indexName,
             'typeName' => $typeName,
-        )));
+        ]));
         $container->setDefinition($providerId, $providerDef);
 
         return $providerId;
@@ -520,11 +501,11 @@ class FazlandElasticaExtension extends Extension
         $listenerId = sprintf('fazland_elastica.listener.%s.%s', $indexName, $typeName);
         $listenerDef = new DefinitionDecorator($abstractListenerId);
         $listenerDef->replaceArgument(0, new Reference($objectPersisterId));
-        $listenerDef->replaceArgument(2, array(
+        $listenerDef->replaceArgument(2, [
             'identifier' => $typeConfig['identifier'],
             'indexName' => $indexName,
             'typeName' => $typeName,
-        ));
+        ]);
         $listenerDef->replaceArgument(3, $typeConfig['listener']['logger'] ?
             new Reference($typeConfig['listener']['logger']) :
             null
@@ -545,7 +526,7 @@ class FazlandElasticaExtension extends Extension
 
         if (null !== $tagName) {
             foreach ($this->getDoctrineEvents($typeConfig) as $event) {
-                $listenerDef->addTag($tagName, array('event' => $event));
+                $listenerDef->addTag($tagName, ['event' => $event]);
             }
         }
 
@@ -573,13 +554,13 @@ class FazlandElasticaExtension extends Extension
                 throw new InvalidArgumentException(sprintf('Cannot determine events for driver "%s"', $typeConfig['driver']));
         }
 
-        $events = array();
-        $eventMapping = array(
-            'insert' => array(constant($eventsClass.'::postPersist')),
-            'update' => array(constant($eventsClass.'::postUpdate')),
-            'delete' => array(constant($eventsClass.'::preRemove')),
-            'flush' => array(constant($eventsClass.'::postFlush')),
-        );
+        $events = [];
+        $eventMapping = [
+            'insert' => [constant($eventsClass.'::postPersist')],
+            'update' => [constant($eventsClass.'::postUpdate')],
+            'delete' => [constant($eventsClass.'::preRemove')],
+            'flush' => [constant($eventsClass.'::postFlush')],
+        ];
 
         foreach ($eventMapping as $event => $doctrineEvents) {
             if (isset($typeConfig['listener'][$event]) && $typeConfig['listener'][$event]) {
@@ -675,21 +656,20 @@ class FazlandElasticaExtension extends Extension
         $serializer = $container->getDefinition('fazland_elastica.serializer_callback_prototype');
         $serializer->setClass($config['callback_class']);
 
-        $callbackClassImplementedInterfaces = class_implements($config['callback_class']);
-        if (isset($callbackClassImplementedInterfaces['Symfony\Component\DependencyInjection\ContainerAwareInterface'])) {
-            $serializer->addMethodCall('setContainer', array(new Reference('service_container')));
+        if (is_subclass_of($config['callback_class'], ContainerAwareInterface::class)) {
+            $serializer->addMethodCall('setContainer', [new Reference('service_container')]);
         }
 
         if (isset($config['groups'])) {
-            $serializer->addMethodCall('setGroups', array($config['groups']));
+            $serializer->addMethodCall('setGroups', [$config['groups']]);
         }
 
         if (isset($config['serialize_null'])) {
-            $serializer->addMethodCall('setSerializeNull', array($config['serialize_null']));
+            $serializer->addMethodCall('setSerializeNull', [$config['serialize_null']]);
         }
 
         if (isset($config['version'])) {
-            $serializer->addMethodCall('setVersion', array($config['version']));
+            $serializer->addMethodCall('setVersion', [$config['version']]);
         }
     }
 
@@ -705,9 +685,7 @@ class FazlandElasticaExtension extends Extension
             return;
         }
 
-        if (count($this->loadedDrivers) > 1
-            && in_array($defaultManager, $this->loadedDrivers)
-        ) {
+        if (count($this->loadedDrivers) > 1 && in_array($defaultManager, $this->loadedDrivers)) {
             $defaultManagerService = $defaultManager;
         } else {
             $defaultManagerService = $this->loadedDrivers[0];
@@ -721,9 +699,9 @@ class FazlandElasticaExtension extends Extension
      *
      * @param string $clientName
      *
+     * @throws \InvalidArgumentException
      * @return Reference
      *
-     * @throws \InvalidArgumentException
      */
     private function getClient($clientName)
     {

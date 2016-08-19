@@ -3,20 +3,19 @@
 namespace Fazland\ElasticaBundle\Provider;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * References persistence providers for each index and type.
  */
 class ProviderRegistry implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
-     * @var ContainerInterface
+     * @var array
      */
-    private $container;
-    
-    /** @var array */
-    private $providers = array();
+    private $providers = [];
 
     /**
      * Registers a provider for the specified index and type.
@@ -28,7 +27,7 @@ class ProviderRegistry implements ContainerAwareInterface
     public function addProvider($index, $type, $providerId)
     {
         if (!isset($this->providers[$index])) {
-            $this->providers[$index] = array();
+            $this->providers[$index] = [];
         }
 
         $this->providers[$index][$type] = $providerId;
@@ -43,7 +42,7 @@ class ProviderRegistry implements ContainerAwareInterface
      */
     public function getAllProviders()
     {
-        $providers = array();
+        $providers = [];
 
         foreach ($this->providers as $index => $indexProviders) {
             foreach ($indexProviders as $type => $providerId) {
@@ -61,9 +60,8 @@ class ProviderRegistry implements ContainerAwareInterface
      *
      * @param string $index
      *
-     * @return ProviderInterface[]
-     *
      * @throws \InvalidArgumentException if no providers were registered for the index
+     * @return ProviderInterface[]
      */
     public function getIndexProviders($index)
     {
@@ -71,7 +69,7 @@ class ProviderRegistry implements ContainerAwareInterface
             throw new \InvalidArgumentException(sprintf('No providers were registered for index "%s".', $index));
         }
 
-        $providers = array();
+        $providers = [];
 
         foreach ($this->providers[$index] as $type => $providerId) {
             $providers[$type] = $this->container->get($providerId);
@@ -86,9 +84,8 @@ class ProviderRegistry implements ContainerAwareInterface
      * @param string $index
      * @param string $type
      *
-     * @return ProviderInterface
-     *
      * @throws \InvalidArgumentException if no provider was registered for the index and type
+     * @return ProviderInterface
      */
     public function getProvider($index, $type)
     {
@@ -97,13 +94,5 @@ class ProviderRegistry implements ContainerAwareInterface
         }
 
         return $this->container->get($this->providers[$index][$type]);
-    }
-
-    /**
-     * @see Symfony\Component\DependencyInjection\ContainerAwareInterface::setContainer()
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
     }
 }

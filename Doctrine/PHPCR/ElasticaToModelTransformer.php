@@ -22,8 +22,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
     {
         return $this->registry
             ->getManager()
-            ->getRepository($this->objectClass)
-            ->findMany($identifierValues)
+            ->findMany($this->objectClass, $identifierValues)
             ->toArray();
     }
 }

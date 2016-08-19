@@ -80,14 +80,18 @@ abstract class AbstractProvider extends BaseAbstractProvider
     protected function doPopulate($options, \Closure $loggerClosure = null)
     {
         $manager = $this->managerRegistry->getManagerForClass($this->objectClass);
+        $offset = $options['offset'];
 
         $queryBuilder = $this->createQueryBuilder($options['query_builder_method']);
         $nbObjects = $this->countObjects($queryBuilder);
-        $offset = $options['offset'];
+
+        $countObjects = max(0, $nbObjects - $offset);
 
         $objects = array();
         for (; $offset < $nbObjects; $offset += $options['batch_size']) {
             $sliceSize = $options['batch_size'];
+            $errorMessage = null;
+
             try {
                 $objects = $this->getSlice($queryBuilder, $options['batch_size'], $offset, $objects);
                 $sliceSize = count($objects);
@@ -102,11 +106,7 @@ abstract class AbstractProvider extends BaseAbstractProvider
                 }
 
                 if (null !== $loggerClosure) {
-                    $loggerClosure(
-                        $options['batch_size'],
-                        $nbObjects,
-                        sprintf('<error>%s</error>', $e->getMessage())
-                    );
+                    $errorMessage = $e->getMessage();
                 }
             }
 
@@ -117,7 +117,7 @@ abstract class AbstractProvider extends BaseAbstractProvider
             usleep($options['sleep']);
 
             if (null !== $loggerClosure) {
-                $loggerClosure($sliceSize, $nbObjects);
+                $loggerClosure($sliceSize, $countObjects, $errorMessage);
             }
         }
     }
