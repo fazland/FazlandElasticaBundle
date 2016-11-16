@@ -308,11 +308,13 @@ class FazlandElasticaExtension extends Extension
     {
         if (isset($typeConfig['driver'])) {
             $this->loadDriver($container, $typeConfig['driver']);
+            $elasticaToModelTransformerId = $this->loadElasticaToModelTransformer($typeConfig, $container, $indexName, $typeName);
+            $modelToElasticaTransformerId = $this->loadModelToElasticaTransformer($typeConfig, $container, $typeRef, $indexName, $typeName);
+            $objectPersisterId = $this->loadObjectPersister($typeConfig, $typeRef, $container, $indexName, $typeName, $modelToElasticaTransformerId);
+        } else {
+            $elasticaToModelTransformerId = null;
+            $objectPersisterId = null;
         }
-
-        $elasticaToModelTransformerId = $this->loadElasticaToModelTransformer($typeConfig, $container, $indexName, $typeName);
-        $modelToElasticaTransformerId = $this->loadModelToElasticaTransformer($typeConfig, $container, $typeRef, $indexName, $typeName);
-        $objectPersisterId = $this->loadObjectPersister($typeConfig, $typeRef, $container, $indexName, $typeName, $modelToElasticaTransformerId);
 
         if (isset($typeConfig['provider'])) {
             $this->loadTypeProvider($typeConfig, $container, $objectPersisterId, $indexName, $typeName);
@@ -604,9 +606,11 @@ class FazlandElasticaExtension extends Extension
         $container->getDefinition('fazland_elastica.repository_manager')
             ->addMethodCall('addType', $arguments);
 
-        $managerId = sprintf('fazland_elastica.manager.%s', $typeConfig['driver']);
-        $container->getDefinition($managerId)
-            ->addMethodCall('addEntity', [$typeConfig['model'], $indexTypeName]);
+        if (isset($typeConfig['driver'])) {
+            $managerId = sprintf('fazland_elastica.manager.%s', $typeConfig['driver']);
+            $container->getDefinition($managerId)
+                ->addMethodCall('addEntity', [$typeConfig['model'], $indexTypeName]);
+        }
 
         return $finderId;
     }
