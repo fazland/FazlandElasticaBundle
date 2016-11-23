@@ -10,5 +10,5 @@ Fazland\ElasticaBundle\Tests\Functional\TypeObj:
             groups: [ elasticadefault ]
     virtualProperties:
         getSerializableColl:
-            serializedName: coll
+            serialized_name: coll
             type: array
