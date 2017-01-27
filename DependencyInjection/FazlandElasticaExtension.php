@@ -2,14 +2,14 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection;
 
-use InvalidArgumentException;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\Config\FileLocator;
+use InvalidArgumentException;
 
 class FazlandElasticaExtension extends Extension
 {
@@ -142,6 +142,7 @@ class FazlandElasticaExtension extends Extension
             $indexName = isset($index['index_name']) ? $index['index_name'] : $name;
 
             $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
+            $indexDef->setFactory(array(new Reference('fazland_elastica.client'), 'getIndex'));
             $indexDef->replaceArgument(0, $indexName);
             $indexDef->addTag('fazland_elastica.index', [
                 'name' => $name,
@@ -149,9 +150,8 @@ class FazlandElasticaExtension extends Extension
 
             if (isset($index['client'])) {
                 $client = $this->getClient($index['client']);
-                $indexDef->setFactory([$client, 'getIndex']);
-            } else {
-                $indexDef->setFactory([new Reference('fazland_elastica.client'), 'getIndex']);
+
+                $indexDef->setFactory(array($client, 'getIndex'));
             }
 
             $container->setDefinition($indexId, $indexDef);
@@ -218,7 +218,7 @@ class FazlandElasticaExtension extends Extension
 
             $typeId = sprintf('%s.%s', $indexConfig['reference'], $name);
             $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
-            $typeDef->setFactory([$indexConfig['reference'], 'getType']);
+            $typeDef->setFactory(array($indexConfig['reference'], 'getType'));
             $typeDef->replaceArgument(0, $name);
 
             $container->setDefinition($typeId, $typeDef);
@@ -267,6 +267,11 @@ class FazlandElasticaExtension extends Extension
                 $this->loadTypePersistenceIntegration($type['persistence'], $container, new Reference($typeId), $indexName, $name);
 
                 $typeConfig['persistence'] = $type['persistence'];
+            }
+
+            if (isset($type['_parent'])) {
+                // _parent mapping cannot contain `property` and `identifier`, so removing them after building `persistence`
+                unset($indexConfig['types'][$name]['mapping']['_parent']['property'], $indexConfig['types'][$name]['mapping']['_parent']['identifier']);
             }
 
             if (isset($type['indexable_callback'])) {

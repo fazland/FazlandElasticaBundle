@@ -250,7 +250,7 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
      */
     private function getMockIndexable($indexName, $typeName, $object, $return = null)
     {
-        $mock = $this->getMock('Fazland\ElasticaBundle\Provider\IndexableInterface');
+        $mock = $this->getMockBuilder('Fazland\ElasticaBundle\Provider\IndexableInterface')->getMock();
 
         if (null !== $return) {
             $mock->expects($this->once())

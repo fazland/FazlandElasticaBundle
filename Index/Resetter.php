@@ -89,12 +89,12 @@ class Resetter
         $indexConfig = $this->configManager->getIndexConfiguration($indexName);
         $index = $this->indexManager->getIndex($indexName);
 
-        $event = new IndexResetEvent($indexName, $populating, $force);
-        $this->dispatcher->dispatch(IndexResetEvent::PRE_INDEX_RESET, $event);
-
         if ($indexConfig->isUseAlias()) {
             $this->aliasProcessor->setRootName($indexConfig, $index);
         }
+
+        $event = new IndexResetEvent($indexName, $populating, $force);
+        $this->dispatcher->dispatch(IndexResetEvent::PRE_INDEX_RESET, $event);
 
         $mapping = $this->mappingBuilder->buildIndexMapping($indexConfig);
         $index->create($mapping, true);
@@ -128,6 +128,7 @@ class Resetter
         $this->dispatcher->dispatch(TypeResetEvent::PRE_TYPE_RESET, $event);
 
         if (!empty($settings)) {
+            unset($settings['number_of_shards']);
             $index->close();
             $index->setSettings($settings);
             $index->open();

@@ -16,7 +16,7 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
 
     protected function collectionSetup()
     {
-        $transformer1 = $this->getMock('Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface');
+        $transformer1 = $this->getMockBuilder('Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface')->getMock();
         $transformer1->expects($this->any())
             ->method('getObjectClass')
             ->will($this->returnValue('Fazland\ElasticaBundle\Tests\Transformer\POPO'));
@@ -25,7 +25,7 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
             ->method('getIdentifierField')
             ->will($this->returnValue('id'));
 
-        $transformer2 = $this->getMock('Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface');
+        $transformer2 = $this->getMockBuilder('Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface')->getMock();
         $transformer2->expects($this->any())
             ->method('getObjectClass')
             ->will($this->returnValue('Fazland\ElasticaBundle\Tests\Transformer\POPO2'));
@@ -100,6 +100,32 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
         ), $results);
     }
 
+    public function testTransformOrderWithIdAsObject()
+    {
+        $this->collectionSetup();
+
+        $id1 = 'yo';
+        $id2 = 'lo';
+        $idObject1 = new IDObject($id1);
+        $idObject2 = new IDObject($id2);
+        $document1 = new Document($idObject1, array('data' => 'lots of data'), 'type1');
+        $document2 = new Document($idObject2, array('data' => 'not so much data'), 'type1');
+        $result1 = new POPO($idObject1, 'lots of data');
+        $result2 = new POPO2($idObject2, 'not so much data');
+
+        $this->transformers['type1']->expects($this->once())
+         ->method('transform')
+         ->with(array($document1, $document2))
+         ->will($this->returnValue(array($result1, $result2)));
+
+        $results = $this->collection->transform(array($document1, $document2));
+
+        $this->assertEquals(array(
+            $result1,
+            $result2,
+        ), $results);
+    }
+
     public function testGetIdentifierFieldReturnsAMapOfIdentifiers()
     {
         $collection = new ElasticaToModelTransformerCollection(array());
@@ -130,7 +156,7 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
      */
     public function testHybridTransformDecoratesResultsWithHybridResultObjects($result, $transformedObject)
     {
-        $transformer = $this->getMock('Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface');
+        $transformer = $this->getMockBuilder('Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface')->getMock();
         $transformer->expects($this->any())->method('getIdentifierField')->will($this->returnValue('id'));
 
         $transformer
@@ -158,7 +184,7 @@ class POPO
     public $data;
 
     /**
-     * @param integer $id
+     * @param mixed $id
      */
     public function __construct($id, $data)
     {
@@ -174,4 +200,22 @@ class POPO
 
 class POPO2 extends POPO
 {
+}
+
+class IDObject
+{
+    protected $id;
+
+    /**
+     * @param int|string $id
+     */
+    public function __construct($id)
+    {
+        $this->id = $id;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->id;
+    }
 }

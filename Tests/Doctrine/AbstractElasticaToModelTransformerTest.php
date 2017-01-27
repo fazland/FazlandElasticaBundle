@@ -4,6 +4,7 @@ namespace Fazland\ElasticaBundle\Tests\Doctrine;
 
 use Elastica\Result;
 use Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer;
+use Fazland\ElasticaBundle\Transformer\HighlightableModelInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
@@ -18,16 +19,22 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
      */
     protected $objectClass = 'stdClass';
 
+    protected function setUp()
+    {
+        $this->registry = $this->getMockBuilder('Doctrine\Common\Persistence\ManagerRegistry')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
     /**
      * Tests if ignore_missing option is properly handled in transformHybrid() method.
      */
     public function testIgnoreMissingOptionDuringTransformHybrid()
     {
-        $transformer = $this->getMock(
-            'Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer',
-            array('findByIdentifiers'),
-            array($this->registry, $this->objectClass, array('ignore_missing' => true))
-        );
+        $transformer = $this->getMockBuilder('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer')
+            ->setMethods(array('findByIdentifiers'))
+            ->setConstructorArgs(array($this->registry, $this->objectClass, array('ignore_missing' => true)))
+            ->getMock();
 
         $transformer->setPropertyAccessor(PropertyAccess::createPropertyAccessor());
 
@@ -53,10 +60,213 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($thirdElasticaResult, $hybridResults[1]->getResult());
     }
 
-    protected function setUp()
+    public function testObjectClassCanBeSet()
     {
-        $this->registry = $this->getMockBuilder('Doctrine\Common\Persistence\ManagerRegistry')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $transformer = $this->createMockTransformer();
+        $this->assertEquals('Fazland\ElasticaBundle\Tests\Doctrine\Foo', $transformer->getObjectClass());
+    }
+
+    public function resultsWithMatchingObjects()
+    {
+        $elasticaResults = $doctrineObjects = array();
+        for ($i=1; $i<4; $i++) {
+            $elasticaResults[] = new Result(array('_id' => $i, 'highlight' => array('foo')));
+            $doctrineObjects[] = new Foo($i);
+        }
+
+        return array(
+            array($elasticaResults, $doctrineObjects)
+        );
+    }
+
+    /**
+     * @dataProvider resultsWithMatchingObjects
+     */
+    public function testObjectsAreTransformedByFindingThemByTheirIdentifiers($elasticaResults, $doctrineObjects)
+    {
+        $transformer = $this->createMockTransformer();
+
+        $transformer
+            ->expects($this->once())
+            ->method('findByIdentifiers')
+            ->with($this->equalTo(array(1, 2, 3)), $this->isType('boolean'))
+            ->will($this->returnValue($doctrineObjects));
+
+        $transformedObjects = $transformer->transform($elasticaResults);
+
+        $this->assertEquals($doctrineObjects, $transformedObjects);
+    }
+
+    /**
+     * @dataProvider resultsWithMatchingObjects
+     */
+    public function testAnExceptionIsThrownWhenTheNumberOfFoundObjectsIsLessThanTheNumberOfResults(
+        $elasticaResults,
+        $doctrineObjects
+    ) {
+        $transformer = $this->createMockTransformer();
+
+        $transformer
+            ->expects($this->once())
+            ->method('findByIdentifiers')
+            ->with($this->equalTo(array(1, 2, 3)), $this->isType('boolean'))
+            ->will($this->returnValue(array()));
+
+        $this->setExpectedException(
+            '\RuntimeException',
+            'Cannot find corresponding Doctrine objects (0) for all Elastica results (3). IDs: 1, 2, 3'
+        );
+
+        $transformer->transform($elasticaResults);
+    }
+
+    /**
+     * @dataProvider resultsWithMatchingObjects
+     */
+    public function testAnExceptionIsNotThrownWhenTheNumberOfFoundObjectsIsLessThanTheNumberOfResultsIfOptionSet(
+        $elasticaResults,
+        $doctrineObjects
+    ) {
+        $transformer = $this->createMockTransformer(array('ignore_missing' => true));
+
+        $transformer
+            ->expects($this->once())
+            ->method('findByIdentifiers')
+            ->with($this->equalTo(array(1, 2, 3)), $this->isType('boolean'))
+            ->will($this->returnValue(array()));
+
+        $results = $transformer->transform($elasticaResults);
+
+        $this->assertEquals(array(), $results);
+    }
+
+    /**
+     * @dataProvider resultsWithMatchingObjects
+     */
+    public function testHighlightsAreSetOnTransformedObjects($elasticaResults, $doctrineObjects)
+    {
+        $transformer = $this->createMockTransformer();
+
+        $transformer
+            ->expects($this->once())
+            ->method('findByIdentifiers')
+            ->with($this->equalTo(array(1, 2, 3)), $this->isType('boolean'))
+            ->will($this->returnValue($doctrineObjects));
+
+        $results = $transformer->transform($elasticaResults);
+
+        foreach($results as $result) {
+            $this->assertInternalType('array', $result->highlights);
+            $this->assertNotEmpty($result->highlights);
+        }
+    }
+
+    /**
+     * @dataProvider resultsWithMatchingObjects
+     */
+    public function testResultsAreSortedByIdentifier($elasticaResults, $doctrineObjects)
+    {
+        rsort($doctrineObjects);
+
+        $transformer = $this->createMockTransformer();
+
+        $transformer
+            ->expects($this->once())
+            ->method('findByIdentifiers')
+            ->with($this->equalTo(array(1, 2, 3)), $this->isType('boolean'))
+            ->will($this->returnValue($doctrineObjects));
+
+        $results = $transformer->transform($elasticaResults);
+
+        $this->assertSame($doctrineObjects[2], $results[0]);
+        $this->assertSame($doctrineObjects[1], $results[1]);
+        $this->assertSame($doctrineObjects[0], $results[2]);
+    }
+
+    /**
+     * @dataProvider resultsWithMatchingObjects
+     */
+    public function testHybridTransformReturnsDecoratedResults($elasticaResults, $doctrineObjects)
+    {
+        $transformer = $this->createMockTransformer();
+
+        $transformer
+            ->expects($this->once())
+            ->method('findByIdentifiers')
+            ->with($this->equalTo(array(1, 2, 3)), $this->isType('boolean'))
+            ->will($this->returnValue($doctrineObjects));
+
+        $results = $transformer->hybridTransform($elasticaResults);
+
+        $this->assertNotEmpty($results);
+
+        foreach ($results as $key => $result) {
+            $this->assertInstanceOf('Fazland\ElasticaBundle\HybridResult', $result);
+            $this->assertSame($elasticaResults[$key], $result->getResult());
+            $this->assertSame($doctrineObjects[$key], $result->getTransformed());
+        }
+    }
+
+    public function testIdentifierFieldDefaultsToId()
+    {
+        $transformer = $this->createMockTransformer();
+        $this->assertEquals('id', $transformer->getIdentifierField());
+    }
+
+    private function createMockPropertyAccessor()
+    {
+        $callback = function ($object, $identifier) {
+            return $object->$identifier;
+        };
+
+        $propertyAccessor = $this->getMockBuilder('Symfony\Component\PropertyAccess\PropertyAccessorInterface')->getMock();
+        $propertyAccessor
+            ->expects($this->any())
+            ->method('getValue')
+            ->with($this->isType('object'), $this->isType('string'))
+            ->will($this->returnCallback($callback));
+
+        return $propertyAccessor;
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|\Fazland\ElasticaBundle\Doctrine\AbstractElasticaToModelTransformer
+     */
+    private function createMockTransformer($options = array())
+    {
+        $objectClass = 'Fazland\ElasticaBundle\Tests\Doctrine\Foo';
+        $propertyAccessor = $this->createMockPropertyAccessor();
+
+        $transformer = $this->getMockForAbstractClass(
+            'Fazland\ElasticaBundle\Doctrine\AbstractElasticaToModelTransformer',
+            array($this->registry, $objectClass, $options)
+        );
+
+        $transformer->setPropertyAccessor($propertyAccessor);
+
+        return $transformer;
+    }
+}
+
+class Foo implements HighlightableModelInterface
+{
+    public $id;
+    public $highlights;
+
+    public function __construct($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setElasticHighlights(array $highlights)
+    {
+        $this->highlights = $highlights;
     }
 }

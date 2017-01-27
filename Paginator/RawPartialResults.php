@@ -41,18 +41,6 @@ class RawPartialResults implements PartialResultsInterface
     /**
      * {@inheritDoc}
      */
-    public function getFacets()
-    {
-        if ($this->resultSet->hasFacets()) {
-            return $this->resultSet->getFacets();
-        }
-
-        return;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getAggregations()
     {
         if ($this->resultSet->hasAggregations()) {

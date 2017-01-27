@@ -3,6 +3,7 @@
 namespace Fazland\ElasticaBundle\Finder;
 
 use Elastica\Document;
+use Fazland\ElasticaBundle\Paginator\HybridPaginatorAdapter;
 use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 use Fazland\ElasticaBundle\Paginator\TransformedPaginatorAdapter;
 use Fazland\ElasticaBundle\Paginator\FantaPaginatorAdapter;
@@ -99,5 +100,15 @@ class TransformedFinder implements PaginatedFinderInterface
         $query = Query::create($query);
 
         return new TransformedPaginatorAdapter($this->searchable, $query, $options, $this->transformer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createHybridPaginatorAdapter($query)
+    {
+        $query = Query::create($query);
+
+        return new HybridPaginatorAdapter($this->searchable, $query, $this->transformer);
     }
 }

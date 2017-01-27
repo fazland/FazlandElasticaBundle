@@ -1,7 +1,10 @@
 CHANGELOG for 3.2.x
 ===================
 
-* 3.2.0 (Unreleased)
+This changelog references the relevant changes (bug and security fixes) done
+in 3.2 versions.
+
+* 3.2.0 (2016-08-04)
 
  * Allow driverless type definitions #953
  * Change Elastica constraints to allow ~2.1 as Elastica now follows semver
@@ -17,3 +20,5 @@ CHANGELOG for 3.2.x
  * Add Elastica compression option
  * Add support for `defaultSortFieldName` and `defaultSortDirection` pagination options
  * Removed `immediate` option on type persistence configuration
+ * Enable pagination of hybrid results
+ * Add Symfony Serializer support

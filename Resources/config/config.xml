@@ -34,6 +34,9 @@
         </service>
 
         <service id="fazland_elastica.paginator.subscriber" class="Fazland\ElasticaBundle\Subscriber\PaginateElasticaQuerySubscriber">
+            <call method="setRequest">
+                <argument type="service" id="request_stack" on-invalid="null" />
+            </call>
             <tag name="knp_paginator.subscriber" />
         </service>
 

@@ -82,8 +82,6 @@ class RepositoryManager implements RepositoryManagerInterface
      * @param $typeName
      *
      * @return mixed
-     * @internal param string $entityName
-     *
      */
     private function createRepository($typeName)
     {

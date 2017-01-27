@@ -17,14 +17,14 @@ class ResetCommandTest extends \PHPUnit_Framework_TestCase
     {
         $container = new Container();
 
-        $this->resetter = $this->getMockBuilder('\Fazland\ElasticaBundle\Resetter')
+        $this->resetter = $this->getMockBuilder('\Fazland\ElasticaBundle\Index\Resetter')
             ->disableOriginalConstructor()
             ->setMethods(array('resetIndex', 'resetIndexType'))
             ->getMock();
 
         $container->set('fazland_elastica.resetter', $this->resetter);
 
-        $this->indexManager = $this->getMockBuilder('\Fazland\ElasticaBundle\IndexManager')
+        $this->indexManager = $this->getMockBuilder('\Fazland\ElasticaBundle\Index\IndexManager')
             ->disableOriginalConstructor()
             ->setMethods(array('getAllIndexes'))
             ->getMock();

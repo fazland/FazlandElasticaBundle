@@ -13,7 +13,7 @@
         { "name": "Giovanni Albero", "email": "giovanni.albero@fazland.com" }
     ],
     "require": {
-        "php": ">=5.5.0",
+        "php": "^7.0",
         "symfony/framework-bundle": "~2.7|~3.0",
         "symfony/console": "~2.7|~3.0",
         "symfony/form": "~2.7|~3.0",
@@ -22,19 +22,25 @@
         "ruflin/elastica": "3.2.*"
     },
     "require-dev":{
+        "doctrine/doctrine-bundle": "~1.6",
         "doctrine/orm": "~2.4",
-        "doctrine/doctrine-bundle": "~1.2",
         "doctrine/phpcr-bundle": "~1.2",
         "jackalope/jackalope-doctrine-dbal": "~1.1",
-        "jms/serializer-bundle": "@stable",
-        "phpunit/phpunit": "~4.8",
-        "propel/propel1": "1.6.*",
-        "pagerfanta/pagerfanta": "~1.0",
+        "jms/serializer-bundle": "~1.1",
         "knplabs/knp-components": "~1.2",
         "knplabs/knp-paginator-bundle": "~2.4",
-        "symfony/browser-kit" : "~2.7|~3.0",
-        "symfony/expression-language" : "~2.7|~3.0",
-        "symfony/twig-bundle": "~2.7|~3.0"
+        "pagerfanta/pagerfanta": "~1.0",
+        "phpunit/phpunit": "~4.8|~5.0",
+        "propel/propel1": "1.6.*",
+        "symfony/asset": "~2.7|~3.0",
+        "symfony/browser-kit": "~2.7|~3.0",
+        "symfony/dependency-injection": "~2.7|~3.0",
+        "symfony/expression-language": "~2.7|~3.0",
+        "symfony/serializer": "~2.7|~3.0",
+        "symfony/templating": "~2.7|~3.0",
+        "symfony/translation": "~2.7|~3.0",
+        "symfony/twig-bundle": "~2.7|~3.0",
+        "symfony/yaml": "~2.7|~3.0"
     },
     "autoload": {
         "psr-4": { "Fazland\\ElasticaBundle\\": "" }

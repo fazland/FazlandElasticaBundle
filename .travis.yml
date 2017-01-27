@@ -12,19 +12,18 @@ addons:
       elasticsearch
 
 php:
-  - 5.5
-  - 5.6
   - 7.0
+  - 7.1
   - hhvm
 
 matrix:
   include:
-    - php: 5.6
+    - php: 7.0
       env: SYMFONY_VERSION='2.7.*'
-    - php: 5.6
+    - php: 7.0
       env: SYMFONY_VERSION='2.8.*'
-    - php: 5.6
-      env: SYMFONY_VERSION='3.0.*'
+    - php: 7.0
+      env: SYMFONY_VERSION='^3.0'
   allow_failures:
     - php: hhvm
   fast_finish: true

@@ -2,76 +2,289 @@
 
 namespace Fazland\ElasticaBundle\Tests\Subscriber;
 
-use Elastica\Aggregation\Terms;
 use Elastica\Query;
+use Fazland\ElasticaBundle\Paginator\PartialResultsInterface;
 use Fazland\ElasticaBundle\Paginator\RawPaginatorAdapter;
 use Fazland\ElasticaBundle\Subscriber\PaginateElasticaQuerySubscriber;
-use Knp\Component\Pager\Event\PaginationEvent;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Knp\Component\Pager\Paginator;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\HttpFoundation\Request;
 
 class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
 {
-    public function testShouldPaginate()
+    protected function getAdapterMock()
+    {
+        return $this->getMockBuilder(RawPaginatorAdapter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    protected function getResultSetMock()
+    {
+        return $this->getMockBuilder(PartialResultsInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    public function testShouldDoNothingIfSortParamIsEmpty()
+    {
+        $request = new Request();
+
+        $subscriber = new PaginateElasticaQuerySubscriber();
+        $subscriber->setRequest($request);
+
+        $adapter = $this->getAdapterMock();
+        $adapter->expects($this->never())
+            ->method('getQuery');
+        $adapter->method('getResults')
+            ->willReturn($this->getResultSetMock());
+
+        $event = new ItemsEvent(0, 10);
+        $event->target = $adapter;
+
+        $subscriber->items($event);
+    }
+
+    public function sortCases()
+    {
+        $tests = [];
+
+        $expected = [
+            'createdAt' => [
+                'order' => 'asc',
+                'ignore_unmapped' => true
+            ]
+        ];
+        $tests[] = [$expected, new Request()];
+
+        $expected = [
+            'name' => [
+                'order' => 'desc',
+                'ignore_unmapped' => true
+            ]
+        ];
+        $tests[] = [$expected, new Request(['ord' => 'name', 'az' => 'desc'])];
+
+        $expected = [
+            'updatedAt' => [
+                'order' => 'asc',
+                'ignore_unmapped' => true
+            ]
+        ];
+        $tests[] = [$expected, new Request(['ord' => 'updatedAt', 'az' => 'invalid'])];
+
+        return $tests;
+    }
+
+    /**
+     * @dataProvider sortCases
+     */
+    public function testShouldSort(array $expected, Request $request)
     {
         $subscriber = new PaginateElasticaQuerySubscriber();
-        $subscriber->setRequest(new Request());
+        $subscriber->setRequest($request);
 
-        $dispatcher = new EventDispatcher();
-        $dispatcher->addSubscriber($subscriber);
-        $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
-        $p = new Paginator($dispatcher);
+        $query = new Query();
+        $adapter = $this->getAdapterMock();
+        $adapter->method('getQuery')
+            ->willReturn($query);
 
-        $searchable = $this->getMockBuilder('Elastica\SearchableInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $adapter->method('getResults')
+            ->willReturn($this->getResultSetMock());
 
-        $self = $this;
-        $resultSet = $this->getMockBuilder('Elastica\ResultSet')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $event = new ItemsEvent(0, 10);
+        $event->target = $adapter;
+        $event->options = [
+            'defaultSortFieldName' => 'createdAt',
+            'sortFieldParameterName' => 'ord',
+            'sortDirectionParameterName' => 'az',
+        ];
 
-        $resultSet->expects($this->any())
-            ->method('getTotalHits')
-            ->willReturn(100);
-        $resultSet->expects($this->any())
-            ->method('getResults')
-            ->willReturn([]);
+        $subscriber->items($event);
 
-        $searchable->expects($this->once())
-            ->method('search')
-            ->willReturnCallback(function (Query $query) use ($self, $resultSet) {
-                $self->assertEquals(80, $query->getParam('from'));
-                $self->assertEquals(20, $query->getParam('size'));
-
-                return $resultSet;
-            });
-
-        $q = new Query(new Query\MatchAll());
-        $q->addAggregation(new Terms('term_agg'));
-
-        $adapter = new RawPaginatorAdapter($searchable, $q);
-
-        $p->paginate($adapter, 5, 20);
-    }
-}
-
-
-class MockPaginationSubscriber implements EventSubscriberInterface
-{
-    static function getSubscribedEvents()
-    {
-        return array(
-            'knp_pager.pagination' => array('pagination', 0)
-        );
+        $this->assertEquals($expected, $query->getParam('sort'));
     }
 
-    function pagination(PaginationEvent $e)
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testShouldThrowIfFieldIsNotWhitelisted()
     {
-        $e->setPagination(new SlidingPagination());
-        $e->stopPropagation();
+        $subscriber = new PaginateElasticaQuerySubscriber();
+        $subscriber->setRequest(new Request(['ord' => 'owner']));
+
+        $query = new Query();
+        $adapter = $this->getAdapterMock();
+        $adapter->method('getQuery')
+            ->willReturn($query);
+
+        $adapter->method('getResults')
+            ->willReturn($this->getResultSetMock());
+
+        $event = new ItemsEvent(0, 10);
+        $event->target = $adapter;
+        $event->options = [
+            'defaultSortFieldName' => 'createdAt',
+            'sortFieldParameterName' => 'ord',
+            'sortDirectionParameterName' => 'az',
+            'sortFieldWhitelist' => ['createdAt', 'updatedAt'],
+        ];
+
+        $subscriber->items($event);
+    }
+
+    public function testShouldAddNestedPath()
+    {
+        $subscriber = new PaginateElasticaQuerySubscriber();
+        $subscriber->setRequest(new Request(['ord' => 'owner.name']));
+
+        $query = new Query();
+        $adapter = $this->getAdapterMock();
+        $adapter->method('getQuery')
+            ->willReturn($query);
+
+        $adapter->method('getResults')
+            ->willReturn($this->getResultSetMock());
+
+        $event = new ItemsEvent(0, 10);
+        $event->target = $adapter;
+        $event->options = [
+            'defaultSortFieldName' => 'createdAt',
+            'sortFieldParameterName' => 'ord',
+            'sortDirectionParameterName' => 'az',
+            'sortNestedPath' => 'owner',
+        ];
+
+        $subscriber->items($event);
+        $this->assertEquals([
+            'owner.name' => [
+                'order' => 'asc',
+                'ignore_unmapped' => true,
+                'nested_path' => 'owner',
+            ]
+        ], $query->getParam('sort'));
+    }
+
+    public function testShouldInvokeCallableNestedPath()
+    {
+        $subscriber = new PaginateElasticaQuerySubscriber();
+        $subscriber->setRequest(new Request(['ord' => 'owner.name']));
+
+        $query = new Query();
+        $adapter = $this->getAdapterMock();
+        $adapter->method('getQuery')
+            ->willReturn($query);
+
+        $adapter->method('getResults')
+            ->willReturn($this->getResultSetMock());
+
+        $event = new ItemsEvent(0, 10);
+        $event->target = $adapter;
+        $event->options = [
+            'defaultSortFieldName' => 'createdAt',
+            'sortFieldParameterName' => 'ord',
+            'sortDirectionParameterName' => 'az',
+            'sortNestedPath' => function ($sortField) {
+                $this->assertEquals('owner.name', $sortField);
+                return 'owner';
+            },
+        ];
+
+        $subscriber->items($event);
+        $this->assertEquals([
+            'owner.name' => [
+                'order' => 'asc',
+                'ignore_unmapped' => true,
+                'nested_path' => 'owner',
+            ]
+        ], $query->getParam('sort'));
+    }
+
+    public function testShouldAddNestedFilter()
+    {
+        $subscriber = new PaginateElasticaQuerySubscriber();
+        $subscriber->setRequest(new Request(['ord' => 'owner.name']));
+
+        $query = new Query();
+        $adapter = $this->getAdapterMock();
+        $adapter->method('getQuery')
+            ->willReturn($query);
+
+        $adapter->method('getResults')
+            ->willReturn($this->getResultSetMock());
+
+        $event = new ItemsEvent(0, 10);
+        $event->target = $adapter;
+        $event->options = [
+            'defaultSortFieldName' => 'createdAt',
+            'sortFieldParameterName' => 'ord',
+            'sortDirectionParameterName' => 'az',
+            'sortNestedPath' => 'owner',
+            'sortNestedFilter' => new Query\Term(['enabled' => ['value' => true]]),
+        ];
+
+        $subscriber->items($event);
+        $this->assertEquals([
+            'sort' => [
+                'owner.name' => [
+                    'order' => 'asc',
+                    'ignore_unmapped' => true,
+                    'nested_path' => 'owner',
+                    'nested_filter' => [
+                        'term' => [
+                            'enabled' => ['value' => true]
+                        ]
+                    ]
+                ]
+            ],
+            'query' => [
+                'match_all' => new \stdClass()
+            ]
+        ], $query->toArray());
+    }
+
+    public function testShouldInvokeNestedFilterCallable()
+    {
+        $subscriber = new PaginateElasticaQuerySubscriber();
+        $subscriber->setRequest(new Request(['ord' => 'owner.name']));
+
+        $query = new Query();
+        $adapter = $this->getAdapterMock();
+        $adapter->method('getQuery')
+            ->willReturn($query);
+
+        $adapter->method('getResults')
+            ->willReturn($this->getResultSetMock());
+
+        $event = new ItemsEvent(0, 10);
+        $event->target = $adapter;
+        $event->options = [
+            'defaultSortFieldName' => 'createdAt',
+            'sortFieldParameterName' => 'ord',
+            'sortDirectionParameterName' => 'az',
+            'sortNestedPath' => 'owner',
+            'sortNestedFilter' => function ($sortField) {
+                $this->assertEquals('owner.name', $sortField);
+                return new Query\Term(['enabled' => ['value' => true]]);
+            },
+        ];
+
+        $subscriber->items($event);
+        $this->assertEquals([
+            'sort' => [
+                'owner.name' => [
+                    'order' => 'asc',
+                    'ignore_unmapped' => true,
+                    'nested_path' => 'owner',
+                    'nested_filter' => [
+                        'term' => [
+                            'enabled' => ['value' => true]
+                        ]
+                    ]
+                ]
+            ],
+            'query' => [
+                'match_all' => new \stdClass()
+            ]
+        ], $query->toArray());
     }
 }

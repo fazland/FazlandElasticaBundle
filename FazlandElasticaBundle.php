@@ -5,7 +5,6 @@ namespace Fazland\ElasticaBundle;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\ConfigSourcePass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\IndexPass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\RegisterProvidersPass;
-use Fazland\ElasticaBundle\DependencyInjection\Compiler\RequestCompilerPass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\TransformerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
@@ -23,7 +22,6 @@ class FazlandElasticaBundle extends Bundle
         $container->addCompilerPass(new ConfigSourcePass());
         $container->addCompilerPass(new IndexPass());
         $container->addCompilerPass(new RegisterProvidersPass(), PassConfig::TYPE_BEFORE_REMOVING);
-        $container->addCompilerPass(new RequestCompilerPass());
         $container->addCompilerPass(new TransformerPass());
     }
 }

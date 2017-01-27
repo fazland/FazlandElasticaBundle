@@ -26,6 +26,7 @@ class RepositoryManager implements RepositoryManagerInterface
     
     /** @var ManagerRegistry */
     protected $managerRegistry;
+
     /**
      * @var RepositoryManagerInterface
      */
@@ -34,8 +35,6 @@ class RepositoryManager implements RepositoryManagerInterface
     /**
      * @param ManagerRegistry $managerRegistry
      * @param RepositoryManagerInterface $repositoryManager
-     *
-     * @internal param Reader $reader
      */
     public function __construct(ManagerRegistry $managerRegistry, RepositoryManagerInterface $repositoryManager)
     {

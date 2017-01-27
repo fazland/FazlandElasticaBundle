@@ -22,7 +22,6 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
         $container->setDefinition('provider.foo.b', $this->createProviderDefinition(array('index' => 'foo', 'type' => 'b')));
         $container->setDefinition('provider.bar.a', $this->createProviderDefinition(array('index' => 'bar', 'type' => 'a')));
 
-
         $pass->process($container);
 
         $calls = $registryDefinition->getMethodCalls();
@@ -69,7 +68,7 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
 
     private function createProviderDefinition(array $attributes = array())
     {
-        $provider = $this->getMock('Fazland\ElasticaBundle\Provider\ProviderInterface');
+        $provider = $this->getMockBuilder('Fazland\ElasticaBundle\Provider\ProviderInterface')->getMock();
 
         $definition = new Definition(get_class($provider));
         $definition->addTag('fazland_elastica.provider', $attributes);
