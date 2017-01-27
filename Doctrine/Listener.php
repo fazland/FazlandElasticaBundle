@@ -35,21 +35,21 @@ class Listener
      *
      * @var array
      */
-    public $scheduledForInsertion = array();
+    public $scheduledForInsertion = [];
 
     /**
      * Objects scheduled to be updated or removed.
      *
      * @var array
      */
-    public $scheduledForUpdate = array();
+    public $scheduledForUpdate = [];
 
     /**
      * IDs of objects scheduled for removal.
      *
      * @var array
      */
-    public $scheduledForDeletion = array();
+    public $scheduledForDeletion = [];
 
     /**
      * PropertyAccessor instance.
@@ -74,12 +74,12 @@ class Listener
     public function __construct(
         ObjectPersisterInterface $objectPersister,
         IndexableInterface $indexable,
-        array $config = array(),
+        array $config = [],
         LoggerInterface $logger = null
     ) {
-        $this->config = array_merge(array(
+        $this->config = array_merge([
             'identifier' => 'id',
-        ), $config);
+        ], $config);
         $this->indexable = $indexable;
         $this->objectPersister = $objectPersister;
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
@@ -145,15 +145,15 @@ class Listener
     {
         if (count($this->scheduledForInsertion)) {
             $this->objectPersister->insertMany($this->scheduledForInsertion);
-            $this->scheduledForInsertion = array();
+            $this->scheduledForInsertion = [];
         }
         if (count($this->scheduledForUpdate)) {
             $this->objectPersister->replaceMany($this->scheduledForUpdate);
-            $this->scheduledForUpdate = array();
+            $this->scheduledForUpdate = [];
         }
         if (count($this->scheduledForDeletion)) {
             $this->objectPersister->deleteManyByIdentifiers($this->scheduledForDeletion);
-            $this->scheduledForDeletion = array();
+            $this->scheduledForDeletion = [];
         }
     }
 

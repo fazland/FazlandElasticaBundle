@@ -61,7 +61,7 @@ class IndexConfig
     {
         $this->elasticSearchName = isset($config['elasticSearchName']) ? $config['elasticSearchName'] : $name;
         $this->name = $name;
-        $this->settings = isset($config['settings']) ? $config['settings'] : array();
+        $this->settings = isset($config['settings']) ? $config['settings'] : [];
         $this->types = $types;
         $this->useAlias = isset($config['useAlias']) ? $config['useAlias'] : false;
     }
@@ -99,7 +99,7 @@ class IndexConfig
      */
     public function getType($typeName)
     {
-        if (!array_key_exists($typeName, $this->types)) {
+        if (! array_key_exists($typeName, $this->types)) {
             throw new \InvalidArgumentException(sprintf('Type "%s" does not exist on index "%s"', $typeName, $this->name));
         }
 

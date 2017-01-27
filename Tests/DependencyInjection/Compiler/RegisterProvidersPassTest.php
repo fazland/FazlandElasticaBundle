@@ -3,8 +3,8 @@
 namespace Fazland\ElasticaBundle\Tests\DependencyInjection\Compiler;
 
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\RegisterProvidersPass;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 
 class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,17 +18,17 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
         $container->setDefinition('fazland_elastica.provider_registry', $registryDefinition);
         $container->setAlias('fazland_elastica.index', 'fazland_elastica.index.foo');
 
-        $container->setDefinition('provider.foo.a', $this->createProviderDefinition(array('type' => 'a')));
-        $container->setDefinition('provider.foo.b', $this->createProviderDefinition(array('index' => 'foo', 'type' => 'b')));
-        $container->setDefinition('provider.bar.a', $this->createProviderDefinition(array('index' => 'bar', 'type' => 'a')));
+        $container->setDefinition('provider.foo.a', $this->createProviderDefinition(['type' => 'a']));
+        $container->setDefinition('provider.foo.b', $this->createProviderDefinition(['index' => 'foo', 'type' => 'b']));
+        $container->setDefinition('provider.bar.a', $this->createProviderDefinition(['index' => 'bar', 'type' => 'a']));
 
         $pass->process($container);
 
         $calls = $registryDefinition->getMethodCalls();
 
-        $this->assertEquals(array('addProvider', array('foo', 'a', 'provider.foo.a')), $calls[0]);
-        $this->assertEquals(array('addProvider', array('foo', 'b', 'provider.foo.b')), $calls[1]);
-        $this->assertEquals(array('addProvider', array('bar', 'a', 'provider.bar.a')), $calls[2]);
+        $this->assertEquals(['addProvider', ['foo', 'a', 'provider.foo.a']], $calls[0]);
+        $this->assertEquals(['addProvider', ['foo', 'b', 'provider.foo.b']], $calls[1]);
+        $this->assertEquals(['addProvider', ['bar', 'a', 'provider.bar.a']], $calls[2]);
     }
 
     /**
@@ -66,7 +66,7 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
         $pass->process($container);
     }
 
-    private function createProviderDefinition(array $attributes = array())
+    private function createProviderDefinition(array $attributes = [])
     {
         $provider = $this->getMockBuilder('Fazland\ElasticaBundle\Provider\ProviderInterface')->getMock();
 

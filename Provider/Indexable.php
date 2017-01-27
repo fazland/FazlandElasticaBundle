@@ -73,7 +73,7 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
     {
         $type = sprintf('%s/%s', $indexName, $typeName);
         $callback = $this->getCallback($type, $object);
-        if (!$callback) {
+        if (! $callback) {
             return true;
         }
 
@@ -99,7 +99,7 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
      */
     private function buildCallback($type, $object)
     {
-        if (!array_key_exists($type, $this->callbacks)) {
+        if (! array_key_exists($type, $this->callbacks)) {
             return;
         }
 
@@ -109,7 +109,7 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
             return $callback;
         }
 
-        if (is_array($callback) && !is_object($callback[0])) {
+        if (is_array($callback) && ! is_object($callback[0])) {
             return $this->processArrayToCallback($type, $callback);
         }
 
@@ -132,7 +132,7 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
     private function buildExpressionCallback($type, $object, $callback)
     {
         $expression = $this->getExpressionLanguage();
-        if (!$expression) {
+        if (! $expression) {
             throw new \RuntimeException('Unable to process an expression without the ExpressionLanguage component.');
         }
 
@@ -161,7 +161,7 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
      */
     private function getCallback($type, $object)
     {
-        if (!array_key_exists($type, $this->initialisedCallbacks)) {
+        if (! array_key_exists($type, $this->initialisedCallbacks)) {
             $this->initialisedCallbacks[$type] = $this->buildCallback($type, $object);
         }
 
@@ -192,7 +192,7 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
      */
     private function getExpressionVar($object = null)
     {
-        if (!is_object($object)) {
+        if (! is_object($object)) {
             return 'object';
         }
 
@@ -218,7 +218,7 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
             $service = $this->container->get(substr($class, 1));
             $callback = [$service, $method];
 
-            if (!is_callable($callback)) {
+            if (! is_callable($callback)) {
                 throw new \InvalidArgumentException(sprintf(
                     'Method "%s" on service "%s" is not callable.',
                     $method,

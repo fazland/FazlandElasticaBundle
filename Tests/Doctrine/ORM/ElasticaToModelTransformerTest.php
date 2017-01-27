@@ -43,15 +43,15 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
         $this->repository->expects($this->never())
             ->method('createQueryBuilder');
 
-        $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass, array(
+        $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass, [
             'query_builder_method' => 'customQueryBuilderCreator',
-        ));
+        ]);
 
         $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
         $method = $class->getMethod('getEntityQueryBuilder');
         $method->setAccessible(true);
 
-        $method->invokeArgs($transformer, array());
+        $method->invokeArgs($transformer, []);
     }
 
     /**
@@ -77,7 +77,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
         $method = $class->getMethod('getEntityQueryBuilder');
         $method->setAccessible(true);
 
-        $method->invokeArgs($transformer, array());
+        $method->invokeArgs($transformer, []);
     }
 
     /**
@@ -86,7 +86,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
     public function testUsesHintsConfigurationIfGiven()
     {
         $query = $this->getMockBuilder('Doctrine\ORM\AbstractQuery')
-            ->setMethods(array('setHint', 'execute', 'setHydrationMode'))
+            ->setMethods(['setHint', 'execute', 'setHydrationMode'])
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
         $query->expects($this->any())->method('setHydrationMode')->willReturnSelf();
@@ -107,17 +107,17 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo(ElasticaToModelTransformer::ENTITY_ALIAS))
             ->will($this->returnValue($qb));
 
-        $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass, array(
-            'hints' => array(
-                array('name' => 'customHintName', 'value' => 'Custom\Hint\Class')
-            )
-        ));
+        $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass, [
+            'hints' => [
+                ['name' => 'customHintName', 'value' => 'Custom\Hint\Class']
+            ]
+        ]);
 
         $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
         $method = $class->getMethod('findByIdentifiers');
         $method->setAccessible(true);
 
-        $method->invokeArgs($transformer, array(array(1, 2, 3), /* $hydrate */true));
+        $method->invokeArgs($transformer, [[1, 2, 3], /* $hydrate */true]);
     }
 
     protected function setUp()
@@ -137,7 +137,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 
         $this->repository = $this
             ->getMockBuilder('Doctrine\Common\Persistence\ObjectRepository')
-            ->setMethods(array(
+            ->setMethods([
                 'customQueryBuilderCreator',
                 'createQueryBuilder',
                 'find',
@@ -145,7 +145,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
                 'findBy',
                 'findOneBy',
                 'getClassName',
-            ))->getMock();
+            ])->getMock();
 
         $this->manager->expects($this->any())
             ->method('getRepository')

@@ -2,9 +2,9 @@
 
 namespace Fazland\ElasticaBundle\Paginator;
 
-use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
-use Elastica\SearchableInterface;
 use Elastica\Query;
+use Elastica\SearchableInterface;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 
 /**
  * Allows pagination of \Elastica\Query.
@@ -19,7 +19,7 @@ class TransformedPaginatorAdapter extends RawPaginatorAdapter
      * @param array                               $options
      * @param ElasticaToModelTransformerInterface $transformer the transformer for fetching the results
      */
-    public function __construct(SearchableInterface $searchable, Query $query, array $options = array(), ElasticaToModelTransformerInterface $transformer)
+    public function __construct(SearchableInterface $searchable, Query $query, array $options = [], ElasticaToModelTransformerInterface $transformer)
     {
         parent::__construct($searchable, $query, $options);
 

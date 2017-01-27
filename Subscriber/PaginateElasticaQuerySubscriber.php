@@ -61,14 +61,14 @@ class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
         $options = $event->options;
         $sortField = $this->request->get($options['sortFieldParameterName']);
 
-        if (!$sortField && isset($options['defaultSortFieldName'])) {
+        if (! $sortField && isset($options['defaultSortFieldName'])) {
             $sortField = $options['defaultSortFieldName'];
         }
 
-        if (!empty($sortField)) {
-            $event->target->getQuery()->setSort(array(
+        if (! empty($sortField)) {
+            $event->target->getQuery()->setSort([
                 $sortField => $this->getSort($sortField, $options),
-            ));
+            ]);
         }
     }
 
@@ -84,7 +84,7 @@ class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
             $path = is_callable($options['sortNestedPath']) ?
                 $options['sortNestedPath']($sortField) : $options['sortNestedPath'];
 
-            if (!empty($path)) {
+            if (! empty($path)) {
                 $sort['nested_path'] = $path;
             }
         }
@@ -93,7 +93,7 @@ class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
             $filter = is_callable($options['sortNestedFilter']) ?
                 $options['sortNestedFilter']($sortField) : $options['sortNestedFilter'];
 
-            if (!empty($filter)) {
+            if (! empty($filter)) {
                 $sort['nested_filter'] = $filter;
             }
         }
@@ -115,7 +115,7 @@ class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
         }
 
         // check if the requested sort field is in the sort whitelist
-        if (isset($options['sortFieldWhitelist']) && !in_array($sortField, $options['sortFieldWhitelist'])) {
+        if (isset($options['sortFieldWhitelist']) && ! in_array($sortField, $options['sortFieldWhitelist'])) {
             throw new \UnexpectedValueException(sprintf('Cannot sort by: [%s] this field is not in whitelist', $sortField));
         }
 
@@ -127,8 +127,8 @@ class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            'knp_pager.items' => array('items', 1),
-        );
+        return [
+            'knp_pager.items' => ['items', 1],
+        ];
     }
 }

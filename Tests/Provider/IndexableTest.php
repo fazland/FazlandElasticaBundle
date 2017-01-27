@@ -71,7 +71,9 @@ class IndexableTest extends \PHPUnit_Framework_TestCase
             [[new IndexableDecider(), 'isIndexable'], true],
             [['@indexableService', 'isIndexable'], true],
             [['@indexableService'], true],
-            [function (Entity $entity) { return $entity->maybeIndex(); }, true],
+            [function (Entity $entity) {
+                return $entity->maybeIndex();
+            }, true],
             ['entity.maybeIndex()', true],
             ['!object.isIndexable() && entity.property == "abc"', true],
             ['entity.property != "abc"', false],
@@ -111,7 +113,7 @@ class IndexableDecider
 {
     public function isIndexable(Entity $entity)
     {
-        return !$entity->isIndexable();
+        return ! $entity->isIndexable();
     }
 
     protected function internalMethod()

@@ -4,9 +4,7 @@ namespace Fazland\ElasticaBundle\Propel;
 
 use Fazland\ElasticaBundle\HybridResult;
 use Fazland\ElasticaBundle\Transformer\AbstractElasticaToModelTransformer;
-use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 use Fazland\ElasticaBundle\Transformer\HighlightableModelInterface;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
  * Maps Elastica documents with Propel objects.
@@ -30,10 +28,10 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
      *
      * @var array
      */
-    protected $options = array(
+    protected $options = [
         'hydrate'    => true,
         'identifier' => 'id',
-    );
+    ];
 
     /**
      * Constructor.
@@ -41,7 +39,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
      * @param string $objectClass
      * @param array  $options
      */
-    public function __construct($objectClass, array $options = array())
+    public function __construct($objectClass, array $options = [])
     {
         $this->objectClass = $objectClass;
         $this->options = array_merge($this->options, $options);
@@ -57,7 +55,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
      */
     public function transform(array $elasticaObjects)
     {
-        $ids = $highlights = array();
+        $ids = $highlights = [];
         foreach ($elasticaObjects as $elasticaObject) {
             $ids[] = $elasticaObject->getId();
             $highlights[$elasticaObject->getId()] = $elasticaObject->getHighlights();
@@ -65,7 +63,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
 
         $objects = $this->findByIdentifiers($ids, $this->options['hydrate']);
 
-        if (!$this->options['ignore_missing'] && count($objects) < count($elasticaObjects)) {
+        if (! $this->options['ignore_missing'] && count($objects) < count($elasticaObjects)) {
             throw new \RuntimeException('Cannot find corresponding Propel objects for all Elastica results.');
         }
 
@@ -88,7 +86,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
     {
         $objects = $this->transform($elasticaObjects);
 
-        $result = array();
+        $result = [];
         for ($i = 0, $j = count($elasticaObjects); $i < $j; $i++) {
             $result[] = new HybridResult($elasticaObjects[$i], $objects[$i]);
         }
@@ -126,7 +124,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
     protected function findByIdentifiers(array $identifierValues, $hydrate)
     {
         if (empty($identifierValues)) {
-            return array();
+            return [];
         }
 
         $query = $this->createQuery($this->objectClass, $this->options['identifier'], $identifierValues);

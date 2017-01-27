@@ -7,7 +7,6 @@ use Elastica\Exception\Bulk\ResponseException as BulkResponseException;
 use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Fazland\ElasticaBundle\Provider\AbstractProvider as BaseAbstractProvider;
 use Fazland\ElasticaBundle\Provider\IndexableInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class AbstractProvider extends BaseAbstractProvider
 {
@@ -62,7 +61,7 @@ abstract class AbstractProvider extends BaseAbstractProvider
      *
      * @return object
      */
-    abstract protected function createQueryBuilder($method, array $arguments = array());
+    abstract protected function createQueryBuilder($method, array $arguments = []);
 
     /**
      * Fetches a slice of objects using the query builder.
@@ -88,7 +87,7 @@ abstract class AbstractProvider extends BaseAbstractProvider
 
         $countObjects = max(0, $nbObjects - $offset);
 
-        $objects = array();
+        $objects = [];
         for (; $offset < $nbObjects; $offset += $options['batch_size']) {
             $sliceSize = $options['batch_size'];
             $errorMessage = null;
@@ -98,11 +97,11 @@ abstract class AbstractProvider extends BaseAbstractProvider
                 $sliceSize = count($objects);
                 $objects = $this->filterObjects($options, $objects);
 
-                if (!empty($objects)) {
+                if (! empty($objects)) {
                     $this->objectPersister->insertMany($objects);
                 }
             } catch (BulkResponseException $e) {
-                if (!$options['ignore_errors']) {
+                if (! $options['ignore_errors']) {
                     throw $e;
                 }
 
@@ -130,14 +129,14 @@ abstract class AbstractProvider extends BaseAbstractProvider
     {
         parent::configureOptions();
 
-        $this->resolver->setDefaults(array(
+        $this->resolver->setDefaults([
             'clear_object_manager' => true,
             'debug_logging'        => false,
             'ignore_errors'        => false,
             'offset'               => 0,
             'query_builder_method' => 'createQueryBuilder',
             'sleep'                => 0
-        ));
+        ]);
     }
 
     /**
@@ -153,7 +152,7 @@ abstract class AbstractProvider extends BaseAbstractProvider
      */
     private function getSlice($queryBuilder, $limit, $offset, $lastSlice)
     {
-        if (!$this->sliceFetcher) {
+        if (! $this->sliceFetcher) {
             return $this->fetchSlice($queryBuilder, $limit, $offset);
         }
 

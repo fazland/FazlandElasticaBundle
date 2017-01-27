@@ -3,8 +3,8 @@
 namespace Fazland\ElasticaBundle\Doctrine\MongoDB;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 use Fazland\ElasticaBundle\Doctrine\SliceFetcherInterface;
+use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 
 /**
  * Fetches a slice of objects.
@@ -18,7 +18,7 @@ class SliceFetcher implements SliceFetcherInterface
      */
     public function fetch($queryBuilder, $limit, $offset, array $previousSlice, array $identifierFieldNames)
     {
-        if (!$queryBuilder instanceof Builder) {
+        if (! $queryBuilder instanceof Builder) {
             throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ODM\MongoDB\Query\Builder');
         }
 
@@ -35,7 +35,7 @@ class SliceFetcher implements SliceFetcherInterface
 
         return $queryBuilder
             ->limit($limit)
-            ->sort(array('_id' => 'asc'))
+            ->sort(['_id' => 'asc'])
             ->getQuery()
             ->execute()
             ->toArray()

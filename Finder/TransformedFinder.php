@@ -3,13 +3,13 @@
 namespace Fazland\ElasticaBundle\Finder;
 
 use Elastica\Document;
-use Fazland\ElasticaBundle\Paginator\HybridPaginatorAdapter;
-use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
-use Fazland\ElasticaBundle\Paginator\TransformedPaginatorAdapter;
-use Fazland\ElasticaBundle\Paginator\FantaPaginatorAdapter;
-use Pagerfanta\Pagerfanta;
-use Elastica\SearchableInterface;
 use Elastica\Query;
+use Elastica\SearchableInterface;
+use Fazland\ElasticaBundle\Paginator\FantaPaginatorAdapter;
+use Fazland\ElasticaBundle\Paginator\HybridPaginatorAdapter;
+use Fazland\ElasticaBundle\Paginator\TransformedPaginatorAdapter;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
+use Pagerfanta\Pagerfanta;
 
 /**
  * Finds elastica documents and map them to persisted objects.
@@ -32,14 +32,14 @@ class TransformedFinder implements PaginatedFinderInterface
     /**
      * {@inheritdoc}
      */
-    public function find($query, $limit = null, $options = array())
+    public function find($query, $limit = null, $options = [])
     {
         $results = $this->search($query, $limit, $options);
 
         return $this->transformer->transform($results);
     }
 
-    public function findHybrid($query, $limit = null, $options = array())
+    public function findHybrid($query, $limit = null, $options = [])
     {
         $results = $this->search($query, $limit, $options);
 
@@ -55,7 +55,7 @@ class TransformedFinder implements PaginatedFinderInterface
      *
      * @return array of model objects
      **/
-    public function moreLikeThis($id, $params = array(), $query = array())
+    public function moreLikeThis($id, $params = [], $query = [])
     {
         $doc = new Document($id);
         $results = $this->searchable->moreLikeThis($doc, $params, $query)->getResults();
@@ -70,7 +70,7 @@ class TransformedFinder implements PaginatedFinderInterface
      *
      * @return array
      */
-    protected function search($query, $limit = null, $options = array())
+    protected function search($query, $limit = null, $options = [])
     {
         $queryObject = Query::create($query);
         if (null !== $limit) {
@@ -84,7 +84,7 @@ class TransformedFinder implements PaginatedFinderInterface
     /**
      * {@inheritdoc}
      */
-    public function findPaginated($query, $options = array())
+    public function findPaginated($query, $options = [])
     {
         $queryObject = Query::create($query);
         $paginatorAdapter = $this->createPaginatorAdapter($queryObject, $options);
@@ -95,7 +95,7 @@ class TransformedFinder implements PaginatedFinderInterface
     /**
      * {@inheritdoc}
      */
-    public function createPaginatorAdapter($query, $options = array())
+    public function createPaginatorAdapter($query, $options = [])
     {
         $query = Query::create($query);
 

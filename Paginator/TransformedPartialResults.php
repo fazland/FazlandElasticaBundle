@@ -2,8 +2,8 @@
 
 namespace Fazland\ElasticaBundle\Paginator;
 
-use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 use Elastica\ResultSet;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 
 /**
  * Partial transformed result set.

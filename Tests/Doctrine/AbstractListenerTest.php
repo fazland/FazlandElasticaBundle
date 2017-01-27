@@ -16,7 +16,7 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
         $eventArgs = $this->createLifecycleEventArgs($entity, $this->getMockObjectManager());
         $indexable = $this->getMockIndexable('index', 'type', $entity, true);
 
-        $listener = $this->createListener($persister, $indexable, array('indexName' => 'index', 'typeName' => 'type'));
+        $listener = $this->createListener($persister, $indexable, ['indexName' => 'index', 'typeName' => 'type']);
         $listener->postPersist($eventArgs);
 
         $this->assertEquals($entity, current($listener->scheduledForInsertion));
@@ -35,7 +35,7 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
         $eventArgs = $this->createLifecycleEventArgs($entity, $this->getMockObjectManager());
         $indexable = $this->getMockIndexable('index', 'type', $entity, false);
 
-        $listener = $this->createListener($persister, $indexable, array('indexName' => 'index', 'typeName' => 'type'));
+        $listener = $this->createListener($persister, $indexable, ['indexName' => 'index', 'typeName' => 'type']);
         $listener->postPersist($eventArgs);
 
         $this->assertEmpty($listener->scheduledForInsertion);
@@ -55,14 +55,14 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
         $eventArgs = $this->createLifecycleEventArgs($entity, $this->getMockObjectManager());
         $indexable = $this->getMockIndexable('index', 'type', $entity, true);
 
-        $listener = $this->createListener($persister, $indexable, array('indexName' => 'index', 'typeName' => 'type'));
+        $listener = $this->createListener($persister, $indexable, ['indexName' => 'index', 'typeName' => 'type']);
         $listener->postUpdate($eventArgs);
 
         $this->assertEquals($entity, current($listener->scheduledForUpdate));
 
         $persister->expects($this->once())
             ->method('replaceMany')
-            ->with(array($entity));
+            ->with([$entity]);
         $persister->expects($this->never())
             ->method('deleteById');
 
@@ -89,7 +89,7 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
             ->with($entity, 'id')
             ->will($this->returnValue($entity->getId()));
 
-        $listener = $this->createListener($persister, $indexable, array('indexName' => 'index', 'typeName' => 'type'));
+        $listener = $this->createListener($persister, $indexable, ['indexName' => 'index', 'typeName' => 'type']);
         $listener->postUpdate($eventArgs);
 
         $this->assertEmpty($listener->scheduledForUpdate);
@@ -99,7 +99,7 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
             ->method('replaceOne');
         $persister->expects($this->once())
             ->method('deleteManyByIdentifiers')
-            ->with(array($entity->getId()));
+            ->with([$entity->getId()]);
 
         $listener->postFlush($eventArgs);
     }
@@ -124,14 +124,14 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
             ->with($entity, 'id')
             ->will($this->returnValue($entity->getId()));
 
-        $listener = $this->createListener($persister, $indexable, array('indexName' => 'index', 'typeName' => 'type'));
+        $listener = $this->createListener($persister, $indexable, ['indexName' => 'index', 'typeName' => 'type']);
         $listener->preRemove($eventArgs);
 
         $this->assertEquals($entity->getId(), current($listener->scheduledForDeletion));
 
         $persister->expects($this->once())
             ->method('deleteManyByIdentifiers')
-            ->with(array($entity->getId()));
+            ->with([$entity->getId()]);
 
         $listener->postFlush($eventArgs);
     }
@@ -157,14 +157,14 @@ abstract class ListenerTest extends \PHPUnit_Framework_TestCase
             ->with($entity, 'identifier')
             ->will($this->returnValue($entity->getId()));
 
-        $listener = $this->createListener($persister, $indexable, array('identifier' => 'identifier', 'indexName' => 'index', 'typeName' => 'type'));
+        $listener = $this->createListener($persister, $indexable, ['identifier' => 'identifier', 'indexName' => 'index', 'typeName' => 'type']);
         $listener->preRemove($eventArgs);
 
         $this->assertEquals($entity->identifier, current($listener->scheduledForDeletion));
 
         $persister->expects($this->once())
             ->method('deleteManyByIdentifiers')
-            ->with(array($entity->identifier));
+            ->with([$entity->identifier]);
 
         $listener->postFlush($eventArgs);
     }

@@ -19,7 +19,7 @@ class ConfigManager implements ManagerInterface
     /**
      * @var IndexConfig[]
      */
-    private $indexes = array();
+    private $indexes = [];
 
     /**
      * @param Source\SourceInterface[] $sources
@@ -38,7 +38,7 @@ class ConfigManager implements ManagerInterface
      */
     public function getIndexConfiguration($indexName)
     {
-        if (!$this->hasIndexConfiguration($indexName)) {
+        if (! $this->hasIndexConfiguration($indexName)) {
             throw new \InvalidArgumentException(sprintf('Index with name "%s" is not configured.', $indexName));
         }
 
@@ -61,7 +61,7 @@ class ConfigManager implements ManagerInterface
         $index = $this->getIndexConfiguration($indexName);
         $type = $index->getType($typeName);
 
-        if (!$type) {
+        if (! $type) {
             throw new \InvalidArgumentException(sprintf('Type with name "%s" on index "%s" is not configured', $typeName, $indexName));
         }
 

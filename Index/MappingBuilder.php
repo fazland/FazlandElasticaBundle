@@ -21,7 +21,7 @@ class MappingBuilder
      *
      * @var array
      */
-    private $skipTypes = array('completion');
+    private $skipTypes = ['completion'];
 
     /**
      * Builds mappings for an entire index.
@@ -32,19 +32,19 @@ class MappingBuilder
      */
     public function buildIndexMapping(IndexConfig $indexConfig)
     {
-        $typeMappings = array();
+        $typeMappings = [];
         foreach ($indexConfig->getTypes() as $typeConfig) {
             $typeMappings[$typeConfig->getName()] = $this->buildTypeMapping($typeConfig);
         }
 
-        $mapping = array();
-        if (!empty($typeMappings)) {
+        $mapping = [];
+        if (! empty($typeMappings)) {
             $mapping['mappings'] = $typeMappings;
         }
         // 'warmers' => $indexConfig->getWarmers(),
 
         $settings = $indexConfig->getSettings();
-        if (!empty($settings)) {
+        if (! empty($settings)) {
             $mapping['settings'] = $settings;
         }
 
@@ -87,7 +87,7 @@ class MappingBuilder
         }
 
         $this->fixProperties($mapping['properties']);
-        if (!$mapping['properties']) {
+        if (! $mapping['properties']) {
             unset($mapping['properties']);
         }
 
@@ -116,7 +116,7 @@ class MappingBuilder
         foreach ($properties as $name => &$property) {
             unset($property['property_path']);
 
-            if (!isset($property['type'])) {
+            if (! isset($property['type'])) {
                 $property['type'] = 'string';
             }
             if ($property['type'] == 'multi_field' && isset($property['fields'])) {

@@ -2,14 +2,14 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection;
 
+use InvalidArgumentException;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\Config\FileLocator;
-use InvalidArgumentException;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class FazlandElasticaExtension extends Extension
 {
@@ -142,7 +142,7 @@ class FazlandElasticaExtension extends Extension
             $indexName = isset($index['index_name']) ? $index['index_name'] : $name;
 
             $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
-            $indexDef->setFactory(array(new Reference('fazland_elastica.client'), 'getIndex'));
+            $indexDef->setFactory([new Reference('fazland_elastica.client'), 'getIndex']);
             $indexDef->replaceArgument(0, $indexName);
             $indexDef->addTag('fazland_elastica.index', [
                 'name' => $name,
@@ -151,7 +151,7 @@ class FazlandElasticaExtension extends Extension
             if (isset($index['client'])) {
                 $client = $this->getClient($index['client']);
 
-                $indexDef->setFactory(array($client, 'getIndex'));
+                $indexDef->setFactory([$client, 'getIndex']);
             }
 
             $container->setDefinition($indexId, $indexDef);
@@ -218,7 +218,7 @@ class FazlandElasticaExtension extends Extension
 
             $typeId = sprintf('%s.%s', $indexConfig['reference'], $name);
             $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
-            $typeDef->setFactory(array($indexConfig['reference'], 'getType'));
+            $typeDef->setFactory([$indexConfig['reference'], 'getType']);
             $typeDef->replaceArgument(0, $name);
 
             $container->setDefinition($typeId, $typeDef);
@@ -714,7 +714,7 @@ class FazlandElasticaExtension extends Extension
      */
     private function getClient($clientName)
     {
-        if (!array_key_exists($clientName, $this->clients)) {
+        if (! array_key_exists($clientName, $this->clients)) {
             throw new InvalidArgumentException(sprintf('The elastica client with name "%s" is not defined', $clientName));
         }
 

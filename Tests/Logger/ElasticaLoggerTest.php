@@ -57,7 +57,7 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
 
         $total = rand(1, 15);
         for ($i = 0; $i < $total; $i++) {
-            $elasticaLogger->logQuery('testPath', 'testMethod', array('data'), 12);
+            $elasticaLogger->logQuery('testPath', 'testMethod', ['data'], 12);
         }
 
         $this->assertEquals($total, $elasticaLogger->getNbQueries());
@@ -69,12 +69,12 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
 
         $path   = 'testPath';
         $method = 'testMethod';
-        $data   = array('data');
+        $data   = ['data'];
         $time   = 12;
-        $connection = array('host' => 'localhost', 'port' => '8999', 'transport' => 'https');
-        $query = array('search_type' => 'dfs_query_then_fetch');
+        $connection = ['host' => 'localhost', 'port' => '8999', 'transport' => 'https'];
+        $query = ['search_type' => 'dfs_query_then_fetch'];
 
-        $expected = array(
+        $expected = [
             'path'        => $path,
             'method'      => $method,
             'data'        => $data,
@@ -83,7 +83,7 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
             'queryString' => $query,
             'engineMS' => 0,
             'itemCount' => 0
-        );
+        ];
 
         $elasticaLogger->logQuery($path, $method, $data, $time, $connection, $query);
         $returnedQueries = $elasticaLogger->getQueries();
@@ -99,7 +99,7 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
 
         $total = rand(1, 15);
         for ($i = 0; $i < $total; $i++) {
-            $elasticaLogger->logQuery('testPath', 'testMethod', array('data'), 12);
+            $elasticaLogger->logQuery('testPath', 'testMethod', ['data'], 12);
         }
 
         $this->assertEquals(0, $elasticaLogger->getNbQueries());
@@ -113,7 +113,7 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
 
         $path   = 'testPath';
         $method = 'testMethod';
-        $data   = array('data');
+        $data   = ['data'];
         $time   = 12;
 
         $expectedMessage = 'testPath (testMethod) 12000.00 ms';
@@ -133,16 +133,16 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
      */
     public function logLevels()
     {
-        return array(
-            array('emergency'),
-            array('alert'),
-            array('critical'),
-            array('error'),
-            array('warning'),
-            array('notice'),
-            array('info'),
-            array('debug'),
-        );
+        return [
+            ['emergency'],
+            ['alert'],
+            ['critical'],
+            ['error'],
+            ['warning'],
+            ['notice'],
+            ['info'],
+            ['debug'],
+        ];
     }
 
     /**
@@ -151,11 +151,11 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
     public function testMessagesCanBeLoggedAtSpecificLogLevels($level)
     {
         $message = 'foo';
-        $context = array('data');
+        $context = ['data'];
 
         $loggerMock = $this->getMockLoggerForLevelMessageAndContext($level, $message, $context);
 
-        call_user_func(array($loggerMock, $level), $message, $context);
+        call_user_func([$loggerMock, $level], $message, $context);
     }
 
     public function testMessagesCanBeLoggedToArbitraryLevels()
@@ -164,7 +164,7 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
 
         $level = 'info';
         $message = 'foo';
-        $context = array('data');
+        $context = ['data'];
 
         $loggerMock->expects($this->once())
             ->method('log')

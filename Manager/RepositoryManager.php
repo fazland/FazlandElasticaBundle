@@ -52,7 +52,7 @@ class RepositoryManager implements RepositoryManagerInterface
             return $this->repositories[$typeName];
         }
 
-        if (!isset($this->types[$typeName])) {
+        if (! isset($this->types[$typeName])) {
             throw new RuntimeException(sprintf('No search finder configured for %s', $typeName));
         }
 
@@ -85,7 +85,7 @@ class RepositoryManager implements RepositoryManagerInterface
      */
     private function createRepository($typeName)
     {
-        if (!class_exists($repositoryName = $this->getRepositoryName($typeName))) {
+        if (! class_exists($repositoryName = $this->getRepositoryName($typeName))) {
             throw new RuntimeException(sprintf('%s repository for %s does not exist', $repositoryName, $typeName));
         }
 

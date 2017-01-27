@@ -2,8 +2,6 @@
 
 namespace Fazland\ElasticaBundle\Tests\Doctrine\PHPCR;
 
-use Fazland\ElasticaBundle\Doctrine\PHPCR\ElasticaToModelTransformer;
-
 class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -37,10 +35,10 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        if (!interface_exists('Doctrine\Common\Persistence\ManagerRegistry')) {
+        if (! interface_exists('Doctrine\Common\Persistence\ManagerRegistry')) {
             $this->markTestSkipped('Doctrine Common is not present');
         }
-        if (!class_exists('Doctrine\ODM\PHPCR\DocumentManager')) {
+        if (! class_exists('Doctrine\ODM\PHPCR\DocumentManager')) {
             $this->markTestSkipped('Doctrine PHPCR is not present');
         }
 
@@ -58,7 +56,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 
         $this->repository = $this
             ->getMockBuilder('Doctrine\Common\Persistence\ObjectRepository')
-            ->setMethods(array(
+            ->setMethods([
                 'customQueryBuilderCreator',
                 'createQueryBuilder',
                 'find',
@@ -66,7 +64,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
                 'findBy',
                 'findOneBy',
                 'getClassName',
-            ))->getMock();
+            ])->getMock();
 
         $this->manager->expects($this->any())
             ->method('getRepository')

@@ -23,7 +23,7 @@ class ElasticaLogger extends AbstractLogger
     /**
      * @var array
      */
-    protected $queries = array();
+    protected $queries = [];
 
     /**
      * @var boolean
@@ -54,13 +54,13 @@ class ElasticaLogger extends AbstractLogger
      * @param int    $engineTime
      * @param int    $itemCount
      */
-    public function logQuery($path, $method, $data, $queryTime, $connection = array(), $query = array(), $engineTime = 0, $itemCount = 0)
+    public function logQuery($path, $method, $data, $queryTime, $connection = [], $query = [], $engineTime = 0, $itemCount = 0)
     {
         $executionMS = $queryTime * 1000;
 
         if ($this->debug) {
             $e = new \Exception();
-            $this->queries[] = array(
+            $this->queries[] = [
                 'path' => $path,
                 'method' => $method,
                 'data' => $data,
@@ -70,7 +70,7 @@ class ElasticaLogger extends AbstractLogger
                 'queryString' => $query,
                 'itemCount' => $itemCount,
                 'backtrace' => $e->getTraceAsString()
-            );
+            ];
         }
 
         if (null !== $this->logger) {
@@ -102,7 +102,7 @@ class ElasticaLogger extends AbstractLogger
     /**
      * {@inheritdoc}
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = [])
     {
         return $this->logger->log($level, $message, $context);
     }

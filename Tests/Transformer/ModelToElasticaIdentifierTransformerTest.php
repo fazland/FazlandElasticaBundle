@@ -26,7 +26,7 @@ class ModelToElasticaIdentifierTransformerTest extends \PHPUnit_Framework_TestCa
     public function testGetDocumentWithIdentifierOnly()
     {
         $transformer = $this->getTransformer();
-        $document    = $transformer->transform(new POPO(), array());
+        $document    = $transformer->transform(new POPO(), []);
         $data        = $document->getData();
 
         $this->assertInstanceOf('Elastica\Document', $document);
@@ -37,7 +37,7 @@ class ModelToElasticaIdentifierTransformerTest extends \PHPUnit_Framework_TestCa
     public function testGetDocumentWithIdentifierOnlyWithFields()
     {
         $transformer = $this->getTransformer();
-        $document    = $transformer->transform(new POPO(), array('name' => array()));
+        $document    = $transformer->transform(new POPO(), ['name' => []]);
         $data        = $document->getData();
 
         $this->assertInstanceOf('Elastica\Document', $document);

@@ -2,11 +2,11 @@
 
 namespace Fazland\ElasticaBundle\Persister;
 
-use Psr\Log\LoggerInterface;
-use Elastica\Exception\BulkException;
-use Fazland\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
-use Elastica\Type;
 use Elastica\Document;
+use Elastica\Exception\BulkException;
+use Elastica\Type;
+use Fazland\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Inserts, replaces and deletes single documents in an elastica type
@@ -73,7 +73,7 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function insertOne($object)
     {
-        $this->insertMany(array($object));
+        $this->insertMany([$object]);
     }
 
     /**
@@ -81,7 +81,7 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function replaceOne($object)
     {
-        $this->replaceMany(array($object));
+        $this->replaceMany([$object]);
     }
 
     /**
@@ -89,7 +89,7 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function deleteOne($object)
     {
-        $this->deleteMany(array($object));
+        $this->deleteMany([$object]);
     }
 
     /**
@@ -97,7 +97,7 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function deleteById($id)
     {
-        $this->deleteManyByIdentifiers(array($id));
+        $this->deleteManyByIdentifiers([$id]);
     }
 
     /**
@@ -105,7 +105,7 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function insertMany(array $objects)
     {
-        $documents = array();
+        $documents = [];
         foreach ($objects as $object) {
             $documents[] = $this->transformToElasticaDocument($object);
         }
@@ -121,7 +121,7 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function replaceMany(array $objects)
     {
-        $documents = array();
+        $documents = [];
         foreach ($objects as $object) {
             $document = $this->transformToElasticaDocument($object);
             $document->setDocAsUpsert(true);
@@ -140,7 +140,7 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function deleteMany(array $objects)
     {
-        $documents = array();
+        $documents = [];
         foreach ($objects as $object) {
             $documents[] = $this->transformToElasticaDocument($object);
         }

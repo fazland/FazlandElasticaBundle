@@ -2,11 +2,11 @@
 
 namespace Fazland\ElasticaBundle\Transformer;
 
+use Elastica\Document;
 use Elastica\Type;
 use Fazland\ElasticaBundle\Event\TransformEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Elastica\Document;
 
 /**
  * Maps Elastica documents with Doctrine objects
@@ -25,9 +25,9 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
      *
      * @var array
      */
-    protected $options = array(
+    protected $options = [
         'identifier' => 'id',
-    );
+    ];
 
     /**
      * PropertyAccessor instance.
@@ -48,7 +48,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
      * @param Type $type
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(Type $type, array $options = array(), EventDispatcherInterface $dispatcher = null)
+    public function __construct(Type $type, array $options = [], EventDispatcherInterface $dispatcher = null)
     {
         $this->options = array_merge($this->options, $options);
         $this->dispatcher = $dispatcher;
@@ -92,7 +92,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
     protected function transformNested($objects, array $fields)
     {
         if (is_array($objects) || $objects instanceof \Traversable || $objects instanceof \ArrayAccess) {
-            $documents = array();
+            $documents = [];
             foreach ($objects as $object) {
                 $document = $this->transformObjectToDocument($object, $fields);
                 $documents[] = $document->getData();
@@ -105,7 +105,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
             return $document->getData();
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -120,7 +120,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
         $normalizeValue = function (&$v) {
             if ($v instanceof \DateTime) {
                 $v = $v->format('c');
-            } elseif (!is_scalar($v) && !is_null($v)) {
+            } elseif (! is_scalar($v) && ! is_null($v)) {
                 $v = (string) $v;
             }
         };
@@ -172,8 +172,8 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
             $value = $this->propertyAccessor->getValue($object, $path);
 
             if (isset($mapping['type']) && in_array(
-                    $mapping['type'], array('nested', 'object')
-                ) && isset($mapping['properties']) && !empty($mapping['properties'])
+                    $mapping['type'], ['nested', 'object']
+                ) && isset($mapping['properties']) && ! empty($mapping['properties'])
             ) {
                 /* $value is a nested document or object. Transform $value into
                  * an array of documents, respective the mapped properties.

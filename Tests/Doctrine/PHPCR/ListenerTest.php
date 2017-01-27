@@ -8,7 +8,7 @@ class ListenerTest extends BaseListenerTest
 {
     public function setUp()
     {
-        if (!class_exists('Doctrine\ODM\PHPCR\DocumentManager')) {
+        if (! class_exists('Doctrine\ODM\PHPCR\DocumentManager')) {
             $this->markTestSkipped('Doctrine PHPCR is not available.');
         }
     }

@@ -47,7 +47,7 @@ abstract class AbstractProvider implements ProviderInterface
         ObjectPersisterInterface $objectPersister,
         IndexableInterface $indexable,
         $objectClass,
-        array $baseOptions = array()
+        array $baseOptions = []
     ) {
         $this->baseOptions = $baseOptions;
         $this->indexable = $indexable;
@@ -60,11 +60,11 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function populate(\Closure $loggerClosure = null, array $options = array())
+    public function populate(\Closure $loggerClosure = null, array $options = [])
     {
         $options = $this->resolveOptions($options);
 
-        $logger = !$options['debug_logging'] ?
+        $logger = ! $options['debug_logging'] ?
             $this->disableLogging() :
             null;
 
@@ -104,16 +104,16 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function configureOptions()
     {
-        $this->resolver->setDefaults(array(
+        $this->resolver->setDefaults([
             'reset' => true,
             'batch_size' => 100,
             'skip_indexable_check' => false,
-        ));
+        ]);
 
-        $this->resolver->setRequired(array(
+        $this->resolver->setRequired([
             'indexName',
             'typeName',
-        ));
+        ]);
     }
 
 
@@ -133,9 +133,9 @@ abstract class AbstractProvider implements ProviderInterface
         $index = $options['indexName'];
         $type = $options['typeName'];
 
-        $return = array();
+        $return = [];
         foreach ($objects as $object) {
-            if (!$this->indexable->isObjectIndexable($index, $type, $object)) {
+            if (! $this->indexable->isObjectIndexable($index, $type, $object)) {
                 continue;
             }
 

@@ -14,7 +14,7 @@ class TransformedFinderTest extends \PHPUnit_Framework_TestCase
         $transformer
             ->expects($this->once())
             ->method($transformMethod)
-            ->with(array());
+            ->with([]);
 
         return $transformer;
     }
@@ -24,15 +24,15 @@ class TransformedFinderTest extends \PHPUnit_Framework_TestCase
         $searchable = $this->getMockBuilder('Elastica\SearchableInterface')->getMock();
 
         $finder = $this->getMockBuilder('Fazland\ElasticaBundle\Finder\TransformedFinder')
-            ->setConstructorArgs(array($searchable, $transformer))
-            ->setMethods(array('search'))
+            ->setConstructorArgs([$searchable, $transformer])
+            ->setMethods(['search'])
             ->getMock();
 
         $finder
             ->expects($this->once())
             ->method('search')
             ->with($query, $limit)
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue([]));
 
         return $finder;
     }
@@ -42,10 +42,10 @@ class TransformedFinderTest extends \PHPUnit_Framework_TestCase
         $resultSet = $this
             ->getMockBuilder('Elastica\ResultSet')
             ->disableOriginalConstructor()
-            ->setMethods(array('getResults'))
+            ->setMethods(['getResults'])
             ->getMock();
 
-        $resultSet->expects($this->once())->method('getResults')->will($this->returnValue(array()));
+        $resultSet->expects($this->once())->method('getResults')->will($this->returnValue([]));
 
         return $resultSet;
     }
@@ -77,7 +77,7 @@ class TransformedFinderTest extends \PHPUnit_Framework_TestCase
         $searchable = $this
             ->getMockBuilder('Elastica\Type')
             ->disableOriginalConstructor()
-            ->setMethods(array('moreLikeThis'))
+            ->setMethods(['moreLikeThis'])
             ->getMock();
 
         $searchable->expects($this->once())
@@ -88,8 +88,8 @@ class TransformedFinderTest extends \PHPUnit_Framework_TestCase
         $transformer = $this->createMockTransformer('transform');
 
         $finder = $this->getMockBuilder('Fazland\ElasticaBundle\Finder\TransformedFinder')
-            ->setConstructorArgs(array($searchable, $transformer))
-            ->setMethods(array('search'))
+            ->setConstructorArgs([$searchable, $transformer])
+            ->setMethods(['search'])
             ->getMock();
 
         $finder->moreLikeThis(1);

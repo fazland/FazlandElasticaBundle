@@ -22,11 +22,11 @@ class ConfigSourcePass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('fazland_elastica.config_manager')) {
+        if (! $container->hasDefinition('fazland_elastica.config_manager')) {
             return;
         }
 
-        $sources = array();
+        $sources = [];
         foreach (array_keys($container->findTaggedServiceIds('fazland_elastica.config_source')) as $id) {
             $sources[] = new Reference($id);
         }

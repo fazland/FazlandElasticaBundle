@@ -2,10 +2,8 @@
 
 namespace Fazland\ElasticaBundle\Doctrine;
 
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Fazland\ElasticaBundle\Finder\FinderInterface;
-use Fazland\ElasticaBundle\Manager\RepositoryManager as BaseManager;
 use Fazland\ElasticaBundle\Manager\RepositoryManagerInterface;
 
 /**
@@ -19,10 +17,10 @@ use Fazland\ElasticaBundle\Manager\RepositoryManagerInterface;
 class RepositoryManager implements RepositoryManagerInterface
 {
     /** @var array */
-    protected $entities = array();
+    protected $entities = [];
     
     /** @var array */
-    protected $repositories = array();
+    protected $repositories = [];
     
     /** @var ManagerRegistry */
     protected $managerRegistry;

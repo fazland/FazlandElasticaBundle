@@ -83,7 +83,7 @@ class PopulateCommand extends ContainerAwareCommand
 
         $index = $input->getOption('index');
         $type = $input->getOption('type');
-        $reset = !$input->getOption('no-reset');
+        $reset = ! $input->getOption('no-reset');
         $options = [
             'ignore_errors' => $input->getOption('ignore-errors'),
             'offset' => $input->getOption('offset'),
@@ -98,7 +98,7 @@ class PopulateCommand extends ContainerAwareCommand
         }
 
         if ($reset && $input->getOption('offset') &&
-            !$this->io->confirm('You chose to reset the index and start indexing with an offset. Do you really want to do that?')) {
+            ! $this->io->confirm('You chose to reset the index and start indexing with an offset. Do you really want to do that?')) {
             return;
         }
 

@@ -2,8 +2,8 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class RegisterProvidersPass implements CompilerPassInterface
 {
@@ -13,14 +13,14 @@ class RegisterProvidersPass implements CompilerPassInterface
      *
      * @var array
      */
-    private $implementations = array();
+    private $implementations = [];
 
     /**
      * @see Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface::process()
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('fazland_elastica.provider_registry')) {
+        if (! $container->hasDefinition('fazland_elastica.provider_registry')) {
             return;
         }
 
@@ -30,13 +30,13 @@ class RegisterProvidersPass implements CompilerPassInterface
         $registry = $container->getDefinition('fazland_elastica.provider_registry');
         $providers = $container->findTaggedServiceIds('fazland_elastica.provider');
 
-        $providersByPriority = array();
+        $providersByPriority = [];
         foreach ($providers as $id => $attributes) {
             $priority = isset($attributes[0]['priority']) ? $attributes[0]['priority'] : 0;
             $providersByPriority[$priority][$id] = $attributes;
         }
 
-        if (!empty($providersByPriority)){
+        if (! empty($providersByPriority)) {
             krsort($providersByPriority);
             $providersByPriority = call_user_func_array('array_merge', $providersByPriority);
         }
@@ -45,12 +45,12 @@ class RegisterProvidersPass implements CompilerPassInterface
             $index = $type = null;
             $class = $container->getDefinition($providerId)->getClass();
 
-            if (!$class || !$this->isProviderImplementation($class)) {
+            if (! $class || ! $this->isProviderImplementation($class)) {
                 throw new \InvalidArgumentException(sprintf('Elastica provider "%s" with class "%s" must implement ProviderInterface.', $providerId, $class));
             }
 
             foreach ($tags as $tag) {
-                if (!isset($tag['type'])) {
+                if (! isset($tag['type'])) {
                     throw new \InvalidArgumentException(sprintf('Elastica provider "%s" must specify the "type" attribute.', $providerId));
                 }
 
@@ -58,7 +58,7 @@ class RegisterProvidersPass implements CompilerPassInterface
                 $type = $tag['type'];
             }
 
-            $registry->addMethodCall('addProvider', array($index, $type, $providerId));
+            $registry->addMethodCall('addProvider', [$index, $type, $providerId]);
         }
     }
 
@@ -71,7 +71,7 @@ class RegisterProvidersPass implements CompilerPassInterface
      */
     private function isProviderImplementation($class)
     {
-        if (!isset($this->implementations[$class])) {
+        if (! isset($this->implementations[$class])) {
             $refl = new \ReflectionClass($class);
             $this->implementations[$class] = $refl->implementsInterface('Fazland\ElasticaBundle\Provider\ProviderInterface');
         }

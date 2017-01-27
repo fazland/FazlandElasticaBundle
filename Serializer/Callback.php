@@ -3,13 +3,13 @@
 namespace Fazland\ElasticaBundle\Serializer;
 
 use JMS\Serializer\SerializationContext;
-use Symfony\Component\Serializer\SerializerInterface;
 use JMS\Serializer\SerializerInterface as JMSSerializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class Callback
 {
     protected $serializer;
-    protected $groups = array();
+    protected $groups = [];
     protected $version;
     protected $serializeNull;
 
@@ -19,7 +19,7 @@ class Callback
     public function setSerializer($serializer)
     {
         $this->serializer = $serializer;
-        if (!method_exists($this->serializer, 'serialize')) {
+        if (! method_exists($this->serializer, 'serialize')) {
             throw new \RuntimeException('The serializer must have a "serialize" method.');
         }
     }
@@ -31,7 +31,7 @@ class Callback
     {
         $this->groups = $groups;
 
-        if (!empty($this->groups) && !$this->serializer instanceof SerializerInterface && !$this->serializer instanceof JMSSerializer) {
+        if (! empty($this->groups) && ! $this->serializer instanceof SerializerInterface && ! $this->serializer instanceof JMSSerializer) {
             throw new \RuntimeException('Setting serialization groups requires using "JMS\Serializer\Serializer" or "Symfony\Component\Serializer\Serializer"');
         }
     }
@@ -43,7 +43,7 @@ class Callback
     {
         $this->version = $version;
 
-        if ($this->version && !$this->serializer instanceof JMSSerializer) {
+        if ($this->version && ! $this->serializer instanceof JMSSerializer) {
             throw new \RuntimeException('Setting serialization version requires using "JMS\Serializer\Serializer".');
         }
     }
@@ -55,7 +55,7 @@ class Callback
     {
         $this->serializeNull = $serializeNull;
 
-        if (true === $this->serializeNull && !$this->serializer instanceof JMSSerializer) {
+        if (true === $this->serializeNull && ! $this->serializer instanceof JMSSerializer) {
             throw new \RuntimeException('Setting null value serialization option requires using "JMS\Serializer\Serializer".');
         }
     }
@@ -67,9 +67,9 @@ class Callback
      */
     public function serialize($object)
     {
-        $context = $this->serializer instanceof JMSSerializer ? SerializationContext::create()->enableMaxDepthChecks() : array();
+        $context = $this->serializer instanceof JMSSerializer ? SerializationContext::create()->enableMaxDepthChecks() : [];
 
-        if (!empty($this->groups)) {
+        if (! empty($this->groups)) {
             if ($context instanceof SerializationContext) {
                 $context->setGroups($this->groups);
             } else {
@@ -81,8 +81,8 @@ class Callback
             $context->setVersion($this->version);
         }
 
-        if (!is_array($context)) {
-          $context->setSerializeNull($this->serializeNull);
+        if (! is_array($context)) {
+            $context->setSerializeNull($this->serializeNull);
         }
 
         return $this->serializer->serialize($object, 'json', $context);

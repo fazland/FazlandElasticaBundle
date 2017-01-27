@@ -2,8 +2,8 @@
 
 namespace Fazland\ElasticaBundle\Doctrine\ORM;
 
-use Fazland\ElasticaBundle\Doctrine\AbstractElasticaToModelTransformer;
 use Doctrine\ORM\Query;
+use Fazland\ElasticaBundle\Doctrine\AbstractElasticaToModelTransformer;
 
 /**
  * Maps Elastica documents with Doctrine objects
@@ -25,7 +25,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
     protected function findByIdentifiers(array $identifierValues, $hydrate)
     {
         if (empty($identifierValues)) {
-            return array();
+            return [];
         }
         $hydrationMode = $hydrate ? Query::HYDRATE_OBJECT : Query::HYDRATE_ARRAY;
 

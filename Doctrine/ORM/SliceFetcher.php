@@ -3,8 +3,8 @@
 namespace Fazland\ElasticaBundle\Doctrine\ORM;
 
 use Doctrine\ORM\QueryBuilder;
-use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 use Fazland\ElasticaBundle\Doctrine\SliceFetcherInterface;
+use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 
 /**
  * Fetches a slice of objects.
@@ -21,7 +21,7 @@ class SliceFetcher implements SliceFetcherInterface
      */
     public function fetch($queryBuilder, $limit, $offset, array $previousSlice, array $identifierFieldNames)
     {
-        if (!$queryBuilder instanceof QueryBuilder) {
+        if (! $queryBuilder instanceof QueryBuilder) {
             throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ORM\QueryBuilder');
         }
 

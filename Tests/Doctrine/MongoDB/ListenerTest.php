@@ -8,7 +8,7 @@ class ListenerTest extends BaseListenerTest
 {
     public function setUp()
     {
-        if (!class_exists('Doctrine\ODM\MongoDB\DocumentManager')) {
+        if (! class_exists('Doctrine\ODM\MongoDB\DocumentManager')) {
             $this->markTestSkipped('Doctrine MongoDB ODM is not available.');
         }
     }

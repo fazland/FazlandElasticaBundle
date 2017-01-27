@@ -2,10 +2,10 @@
 
 namespace Fazland\ElasticaBundle\Doctrine\PHPCR;
 
-use Fazland\ElasticaBundle\Doctrine\AbstractProvider;
-use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 use Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder;
 use Doctrine\ODM\PHPCR\Query\Query;
+use Fazland\ElasticaBundle\Doctrine\AbstractProvider;
+use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 
 class Provider extends AbstractProvider
 {
@@ -37,7 +37,7 @@ class Provider extends AbstractProvider
      */
     protected function countObjects($queryBuilder)
     {
-        if (!$queryBuilder instanceof QueryBuilder) {
+        if (! $queryBuilder instanceof QueryBuilder) {
             throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder');
         }
 
@@ -53,7 +53,7 @@ class Provider extends AbstractProvider
      */
     protected function fetchSlice($queryBuilder, $limit, $offset)
     {
-        if (!$queryBuilder instanceof QueryBuilder) {
+        if (! $queryBuilder instanceof QueryBuilder) {
             throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder');
         }
 
@@ -68,7 +68,7 @@ class Provider extends AbstractProvider
     /**
      * {@inheritDoc}
      */
-    protected function createQueryBuilder($method,array $arguments=array())
+    protected function createQueryBuilder($method, array $arguments=[])
     {
         return $this->managerRegistry
             ->getManager()

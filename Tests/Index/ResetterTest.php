@@ -2,11 +2,8 @@
 
 namespace Fazland\ElasticaBundle\Tests\Index;
 
-use Elastica\Exception\ResponseException;
 use Elastica\Request;
-use Elastica\Response;
 use Elastica\Type;
-use Elastica\Type\Mapping;
 use Fazland\ElasticaBundle\Configuration\IndexConfig;
 use Fazland\ElasticaBundle\Configuration\TypeConfig;
 use Fazland\ElasticaBundle\Elastica\Index;
@@ -32,23 +29,23 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
     public function testResetAllIndexes()
     {
         $indexName = 'index1';
-        $indexConfig = new IndexConfig($indexName, array(), array());
+        $indexConfig = new IndexConfig($indexName, [], []);
         $this->mockIndex($indexName, $indexConfig);
 
         $this->configManager->expects($this->once())
             ->method('getIndexNames')
-            ->will($this->returnValue(array($indexName)));
+            ->will($this->returnValue([$indexName]));
 
-        $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent'))
-        ));
+        $this->dispatcherExpects([
+            [IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')],
+            [IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')]
+        ]);
 
         $this->elasticaClient->expects($this->exactly(2))
             ->method('request')
             ->withConsecutive(
-                array('index1/', 'DELETE'),
-                array('index1/', 'PUT', array(), array())
+                ['index1/', 'DELETE'],
+                ['index1/', 'PUT', [], []]
             );
 
         $this->resetter->resetAllIndexes();
@@ -56,19 +53,19 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
 
     public function testResetIndex()
     {
-        $indexConfig = new IndexConfig('index1', array(), array());
+        $indexConfig = new IndexConfig('index1', [], []);
         $this->mockIndex('index1', $indexConfig);
 
-        $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent'))
-        ));
+        $this->dispatcherExpects([
+            [IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')],
+            [IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')]
+        ]);
 
         $this->elasticaClient->expects($this->exactly(2))
             ->method('request')
             ->withConsecutive(
-                array('index1/', 'DELETE'),
-                array('index1/', 'PUT', array(), array())
+                ['index1/', 'DELETE'],
+                ['index1/', 'PUT', [], []]
             );
 
         $this->resetter->resetIndex('index1');
@@ -76,20 +73,20 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
 
     public function testResetIndexWithDifferentName()
     {
-        $indexConfig = new IndexConfig('index1', array(), array(
+        $indexConfig = new IndexConfig('index1', [], [
             'elasticSearchName' => 'notIndex1'
-        ));
+        ]);
         $this->mockIndex('index1', $indexConfig);
-        $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent'))
-        ));
+        $this->dispatcherExpects([
+            [IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')],
+            [IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')]
+        ]);
 
         $this->elasticaClient->expects($this->exactly(2))
             ->method('request')
             ->withConsecutive(
-                array('index1/', 'DELETE'),
-                array('index1/', 'PUT', array(), array())
+                ['index1/', 'DELETE'],
+                ['index1/', 'PUT', [], []]
             );
 
         $this->resetter->resetIndex('index1');
@@ -97,15 +94,15 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
 
     public function testResetIndexWithDifferentNameAndAlias()
     {
-        $indexConfig = new IndexConfig('index1', array(), array(
+        $indexConfig = new IndexConfig('index1', [], [
             'elasticSearchName' => 'notIndex1',
             'useAlias' => true
-        ));
+        ]);
         $index = $this->mockIndex('index1', $indexConfig);
-        $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent'))
-        ));
+        $this->dispatcherExpects([
+            [IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')],
+            [IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')]
+        ]);
 
         $this->aliasProcessor->expects($this->once())
             ->method('switchIndexAlias')
@@ -114,8 +111,8 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
         $this->elasticaClient->expects($this->exactly(2))
             ->method('request')
             ->withConsecutive(
-                array('index1/', 'DELETE'),
-                array('index1/', 'PUT', array(), array())
+                ['index1/', 'DELETE'],
+                ['index1/', 'PUT', [], []]
             );
 
         $this->resetter->resetIndex('index1');
@@ -139,23 +136,23 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
 
     public function testResetType()
     {
-        $typeConfig = new TypeConfig('type', array(), array());
-        $indexConfig = new IndexConfig('index', array(), array());
+        $typeConfig = new TypeConfig('type', [], []);
+        $indexConfig = new IndexConfig('index', [], []);
         $this->mockType('type', 'index', $typeConfig, $indexConfig);
 
-        $this->dispatcherExpects(array(
-            array(IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')),
-            array(TypeResetEvent::PRE_TYPE_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\TypeResetEvent')),
-            array(TypeResetEvent::POST_TYPE_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\TypeResetEvent'))
-        ));
+        $this->dispatcherExpects([
+            [IndexResetEvent::PRE_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')],
+            [IndexResetEvent::POST_INDEX_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\IndexResetEvent')],
+            [TypeResetEvent::PRE_TYPE_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\TypeResetEvent')],
+            [TypeResetEvent::POST_TYPE_RESET, $this->isInstanceOf('Fazland\\ElasticaBundle\\Event\\TypeResetEvent')]
+        ]);
 
         $this->elasticaClient->expects($this->exactly(3))
             ->method('request')
             ->withConsecutive(
-                array('index/', 'DELETE'),
-                array('index/', 'PUT', array(), array()),
-                array('index/type/_mapping', 'PUT', array('type' => array()), array())
+                ['index/', 'DELETE'],
+                ['index/', 'PUT', [], []],
+                ['index/type/_mapping', 'PUT', ['type' => []], []]
             );
 
         $this->resetter->resetIndexType('index', 'type');
@@ -163,26 +160,26 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
 
     public function testResetTypeWithChangedSettings()
     {
-        $settingsValue = array(
-            'analysis' => array(
-                'analyzer' => array(
-                    'test_analyzer' => array(
+        $settingsValue = [
+            'analysis' => [
+                'analyzer' => [
+                    'test_analyzer' => [
                         'type' => 'standard',
                         'tokenizer' => 'standard'
-                    )
-                )
-            )
-        );
-        $typeConfig = new TypeConfig('type', array(), array());
-        $indexConfig = new IndexConfig('index', array(), array('settings' => $settingsValue));
+                    ]
+                ]
+            ]
+        ];
+        $typeConfig = new TypeConfig('type', [], []);
+        $indexConfig = new IndexConfig('index', [], ['settings' => $settingsValue]);
         $this->mockType('type', 'index', $typeConfig, $indexConfig);
 
         $this->elasticaClient->expects($this->exactly(3))
             ->method('request')
             ->withConsecutive(
-                array('index/', 'DELETE'),
-                array('index/', 'PUT', array(), array()),
-                array('index/type/_mapping', 'PUT', array('type' => array()), array())
+                ['index/', 'DELETE'],
+                ['index/', 'PUT', [], []],
+                ['index/type/_mapping', 'PUT', ['type' => []], []]
             );
 
         $this->resetter->resetIndexType('index', 'type');
@@ -206,7 +203,7 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
 
     public function testPostPopulateWithoutAlias()
     {
-        $this->mockIndex('index', new IndexConfig('index', array(), array()));
+        $this->mockIndex('index', new IndexConfig('index', [], []));
 
         $this->indexManager->expects($this->never())
             ->method('getIndex');
@@ -218,7 +215,7 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
 
     public function testPostPopulate()
     {
-        $indexConfig = new IndexConfig('index', array(), array('useAlias' => true));
+        $indexConfig = new IndexConfig('index', [], ['useAlias' => true]);
         $index = $this->mockIndex('index', $indexConfig);
 
         $this->aliasProcessor->expects($this->once())
@@ -233,10 +230,10 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
         $expectation = $this->dispatcher->expects($this->exactly(count($events)))
             ->method('dispatch');
 
-        call_user_func_array(array($expectation, 'withConsecutive'), $events);
+        call_user_func_array([$expectation, 'withConsecutive'], $events);
     }
 
-    private function mockIndex($indexName, IndexConfig $config, $mapping = array())
+    private function mockIndex($indexName, IndexConfig $config, $mapping = [])
     {
         $this->configManager->expects($this->atLeast(1))
             ->method('getIndexConfiguration')
@@ -255,7 +252,7 @@ class ResetterTest extends \PHPUnit_Framework_TestCase
         return $index;
     }
 
-    private function mockType($typeName, $indexName, TypeConfig $typeConfig, IndexConfig $indexConfig, $mapping = array())
+    private function mockType($typeName, $indexName, TypeConfig $typeConfig, IndexConfig $indexConfig, $mapping = [])
     {
         $this->configManager->expects($this->atLeast(1))
             ->method('getTypeConfiguration')

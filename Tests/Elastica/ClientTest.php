@@ -13,7 +13,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $connection = $this->getMockBuilder('Elastica\Connection')->getMock();
         $connection->expects($this->any())->method('getTransportObject')->will($this->returnValue($transport));
-        $connection->expects($this->any())->method('toArray')->will($this->returnValue(array()));
+        $connection->expects($this->any())->method('toArray')->will($this->returnValue([]));
 
         $logger = $this->getMockBuilder('Fazland\ElasticaBundle\Logger\ElasticaLogger')->getMock();
         $logger
@@ -32,7 +32,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             );
 
         $client = $this->getMockBuilder('Fazland\ElasticaBundle\Elastica\Client')
-            ->setMethods(array('getConnection'))
+            ->setMethods(['getConnection'])
             ->getMock();
 
         $client->expects($this->any())->method('getConnection')->will($this->returnValue($connection));

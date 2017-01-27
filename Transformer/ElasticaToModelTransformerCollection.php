@@ -3,7 +3,6 @@
 namespace Fazland\ElasticaBundle\Transformer;
 
 use Fazland\ElasticaBundle\HybridResult;
-use Elastica\Document;
 
 /**
  * Holds a collection of transformers for an index wide transformation.
@@ -15,7 +14,7 @@ class ElasticaToModelTransformerCollection implements ElasticaToModelTransformer
     /**
      * @var ElasticaToModelTransformerInterface[]
      */
-    protected $transformers = array();
+    protected $transformers = [];
 
     /**
      * @param array $transformers
@@ -50,12 +49,12 @@ class ElasticaToModelTransformerCollection implements ElasticaToModelTransformer
      */
     public function transform(array $elasticaObjects)
     {
-        $sorted = array();
+        $sorted = [];
         foreach ($elasticaObjects as $object) {
             $sorted[$object->getType()][] = $object;
         }
 
-        $transformed = array();
+        $transformed = [];
         foreach ($sorted as $type => $objects) {
             $transformedObjects = $this->transformers[$type]->transform($objects);
             $identifierGetter = 'get'.ucfirst($this->transformers[$type]->getIdentifierField());
@@ -70,7 +69,7 @@ class ElasticaToModelTransformerCollection implements ElasticaToModelTransformer
             );
         }
 
-        $result = array();
+        $result = [];
         foreach ($elasticaObjects as $object) {
             if (array_key_exists((string) $object->getId(), $transformed[$object->getType()])) {
                 $result[] = $transformed[$object->getType()][(string) $object->getId()];
@@ -87,7 +86,7 @@ class ElasticaToModelTransformerCollection implements ElasticaToModelTransformer
     {
         $objects = $this->transform($elasticaObjects);
 
-        $result = array();
+        $result = [];
         for ($i = 0, $j = count($elasticaObjects); $i < $j; $i++) {
             $result[] = new HybridResult($elasticaObjects[$i], $objects[$i]);
         }

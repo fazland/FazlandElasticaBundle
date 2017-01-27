@@ -50,7 +50,7 @@ class Provider extends AbstractProvider
      */
     protected function countObjects($queryBuilder)
     {
-        if (!$queryBuilder instanceof QueryBuilder) {
+        if (! $queryBuilder instanceof QueryBuilder) {
             throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ORM\QueryBuilder');
         }
 
@@ -75,7 +75,7 @@ class Provider extends AbstractProvider
      */
     protected function fetchSlice($queryBuilder, $limit, $offset)
     {
-        if (!$queryBuilder instanceof QueryBuilder) {
+        if (! $queryBuilder instanceof QueryBuilder) {
             throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ORM\QueryBuilder');
         }
 
@@ -107,7 +107,7 @@ class Provider extends AbstractProvider
     /**
      * {@inheritDoc}
      */
-    protected function createQueryBuilder($method, array $arguments = array())
+    protected function createQueryBuilder($method, array $arguments = [])
     {
         $repository = $this->managerRegistry
             ->getManagerForClass($this->objectClass)

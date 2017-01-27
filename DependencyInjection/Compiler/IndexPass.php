@@ -22,11 +22,11 @@ class IndexPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('fazland_elastica.index_manager')) {
+        if (! $container->hasDefinition('fazland_elastica.index_manager')) {
             return;
         }
 
-        $indexes = array();
+        $indexes = [];
         foreach ($container->findTaggedServiceIds('fazland_elastica.index') as $id => $tags) {
             foreach ($tags as $tag) {
                 $indexes[$tag['name']] = new Reference($id);

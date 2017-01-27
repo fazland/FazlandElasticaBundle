@@ -20,7 +20,7 @@ class MappingToElasticaTest extends WebTestCase
 {
     public function testResetIndexAddsMappings()
     {
-        $client = $this->createClient(array('test_case' => 'Basic'));
+        $client = $this->createClient(['test_case' => 'Basic']);
         $resetter = $this->getResetter($client);
         $resetter->resetIndex('index');
 
@@ -40,7 +40,7 @@ class MappingToElasticaTest extends WebTestCase
 
     public function testResetType()
     {
-        $client = $this->createClient(array('test_case' => 'Basic'));
+        $client = $this->createClient(['test_case' => 'Basic']);
         $resetter = $this->getResetter($client);
         $resetter->resetIndexType('index', 'type');
 
@@ -50,12 +50,12 @@ class MappingToElasticaTest extends WebTestCase
         $this->assertNotEmpty($mapping, 'Mapping was populated');
         $this->assertFalse($mapping['type']['date_detection']);
         $this->assertTrue($mapping['type']['numeric_detection']);
-        $this->assertEquals(array('yyyy-MM-dd'), $mapping['type']['dynamic_date_formats']);
+        $this->assertEquals(['yyyy-MM-dd'], $mapping['type']['dynamic_date_formats']);
     }
 
     public function testORMResetIndexAddsMappings()
     {
-        $client = $this->createClient(array('test_case' => 'ORM'));
+        $client = $this->createClient(['test_case' => 'ORM']);
         $resetter = $this->getResetter($client);
         $resetter->resetIndex('index');
 
@@ -67,7 +67,7 @@ class MappingToElasticaTest extends WebTestCase
 
     public function testORMResetType()
     {
-        $client = $this->createClient(array('test_case' => 'ORM'));
+        $client = $this->createClient(['test_case' => 'ORM']);
         $resetter = $this->getResetter($client);
         $resetter->resetIndexType('index', 'type');
 
@@ -79,15 +79,15 @@ class MappingToElasticaTest extends WebTestCase
 
     public function testMappingIteratorToArrayField()
     {
-        $client = $this->createClient(array('test_case' => 'ORM'));
+        $client = $this->createClient(['test_case' => 'ORM']);
         $persister = $client->getContainer()->get('fazland_elastica.object_persister.index.type');
 
         $object = new TypeObj();
         $object->id = 1;
-        $object->coll = new \ArrayIterator(array('foo', 'bar'));
+        $object->coll = new \ArrayIterator(['foo', 'bar']);
         $persister->insertOne($object);
 
-        $object->coll = new \ArrayIterator(array('foo', 'bar', 'bazz'));
+        $object->coll = new \ArrayIterator(['foo', 'bar', 'bazz']);
         $object->coll->offsetUnset(1);
 
         $persister->replaceOne($object);

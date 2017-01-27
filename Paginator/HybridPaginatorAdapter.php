@@ -2,9 +2,9 @@
 
 namespace Fazland\ElasticaBundle\Paginator;
 
-use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
-use Elastica\SearchableInterface;
 use Elastica\Query;
+use Elastica\SearchableInterface;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 
 /**
  * Allows pagination of \Elastica\Query

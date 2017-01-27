@@ -2,8 +2,8 @@
 
 namespace Fazland\ElasticaBundle\Index;
 
-use Elastica\Index;
 use Elastica\Exception\ResponseException;
+use Elastica\Index;
 use Elastica\Type\Mapping;
 use Fazland\ElasticaBundle\Configuration\ConfigManager;
 use Fazland\ElasticaBundle\Event\IndexResetEvent;
@@ -99,7 +99,7 @@ class Resetter
         $mapping = $this->mappingBuilder->buildIndexMapping($indexConfig);
         $index->create($mapping, true);
 
-        if (!$populating and $indexConfig->isUseAlias()) {
+        if (! $populating and $indexConfig->isUseAlias()) {
             $this->aliasProcessor->switchIndexAlias($indexConfig, $index, $force);
         }
 
@@ -127,7 +127,7 @@ class Resetter
         $event = new TypeResetEvent($indexName, $typeName);
         $this->dispatcher->dispatch(TypeResetEvent::PRE_TYPE_RESET, $event);
 
-        if (!empty($settings)) {
+        if (! empty($settings)) {
             unset($settings['number_of_shards']);
             $index->close();
             $index->setSettings($settings);

@@ -26,7 +26,7 @@ class ProviderRegistry implements ContainerAwareInterface
      */
     public function addProvider($index, $type, $providerId)
     {
-        if (!isset($this->providers[$index])) {
+        if (! isset($this->providers[$index])) {
             $this->providers[$index] = [];
         }
 
@@ -65,7 +65,7 @@ class ProviderRegistry implements ContainerAwareInterface
      */
     public function getIndexProviders($index)
     {
-        if (!isset($this->providers[$index])) {
+        if (! isset($this->providers[$index])) {
             throw new \InvalidArgumentException(sprintf('No providers were registered for index "%s".', $index));
         }
 
@@ -89,7 +89,7 @@ class ProviderRegistry implements ContainerAwareInterface
      */
     public function getProvider($index, $type)
     {
-        if (!isset($this->providers[$index][$type])) {
+        if (! isset($this->providers[$index][$type])) {
             throw new \InvalidArgumentException(sprintf('No provider was registered for index "%s" and type "%s".', $index, $type));
         }
 

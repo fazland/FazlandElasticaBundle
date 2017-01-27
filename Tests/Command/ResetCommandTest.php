@@ -19,14 +19,14 @@ class ResetCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->resetter = $this->getMockBuilder('\Fazland\ElasticaBundle\Index\Resetter')
             ->disableOriginalConstructor()
-            ->setMethods(array('resetIndex', 'resetIndexType'))
+            ->setMethods(['resetIndex', 'resetIndexType'])
             ->getMock();
 
         $container->set('fazland_elastica.resetter', $this->resetter);
 
         $this->indexManager = $this->getMockBuilder('\Fazland\ElasticaBundle\Index\IndexManager')
             ->disableOriginalConstructor()
-            ->setMethods(array('getAllIndexes'))
+            ->setMethods(['getAllIndexes'])
             ->getMock();
 
         $container->set('fazland_elastica.index_manager', $this->indexManager);
@@ -39,7 +39,7 @@ class ResetCommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->indexManager->expects($this->any())
             ->method('getAllIndexes')
-            ->will($this->returnValue(array('index1' => true, 'index2' => true)));
+            ->will($this->returnValue(['index1' => true, 'index2' => true]));
 
         $this->resetter->expects($this->at(0))
             ->method('resetIndex')
@@ -50,7 +50,7 @@ class ResetCommandTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('index2'));
 
         $this->command->run(
-            new ArrayInput(array()),
+            new ArrayInput([]),
             new NullOutput()
         );
     }
@@ -65,7 +65,7 @@ class ResetCommandTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('index1'));
 
         $this->command->run(
-            new ArrayInput(array('--index' => 'index1')),
+            new ArrayInput(['--index' => 'index1']),
             new NullOutput()
         );
     }
@@ -83,7 +83,7 @@ class ResetCommandTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('index1'), $this->equalTo('type1'));
 
         $this->command->run(
-            new ArrayInput(array('--index' => 'index1', '--type' => 'type1')),
+            new ArrayInput(['--index' => 'index1', '--type' => 'type1']),
             new NullOutput()
         );
     }

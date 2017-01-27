@@ -20,7 +20,7 @@ class Client extends BaseClient
      *
      * @var array
      */
-    private $indexCache = array();
+    private $indexCache = [];
 
     /**
      * Symfony's debugging Stopwatch.
@@ -37,7 +37,7 @@ class Client extends BaseClient
      *
      * @return \Elastica\Response
      */
-    public function request($path, $method = Request::GET, $data = array(), array $query = array())
+    public function request($path, $method = Request::GET, $data = [], array $query = [])
     {
         if ($this->stopwatch) {
             $this->stopwatch->start('es_request', 'fazland_elastica');
@@ -96,19 +96,19 @@ class Client extends BaseClient
      */
     private function logQuery($path, $method, $data, array $query, $queryTime, $engineMS = 0, $itemCount = 0)
     {
-        if (!$this->_logger or !$this->_logger instanceof ElasticaLogger) {
+        if (! $this->_logger or ! $this->_logger instanceof ElasticaLogger) {
             return;
         }
 
 
         $connection = $this->getLastRequest()->getConnection();
 
-        $connectionArray = array(
+        $connectionArray = [
             'host' => $connection->getHost(),
             'port' => $connection->getPort(),
             'transport' => $connection->getTransport(),
-            'headers' => $connection->hasConfig('headers') ? $connection->getConfig('headers') : array(),
-        );
+            'headers' => $connection->hasConfig('headers') ? $connection->getConfig('headers') : [],
+        ];
 
         /** @var ElasticaLogger $logger */
         $logger = $this->_logger;

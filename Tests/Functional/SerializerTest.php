@@ -18,15 +18,15 @@ class SerializerTest extends WebTestCase
 {
     public function testMappingIteratorToArrayField()
     {
-        $client = $this->createClient(array('test_case' => 'Serializer'));
+        $client = $this->createClient(['test_case' => 'Serializer']);
         $persister = $client->getContainer()->get('fazland_elastica.object_persister.index.type');
 
         $object = new TypeObj();
         $object->id = 1;
-        $object->coll = new \ArrayIterator(array('foo', 'bar'));
+        $object->coll = new \ArrayIterator(['foo', 'bar']);
         $persister->insertOne($object);
 
-        $object->coll = new \ArrayIterator(array('foo', 'bar', 'bazz'));
+        $object->coll = new \ArrayIterator(['foo', 'bar', 'bazz']);
         $object->coll->offsetUnset(1);
 
         $persister->replaceOne($object);
@@ -37,7 +37,7 @@ class SerializerTest extends WebTestCase
      */
     public function testWithNullValues()
     {
-        $client = $this->createClient(array('test_case' => 'Serializer'));
+        $client = $this->createClient(['test_case' => 'Serializer']);
         $container = $client->getContainer();
 
         $disabledNullPersister = $container->get('fazland_elastica.object_persister.index.type_serialize_null_disabled');
@@ -66,7 +66,7 @@ class SerializerTest extends WebTestCase
      */
     public function testWithDefaultConfiguration()
     {
-        $client = $this->createClient(array('test_case' => 'Serializer'));
+        $client = $this->createClient(['test_case' => 'Serializer']);
         $container = $client->getContainer();
 
         $defaultConfigPersister = $container->get('fazland_elastica.object_persister.index.serializer_default_config');
@@ -88,7 +88,7 @@ class SerializerTest extends WebTestCase
 
     public function testUnmappedType()
     {
-        $client = $this->createClient(array('test_case' => 'Serializer'));
+        $client = $this->createClient(['test_case' => 'Serializer']);
         $resetter = $client->getContainer()->get('fazland_elastica.resetter');
         $resetter->resetIndex('index');
     }

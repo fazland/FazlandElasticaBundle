@@ -20,7 +20,7 @@ class PropertyPathTest extends WebTestCase
 {
     public function testContainerSource()
     {
-        $client = $this->createClient(array('test_case' => 'ORM'));
+        $client = $this->createClient(['test_case' => 'ORM']);
         /** @var \Fazland\ElasticaBundle\Persister\ObjectPersister $persister */
         $persister = $client->getContainer()->get('fazland_elastica.object_persister.index.property_paths_type');
         $obj = new TypeObj();

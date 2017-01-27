@@ -2,10 +2,10 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\Reference;
 use InvalidArgumentException;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Registers Transformer implementations into the TransformerCollection.
@@ -19,11 +19,11 @@ class TransformerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('fazland_elastica.elastica_to_model_transformer.collection')) {
+        if (! $container->hasDefinition('fazland_elastica.elastica_to_model_transformer.collection')) {
             return;
         }
 
-        $transformers = array();
+        $transformers = [];
 
         foreach ($container->findTaggedServiceIds('fazland_elastica.elastica_to_model_transformer') as $id => $tags) {
             foreach ($tags as $tag) {
@@ -36,7 +36,7 @@ class TransformerPass implements CompilerPassInterface
         }
 
         foreach ($transformers as $index => $indexTransformers) {
-            if (!$container->hasDefinition(sprintf('fazland_elastica.elastica_to_model_transformer.collection.%s', $index))) {
+            if (! $container->hasDefinition(sprintf('fazland_elastica.elastica_to_model_transformer.collection.%s', $index))) {
                 continue;
             }
 

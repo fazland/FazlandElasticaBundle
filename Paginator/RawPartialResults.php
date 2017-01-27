@@ -2,8 +2,8 @@
 
 namespace Fazland\ElasticaBundle\Paginator;
 
-use Elastica\ResultSet;
 use Elastica\Result;
+use Elastica\ResultSet;
 
 /**
  * Raw partial results transforms to a simple array.

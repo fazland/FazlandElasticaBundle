@@ -6,8 +6,8 @@ use Fazland\ElasticaBundle\DependencyInjection\Compiler\ConfigSourcePass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\IndexPass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\RegisterProvidersPass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\TransformerPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class FazlandElasticaBundle extends Bundle

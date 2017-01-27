@@ -22,11 +22,11 @@ class WebTestCase extends BaseWebTestCase
         return 'Fazland\ElasticaBundle\Tests\Functional\app\AppKernel';
     }
 
-    protected static function createKernel(array $options = array())
+    protected static function createKernel(array $options = [])
     {
         $class = self::getKernelClass();
 
-        if (!isset($options['test_case'])) {
+        if (! isset($options['test_case'])) {
             throw new \InvalidArgumentException('The option "test_case" must be set.');
         }
 
