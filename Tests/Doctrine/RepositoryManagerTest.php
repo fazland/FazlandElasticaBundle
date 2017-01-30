@@ -36,7 +36,7 @@ class RepositoryManagerTest extends \PHPUnit_Framework_TestCase
 
         $mainManager->method('getRepository')
             ->with($this->equalTo('index/type'))
-            ->willReturn(new Repository($finderMock));
+            ->willReturn(new Repository($this->createMock(\Fazland\ElasticaBundle\Manager\RepositoryManager::class), $finderMock));
 
         $entityName = 'Fazland\ElasticaBundle\Tests\Manager\Entity';
 
@@ -68,7 +68,7 @@ class RepositoryManagerTest extends \PHPUnit_Framework_TestCase
 
         $mainManager->method('getRepository')
             ->with($this->equalTo('index/type'))
-            ->willReturn(new Repository($finderMock));
+            ->willReturn(new Repository($this->createMock(\Fazland\ElasticaBundle\Manager\RepositoryManager::class), $finderMock));
 
         $entityName = 'Fazland\ElasticaBundle\Tests\Manager\Entity';
 

@@ -75,7 +75,7 @@ class RepositoryManager implements RepositoryManagerInterface
             return $this->types[$typeName]['repositoryName'];
         }
 
-        return 'Fazland\ElasticaBundle\Repository';
+        return Repository::class;
     }
 
     /**
@@ -89,6 +89,6 @@ class RepositoryManager implements RepositoryManagerInterface
             throw new RuntimeException(sprintf('%s repository for %s does not exist', $repositoryName, $typeName));
         }
 
-        return new $repositoryName($this->types[$typeName]['finder']);
+        return new $repositoryName($this, $this->types[$typeName]['finder']);
     }
 }

@@ -3,6 +3,7 @@
 namespace Fazland\ElasticaBundle;
 
 use Fazland\ElasticaBundle\Finder\PaginatedFinderInterface;
+use Fazland\ElasticaBundle\Manager\RepositoryManager;
 
 /**
  * @author Richard Miller <info@limethinking.co.uk>
@@ -12,14 +13,23 @@ use Fazland\ElasticaBundle\Finder\PaginatedFinderInterface;
  */
 class Repository
 {
-    /** @var PaginatedFinderInterface */
+    /**
+     * @var RepositoryManager
+     */
+    protected $repositoryManager;
+
+    /**
+     * @var PaginatedFinderInterface
+     */
     protected $finder;
 
     /**
+     * @param RepositoryManager $repositoryManager
      * @param PaginatedFinderInterface $finder
      */
-    public function __construct(PaginatedFinderInterface $finder)
+    public function __construct(RepositoryManager $repositoryManager, PaginatedFinderInterface $finder)
     {
+        $this->repositoryManager = $repositoryManager;
         $this->finder = $finder;
     }
 

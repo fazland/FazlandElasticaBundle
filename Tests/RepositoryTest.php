@@ -2,6 +2,8 @@
 
 namespace Fazland\ElasticaBundle\Tests;
 
+use Fazland\ElasticaBundle\Finder\TransformedFinder;
+use Fazland\ElasticaBundle\Manager\RepositoryManager;
 use Fazland\ElasticaBundle\Repository;
 
 /**
@@ -14,7 +16,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $testQuery = 'Test Query';
 
         $finderMock = $this->getFinderMock($testQuery);
-        $repository = new Repository($finderMock);
+        $repository = new Repository($this->getRepositoryManagerMock(), $finderMock);
         $repository->find($testQuery);
     }
 
@@ -24,7 +26,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $testLimit = 20;
 
         $finderMock = $this->getFinderMock($testQuery, $testLimit);
-        $repository = new Repository($finderMock);
+        $repository = new Repository($this->getRepositoryManagerMock(), $finderMock);
         $repository->find($testQuery, $testLimit);
     }
 
@@ -33,7 +35,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $testQuery = 'Test Query';
 
         $finderMock = $this->getFinderMock($testQuery, [], 'findPaginated');
-        $repository = new Repository($finderMock);
+        $repository = new Repository($this->getRepositoryManagerMock(), $finderMock);
         $repository->findPaginated($testQuery);
     }
 
@@ -42,7 +44,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $testQuery = 'Test Query';
 
         $finderMock = $this->getFinderMock($testQuery, [], 'createPaginatorAdapter');
-        $repository = new Repository($finderMock);
+        $repository = new Repository($this->getRepositoryManagerMock(), $finderMock);
         $repository->createPaginatorAdapter($testQuery);
     }
 
@@ -51,7 +53,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $testQuery = 'Test Query';
 
         $finderMock = $this->getFinderMock($testQuery, null, 'findHybrid');
-        $repository = new Repository($finderMock);
+        $repository = new Repository($this->getRepositoryManagerMock(), $finderMock);
         $repository->findHybrid($testQuery);
     }
 
@@ -64,7 +66,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
      */
     private function getFinderMock($testQuery, $testLimit = null, $method = 'find')
     {
-        $finderMock = $this->getMockBuilder('Fazland\ElasticaBundle\Finder\TransformedFinder')
+        $finderMock = $this->getMockBuilder(TransformedFinder::class)
             ->disableOriginalConstructor()
             ->getMock();
         $finderMock->expects($this->once())
@@ -72,5 +74,10 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo($testQuery), $this->equalTo($testLimit));
 
         return $finderMock;
+    }
+
+    private function getRepositoryManagerMock()
+    {
+        return $this->createMock(RepositoryManager::class);
     }
 }
