@@ -418,6 +418,10 @@ class FazlandElasticaExtension extends Extension
             return $typeConfig['persister']['service'];
         }
 
+        if (!isset($typeConfig['model'])) {
+            return null;
+        }
+
         $arguments = [
             $typeRef,
             new Reference($transformerId),
@@ -457,13 +461,11 @@ class FazlandElasticaExtension extends Extension
      * @param string           $objectPersisterId
      * @param string           $indexName
      * @param string           $typeName
-     *
-     * @return string
      */
     private function loadTypeProvider(array $typeConfig, ContainerBuilder $container, $objectPersisterId, $indexName, $typeName)
     {
-        if (isset($typeConfig['provider']['service'])) {
-            return $typeConfig['provider']['service'];
+        if (null === $objectPersisterId || isset($typeConfig['provider']['service'])) {
+            return;
         }
 
         /* Note: provider services may conflict with "prototype.driver", if the
@@ -480,8 +482,6 @@ class FazlandElasticaExtension extends Extension
             'typeName' => $typeName,
         ]));
         $container->setDefinition($providerId, $providerDef);
-
-        return $providerId;
     }
 
     /**
@@ -492,13 +492,11 @@ class FazlandElasticaExtension extends Extension
      * @param string           $objectPersisterId
      * @param string           $indexName
      * @param string           $typeName
-     *
-     * @return string
      */
     private function loadTypeListener(array $typeConfig, ContainerBuilder $container, $objectPersisterId, $indexName, $typeName)
     {
-        if (isset($typeConfig['listener']['service'])) {
-            return $typeConfig['listener']['service'];
+        if (null === $objectPersisterId || isset($typeConfig['listener']['service'])) {
+            return;
         }
 
         /* Note: listener services may conflict with "prototype.driver", if the
@@ -538,8 +536,6 @@ class FazlandElasticaExtension extends Extension
         }
 
         $container->setDefinition($listenerId, $listenerDef);
-
-        return $listenerId;
     }
 
     /**
