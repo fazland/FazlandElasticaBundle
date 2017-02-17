@@ -82,18 +82,6 @@ class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('id')
                     ->prototype('array')
                         ->performNoDeepMerging()
-                        // BC - Renaming 'servers' node to 'connections'
-                        ->beforeNormalization()
-                        ->ifTrue(function ($v) {
-                            return isset($v['servers']);
-                        })
-                        ->then(function ($v) {
-                            $v['connections'] = $v['servers'];
-                            unset($v['servers']);
-
-                            return $v;
-                        })
-                        ->end()
                         // Elastica names its properties with camel case, support both
                         ->beforeNormalization()
                         ->ifTrue(function ($v) {
