@@ -139,7 +139,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     ],
                     'types' => [
                         'test' => [
-                            'mappings' => [
+                            'properties' => [
                                 'title' => [],
                                 'published' => ['type' => 'datetime'],
                                 'body' => null,
@@ -151,7 +151,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                             ],
                         ],
                         'test2' => [
-                            'mappings' => [
+                            'properties' => [
                                 'title' => null,
                                 'children' => [
                                     'type' => 'nested',
@@ -188,7 +188,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'test' => [
                         'types' => [
                             'test' => [
-                                'mappings' => [
+                                'properties' => [
                                     'title' => [],
                                     'published' => ['type' => 'datetime'],
                                     'body' => null,

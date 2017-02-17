@@ -209,43 +209,7 @@ class Configuration implements ConfigurationInterface
                 ->treatNullLike([])
                 ->beforeNormalization()
                 ->ifNull()
-                ->thenEmptyArray()
-                ->end()
-                // BC - Renaming 'mappings' node to 'properties'
-                ->beforeNormalization()
-                ->ifTrue(function ($v) {
-                    return array_key_exists('mappings', $v);
-                })
-                ->then(function ($v) {
-                    $v['properties'] = $v['mappings'];
-                    unset($v['mappings']);
-
-                    return $v;
-                })
-                ->end()
-                // BC - Support the old is_indexable_callback property
-                ->beforeNormalization()
-                ->ifTrue(function ($v) {
-                    return isset($v['persistence']) &&
-                        isset($v['persistence']['listener']) &&
-                        isset($v['persistence']['listener']['is_indexable_callback']);
-                })
-                ->then(function ($v) {
-                    $callback = $v['persistence']['listener']['is_indexable_callback'];
-
-                    if (is_array($callback)) {
-                        list($class) = $callback + [null];
-
-                        if ($class[0] !== '@' && is_string($class) && ! class_exists($class)) {
-                            $callback[0] = '@'.$class;
-                        }
-                    }
-
-                    $v['indexable_callback'] = $callback;
-                    unset($v['persistence']['listener']['is_indexable_callback']);
-
-                    return $v;
-                })
+                    ->thenEmptyArray()
                 ->end()
                 // Support multiple dynamic_template formats to match the old bundle style
                 // and the way ElasticSearch expects them
@@ -282,12 +246,9 @@ class Configuration implements ConfigurationInterface
                 ->append($this->getPropertiesNode())
                 ->append($this->getDynamicTemplateNode())
                 ->append($this->getSourceNode())
-                ->append($this->getBoostNode())
                 ->append($this->getRoutingNode())
                 ->append($this->getParentNode())
                 ->append($this->getAllNode())
-                ->append($this->getTimestampNode())
-                ->append($this->getTtlNode())
             ->end()
         ;
 
@@ -386,24 +347,6 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * Returns the array node used for "_boost".
-     */
-    protected function getBoostNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('_boost');
-
-        $node
-            ->children()
-                ->scalarNode('name')->end()
-                ->scalarNode('null_value')->end()
-            ->end()
-        ;
-
-        return $node;
-    }
-
-    /**
      * Returns the array node used for "_routing".
      */
     protected function getRoutingNode()
@@ -452,47 +395,6 @@ class Configuration implements ConfigurationInterface
             ->children()
             ->scalarNode('enabled')->defaultValue(true)->end()
             ->scalarNode('analyzer')->end()
-            ->end()
-        ;
-
-        return $node;
-    }
-
-    /**
-     * Returns the array node used for "_timestamp".
-     */
-    protected function getTimestampNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('_timestamp');
-
-        $node
-            ->children()
-            ->scalarNode('enabled')->defaultValue(true)->end()
-            ->scalarNode('path')->end()
-            ->scalarNode('format')->end()
-            ->scalarNode('store')->end()
-            ->scalarNode('index')->end()
-            ->end()
-        ;
-
-        return $node;
-    }
-
-    /**
-     * Returns the array node used for "_ttl".
-     */
-    protected function getTtlNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('_ttl');
-
-        $node
-            ->children()
-            ->scalarNode('enabled')->defaultValue(true)->end()
-            ->scalarNode('default')->end()
-            ->scalarNode('store')->end()
-            ->scalarNode('index')->end()
             ->end()
         ;
 

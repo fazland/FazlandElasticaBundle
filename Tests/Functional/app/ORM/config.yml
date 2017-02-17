@@ -30,41 +30,41 @@ fazland_elastica:
                     properties:
                         field1: ~
                         coll: ~
+                    indexable_callback: 'object.isIndexable() && !object.isntIndexable()'
                     persistence:
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
-                        listener:
-                            is_indexable_callback: 'object.isIndexable() && !object.isntIndexable()'
+                        listener: ~
                         provider:
                             debug_logging: true
                 type2:
                     properties:
                         field1: ~
+                    indexable_callback: [ "@indexable_service", 'isIndexable' ]
                     persistence:
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
-                        listener:
-                            is_indexable_callback: [ "@indexable_service", 'isIndexable' ]
+                        listener: ~
                 type3:
-                    mappings:
+                    properties:
                         field1: ~
+                    indexable_callback: 'isntIndexable'
                     persistence:
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                         finder: ~
                         provider: ~
-                        listener:
-                            is_indexable_callback: 'isntIndexable'
+                        listener: ~
                 type4:
-                    mappings:
+                    properties:
                         field1: ~
+                    indexable_callback: [ 'Fazland\ElasticaBundle\Tests\Functional\app\ORM\IndexableService', 'isntIndexable' ]
                     persistence:
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                         finder: ~
                         provider: ~
-                        listener:
-                            is_indexable_callback: [ 'Fazland\ElasticaBundle\Tests\Functional\app\ORM\IndexableService', 'isntIndexable' ]
+                        listener: ~
                 property_paths_type:
                     persistence:
                         driver: orm
@@ -94,8 +94,8 @@ fazland_elastica:
                     properties:
                         field1: ~
                         coll: ~
+                    indexable_callback: 'object.isIndexable() && !object.isntIndexable()'
                     persistence:
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
-                        listener:
-                            is_indexable_callback: 'object.isIndexable() && !object.isntIndexable()'
+                        listener: ~

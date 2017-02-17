@@ -11,3 +11,5 @@ in 5.0 versions.
  * Removed `multi_field` type.
  * Removed `Search` annotations.
  * Removed deprecated `servers` configuration key.
+ * Removed `_boost`, `_timestamp` and `_ttl` fields, not supported by ES 5
+ * Removed deprecated `mappings` and `is_indexable_callback` configurations
