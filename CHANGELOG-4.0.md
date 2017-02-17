@@ -4,7 +4,7 @@ CHANGELOG for 4.0.x
 This changelog references the relevant changes (bug and security fixes) done
 in 4.0 versions.
 
-* 4.0.0 (xxxx-xx-xx)
+* 4.0.0 (2017-02-01)
 
  * Add `ruflin/Elastica` 3.x support.
  * Allow additional parameters to `AbstractProvider::queryBuilder`.
