@@ -6,26 +6,18 @@ use Fazland\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use Fazland\ElasticaBundle\Paginator\PartialResultsInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
 {
     /**
-     * @var Request
+     * @var RequestStack
      */
-    private $request;
+    private $requestStack;
 
-    /**
-     * @param RequestStack|Request $requestStack
-     */
-    public function setRequest($requestStack)
+    public function __construct(RequestStack $requestStack)
     {
-        if ($requestStack instanceof Request) {
-            $this->request = $requestStack;
-        } elseif ($requestStack instanceof RequestStack) {
-            $this->request = $requestStack->getMasterRequest();
-        }
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -51,6 +43,13 @@ class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
         }
     }
 
+    public static function getSubscribedEvents()
+    {
+        return [
+            'knp_pager.items' => ['items', 1],
+        ];
+    }
+
     /**
      * Adds knp paging sort to query.
      *
@@ -59,7 +58,8 @@ class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
     protected function setSorting(ItemsEvent $event)
     {
         $options = $event->options;
-        $sortField = $this->request->get($options['sortFieldParameterName']);
+        $request = $this->getRequest();
+        $sortField = null !== $request ? $request->get($options['sortFieldParameterName']) : null;
 
         if (! $sortField && isset($options['defaultSortFieldName'])) {
             $sortField = $options['defaultSortFieldName'];
@@ -104,7 +104,8 @@ class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
     protected function getSortDirection($sortField, array $options = [])
     {
         $dir = 'asc';
-        $sortDirection = $this->request->get($options['sortDirectionParameterName']);
+        $request = $this->getRequest();
+        $sortDirection = null !== $request ? $request->get($options['sortDirectionParameterName']) : null;
 
         if (empty($sortDirection) && isset($options['defaultSortDirection'])) {
             $sortDirection = $options['defaultSortDirection'];
@@ -122,13 +123,8 @@ class PaginateElasticaQuerySubscriber implements EventSubscriberInterface
         return $dir;
     }
 
-    /**
-     * @return array
-     */
-    public static function getSubscribedEvents()
+    private function getRequest()
     {
-        return [
-            'knp_pager.items' => ['items', 1],
-        ];
+        return $this->requestStack->getCurrentRequest();
     }
 }

@@ -8,6 +8,7 @@ use Fazland\ElasticaBundle\Paginator\RawPaginatorAdapter;
 use Fazland\ElasticaBundle\Subscriber\PaginateElasticaQuerySubscriber;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,10 +28,10 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldDoNothingIfSortParamIsEmpty()
     {
-        $request = new Request();
+        $stack = new RequestStack();
+        $stack->push(new Request());
 
-        $subscriber = new PaginateElasticaQuerySubscriber();
-        $subscriber->setRequest($request);
+        $subscriber = new PaginateElasticaQuerySubscriber($stack);
 
         $adapter = $this->getAdapterMock();
         $adapter->expects($this->never())
@@ -80,8 +81,10 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
      */
     public function testShouldSort(array $expected, Request $request)
     {
-        $subscriber = new PaginateElasticaQuerySubscriber();
-        $subscriber->setRequest($request);
+        $stack = new RequestStack();
+        $stack->push($request);
+
+        $subscriber = new PaginateElasticaQuerySubscriber($stack);
 
         $query = new Query();
         $adapter = $this->getAdapterMock();
@@ -109,8 +112,10 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
      */
     public function testShouldThrowIfFieldIsNotWhitelisted()
     {
-        $subscriber = new PaginateElasticaQuerySubscriber();
-        $subscriber->setRequest(new Request(['ord' => 'owner']));
+        $stack = new RequestStack();
+        $stack->push(new Request(['ord' => 'owner']));
+
+        $subscriber = new PaginateElasticaQuerySubscriber($stack);
 
         $query = new Query();
         $adapter = $this->getAdapterMock();
@@ -134,8 +139,10 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldAddNestedPath()
     {
-        $subscriber = new PaginateElasticaQuerySubscriber();
-        $subscriber->setRequest(new Request(['ord' => 'owner.name']));
+        $stack = new RequestStack();
+        $stack->push(new Request(['ord' => 'owner.name']));
+
+        $subscriber = new PaginateElasticaQuerySubscriber($stack);
 
         $query = new Query();
         $adapter = $this->getAdapterMock();
@@ -166,8 +173,10 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldInvokeCallableNestedPath()
     {
-        $subscriber = new PaginateElasticaQuerySubscriber();
-        $subscriber->setRequest(new Request(['ord' => 'owner.name']));
+        $stack = new RequestStack();
+        $stack->push(new Request(['ord' => 'owner.name']));
+
+        $subscriber = new PaginateElasticaQuerySubscriber($stack);
 
         $query = new Query();
         $adapter = $this->getAdapterMock();
@@ -201,8 +210,10 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldAddNestedFilter()
     {
-        $subscriber = new PaginateElasticaQuerySubscriber();
-        $subscriber->setRequest(new Request(['ord' => 'owner.name']));
+        $stack = new RequestStack();
+        $stack->push(new Request(['ord' => 'owner.name']));
+
+        $subscriber = new PaginateElasticaQuerySubscriber($stack);
 
         $query = new Query();
         $adapter = $this->getAdapterMock();
@@ -244,8 +255,10 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldInvokeNestedFilterCallable()
     {
-        $subscriber = new PaginateElasticaQuerySubscriber();
-        $subscriber->setRequest(new Request(['ord' => 'owner.name']));
+        $stack = new RequestStack();
+        $stack->push(new Request(['ord' => 'owner.name']));
+
+        $subscriber = new PaginateElasticaQuerySubscriber($stack);
 
         $query = new Query();
         $adapter = $this->getAdapterMock();
