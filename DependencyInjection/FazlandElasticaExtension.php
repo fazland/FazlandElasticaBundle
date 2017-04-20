@@ -134,9 +134,11 @@ class FazlandElasticaExtension extends Extension
             $indexConfig = new IndexConfig($name, $index);
             $this->indexConfigs[$name] = $indexConfig;
 
+            $indexConfigDef = $this->getIndexConfigDefinition($indexConfig);
+
             $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
-            $indexDef->setFactory([$this->getClient($indexConfig->client), 'getIndex']);
-            $indexDef->replaceArgument(0, $indexConfig->indexName);
+            $indexDef->replaceArgument(0, $this->getClient($indexConfig->client));
+            $indexDef->replaceArgument(1, $indexConfigDef);
             $indexDef->addTag('fazland_elastica.index', ['name' => $name]);
 
             $container->setDefinition($indexConfig->service, $indexDef);
@@ -639,5 +641,38 @@ class FazlandElasticaExtension extends Extension
             $container->getDefinition('fazland_elastica.indexable')
                 ->addMethodCall('setExpressionLanguage', $expressionLanguageDef);
         }
+    }
+
+    /**
+     * @param IndexConfig $indexConfig
+     *
+     * @return Definition
+     */
+    private function getIndexConfigDefinition(IndexConfig $indexConfig): Definition
+    {
+        $types = [];
+        foreach ($indexConfig->types as $typeConfig) {
+            $typeDef = new Definition(\Fazland\ElasticaBundle\Configuration\TypeConfig::class);
+            $typeDef->setArguments([
+                $typeConfig->name,
+                $typeConfig->mapping,
+                $typeConfig->config
+            ]);
+
+            $types[$typeConfig->name] = $typeDef;
+        }
+
+        $indexConfigDef = new Definition(\Fazland\ElasticaBundle\Configuration\IndexConfig::class);
+        $indexConfigDef->setArguments([
+            $indexConfig->name,
+            $types,
+            [
+                'elasticSearchName' => $indexConfig->indexName,
+                'settings' => $indexConfig->settings,
+                'useAlias' => $indexConfig->useAlias
+            ]
+        ]);
+
+        return $indexConfigDef;
     }
 }

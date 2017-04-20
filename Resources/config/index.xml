@@ -25,7 +25,8 @@
         </service>
 
         <service id="fazland_elastica.index_prototype" class="%fazland_elastica.index.class%" abstract="true">
-            <argument /> <!-- index name -->
+            <argument /> <!-- Client -->
+            <argument /> <!-- Index config -->
             <!-- tagged with fazland_elastica.index in the Extension -->
         </service>
 

@@ -2,8 +2,8 @@
 
 namespace Fazland\ElasticaBundle\Command;
 
-use Fazland\ElasticaBundle\IndexManager;
-use Fazland\ElasticaBundle\Resetter;
+use Fazland\ElasticaBundle\Index\IndexManager;
+use Fazland\ElasticaBundle\Index\Resetter;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,9 +24,6 @@ class ResetCommand extends ContainerAwareCommand
      */
     private $resetter;
 
-    /**
-     * @see Symfony\Component\Console\Command\Command::configure()
-     */
     protected function configure()
     {
         $this
@@ -38,18 +35,12 @@ class ResetCommand extends ContainerAwareCommand
         ;
     }
 
-    /**
-     * @see Symfony\Component\Console\Command\Command::initialize()
-     */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->indexManager = $this->getContainer()->get('fazland_elastica.index_manager');
         $this->resetter = $this->getContainer()->get('fazland_elastica.resetter');
     }
 
-    /**
-     * @see Symfony\Component\Console\Command\Command::execute()
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $index = $input->getOption('index');
@@ -71,7 +62,7 @@ class ResetCommand extends ContainerAwareCommand
 
             foreach ($indexes as $index) {
                 $output->writeln(sprintf('<info>Resetting</info> <comment>%s</comment>', $index));
-                $this->resetter->resetIndex($index, false, $force);
+                $index->reset();
             }
         }
     }

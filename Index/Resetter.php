@@ -3,10 +3,9 @@
 namespace Fazland\ElasticaBundle\Index;
 
 use Elastica\Exception\ResponseException;
-use Elastica\Index;
 use Elastica\Type\Mapping;
 use Fazland\ElasticaBundle\Configuration\ConfigManager;
-use Fazland\ElasticaBundle\Event\IndexResetEvent;
+use Fazland\ElasticaBundle\Elastica\Index;
 use Fazland\ElasticaBundle\Event\TypeResetEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -62,48 +61,14 @@ class Resetter
     }
 
     /**
-     * Deletes and recreates all indexes.
-     *
-     * @param bool $populating
-     * @param bool $force
-     */
-    public function resetAllIndexes($populating = false, $force = false)
-    {
-        foreach ($this->configManager->getIndexNames() as $name) {
-            $this->resetIndex($name, $populating, $force);
-        }
-    }
-
-    /**
      * Deletes and recreates the named index. If populating, creates a new index
      * with a randomised name for an alias to be set after population.
      *
-     * @param string $indexName
-     * @param bool   $populating
-     * @param bool   $force      If index exists with same name as alias, remove it
-     *
      * @throws \InvalidArgumentException if no index exists for the given name
      */
-    public function resetIndex($indexName, $populating = false, $force = false)
+    public function resetIndex(Index $index)
     {
-        $indexConfig = $this->configManager->getIndexConfiguration($indexName);
-        $index = $this->indexManager->getIndex($indexName);
-
-        if ($indexConfig->isUseAlias()) {
-            $this->aliasProcessor->setRootName($indexConfig, $index);
-        }
-
-        $event = new IndexResetEvent($indexName, $populating, $force);
-        $this->dispatcher->dispatch(IndexResetEvent::PRE_INDEX_RESET, $event);
-
-        $mapping = $this->mappingBuilder->buildIndexMapping($indexConfig);
-        $index->create($mapping, true);
-
-        if (! $populating and $indexConfig->isUseAlias()) {
-            $this->aliasProcessor->switchIndexAlias($indexConfig, $index, $force);
-        }
-
-        $this->dispatcher->dispatch(IndexResetEvent::POST_INDEX_RESET, $event);
+        $index->reset();
     }
 
     /**
@@ -139,15 +104,10 @@ class Resetter
     /**
      * A command run when a population has finished.
      *
-     * @param string $indexName
+     * @param Index $index
      */
-    public function postPopulate($indexName)
+    public function finalize(Index $index)
     {
-        $indexConfig = $this->configManager->getIndexConfiguration($indexName);
-
-        if ($indexConfig->isUseAlias()) {
-            $index = $this->indexManager->getIndex($indexName);
-            $this->aliasProcessor->switchIndexAlias($indexConfig, $index);
-        }
+        $index->getAliasStrategy()->finalize();
     }
 }

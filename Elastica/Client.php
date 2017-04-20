@@ -100,9 +100,7 @@ class Client extends BaseClient
             return;
         }
 
-
         $connection = $this->getLastRequest()->getConnection();
-
         $connectionArray = [
             'host' => $connection->getHost(),
             'port' => $connection->getPort(),

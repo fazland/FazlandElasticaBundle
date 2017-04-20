@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Command;
 
+use Fazland\ElasticaBundle\Elastica\Index;
 use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
 use Fazland\ElasticaBundle\Event\TypePopulateEvent;
 use Fazland\ElasticaBundle\Index\IndexManager;
@@ -189,16 +190,16 @@ class PopulateCommand extends ContainerAwareCommand
     /**
      * Refreshes an index.
      *
-     * @param string $index
+     * @param Index $index
      * @param bool $postPopulate
      */
-    private function refreshIndex($index, $postPopulate = true)
+    private function refreshIndex(Index $index, $postPopulate = true)
     {
         if ($postPopulate) {
-            $this->resetter->postPopulate($index);
+            $index->getAliasStrategy()->finalize();
         }
 
         $this->io->note(sprintf('Refreshing %s', $index));
-        $this->indexManager->getIndex($index)->refresh();
+        $index->refresh();
     }
 }

@@ -42,8 +42,6 @@
             <tag name="monolog.logger" channel="elastica" />
         </service>
 
-        <service id="fazland_elastica.mapping_builder" class="%fazland_elastica.mapping_builder.class%" />
-
         <service id="fazland_elastica.property_accessor" class="%fazland_elastica.property_accessor.class%">
             <argument>%fazland_elastica.property_accessor.magicCall%</argument>
             <argument>%fazland_elastica.property_accessor.throwExceptionOnInvalidIndex%</argument>

@@ -41,7 +41,6 @@ class MappingBuilder
         if (! empty($typeMappings)) {
             $mapping['mappings'] = $typeMappings;
         }
-        // 'warmers' => $indexConfig->getWarmers(),
 
         $settings = $indexConfig->getSettings();
         if (! empty($settings)) {

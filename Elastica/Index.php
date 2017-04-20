@@ -2,7 +2,12 @@
 
 namespace Fazland\ElasticaBundle\Elastica;
 
+use Elastica\Client;
 use Elastica\Index as BaseIndex;
+use Fazland\ElasticaBundle\Configuration\IndexConfig;
+use Fazland\ElasticaBundle\Index\AliasStrategy\AliasStrategyInterface;
+use Fazland\ElasticaBundle\Index\AliasStrategy\NullAliasStrategy;
+use Fazland\ElasticaBundle\Index\MappingBuilder;
 
 /**
  * Overridden Elastica Index class that provides dynamic index name changes.
@@ -26,14 +31,67 @@ class Index extends BaseIndex
     private $typeCache = [];
 
     /**
-     * Returns the original name of the index if the index has been renamed for reindexing
-     * or realiasing purposes.
-     *
-     * @return string
+     * @var AliasStrategyInterface
      */
-    public function getOriginalName()
+    private $aliasStrategy;
+
+    /**
+     * @var IndexConfig
+     */
+    private $indexConfig;
+
+    public function __construct(Client $client, IndexConfig $indexConfig)
     {
-        return $this->originalName ?: $this->_name;
+        $this->indexConfig = $indexConfig;
+
+        parent::__construct($client, $this->indexConfig->getElasticSearchName());
+    }
+
+    /**
+     * @return void
+     */
+    public function reset()
+    {
+        $this->overrideName();
+
+        $mappingBuilder = $this->getMappingBuilder();
+        $mapping = $mappingBuilder->buildIndexMapping($this->indexConfig);
+
+        $this->create($mapping, true);
+
+        $this->aliasStrategy->prePopulate();
+    }
+
+    public function setAliasStrategy(AliasStrategyInterface $aliasStrategy = null)
+    {
+        $this->aliasStrategy = $aliasStrategy;
+    }
+
+    public function getAliasStrategy(): AliasStrategyInterface
+    {
+        if (null === $this->aliasStrategy) {
+            $this->aliasStrategy = new NullAliasStrategy();
+        }
+
+        return $this->aliasStrategy;
+    }
+
+    /**
+     * Reassign index name for aliasing.
+     *
+     * While it's technically a regular setter for name property, it's specifically named overrideName, but not setName
+     * since it's used for a very specific case and normally should not be used
+     *
+     * @return void
+     */
+    public function overrideName()
+    {
+        if (null === $this->originalName) {
+            $this->originalName = $this->_name;
+        }
+
+        $this->_name = $this->aliasStrategy->buildName($this->originalName);
+        $this->_name = sprintf('%s_%s', $this->originalName, date('Y-m-d-His'));
     }
 
     /**
@@ -51,16 +109,12 @@ class Index extends BaseIndex
     }
 
     /**
-     * Reassign index name.
+     * Create a new instance of MappingBuilder
      *
-     * While it's technically a regular setter for name property, it's specifically named overrideName, but not setName
-     * since it's used for a very specific case and normally should not be used
-     *
-     * @param string $name Index name
+     * @return MappingBuilder
      */
-    public function overrideName($name)
+    protected function getMappingBuilder(): MappingBuilder
     {
-        $this->originalName = $this->_name;
-        $this->_name = $name;
+        return new MappingBuilder();
     }
 }
