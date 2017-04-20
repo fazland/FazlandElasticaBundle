@@ -8,7 +8,6 @@
         <parameter key="fazland_elastica.alias_processor.class">Fazland\ElasticaBundle\Index\AliasProcessor</parameter>
         <parameter key="fazland_elastica.finder.class">Fazland\ElasticaBundle\Finder\TransformedFinder</parameter>
         <parameter key="fazland_elastica.index.class">Fazland\ElasticaBundle\Elastica\Index</parameter>
-        <parameter key="fazland_elastica.index_manager.class">Fazland\ElasticaBundle\Index\IndexManager</parameter>
         <parameter key="fazland_elastica.resetter.class">Fazland\ElasticaBundle\Index\Resetter</parameter>
         <parameter key="fazland_elastica.type.class">Elastica\Type</parameter>
     </parameters>
@@ -34,7 +33,7 @@
             <argument /> <!-- type name -->
         </service>
 
-        <service id="fazland_elastica.index_manager" class="%fazland_elastica.index_manager.class%">
+        <service id="fazland_elastica.index_manager" class="Fazland\ElasticaBundle\Index\IndexManager">
             <argument /> <!-- indexes -->
         </service>
 

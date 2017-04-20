@@ -127,6 +127,16 @@ class Indexable implements IndexableInterface, DI\ContainerAwareInterface
     }
 
     /**
+     * Inject an ExpressionLanguage object.
+     *
+     * @param ExpressionLanguage $expressionLanguage
+     */
+    public function setExpressionLanguage(ExpressionLanguage $expressionLanguage)
+    {
+        $this->expressionLanguage = $expressionLanguage;
+    }
+
+    /**
      * Returns the ExpressionLanguage class if it is available.
      *
      * @return ExpressionLanguage|null

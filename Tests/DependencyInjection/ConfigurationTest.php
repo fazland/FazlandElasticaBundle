@@ -29,6 +29,9 @@ class ConfigurationTest extends TestCase
         $this->assertSame([
             'clients' => [],
             'indexes' => [],
+            'cache' => [
+                'indexable_expression' => null,
+            ],
         ], $configuration);
     }
 

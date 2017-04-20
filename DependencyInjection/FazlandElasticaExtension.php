@@ -13,8 +13,10 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\ExpressionLanguageProvider;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class FazlandElasticaExtension extends Extension
@@ -73,6 +75,8 @@ class FazlandElasticaExtension extends Extension
 
         $this->loadIndexes($config['indexes'], $container);
         $this->loadIndexManager($container);
+
+        $this->loadCaches($config['cache'], $container);
     }
 
     /**
@@ -623,5 +627,17 @@ class FazlandElasticaExtension extends Extension
         }
 
         return $this->clients[$clientName]['reference'];
+    }
+
+    private function loadCaches(array $cache, ContainerBuilder $container)
+    {
+        if ($cache['indexable_expression']) {
+            $expressionLanguageDef = new Definition(ExpressionLanguage::class);
+            $expressionLanguageDef->addMethodCall('registerProvider', [new Definition(ExpressionLanguageProvider::class)]);
+            $expressionLanguageDef->addArgument(new Reference($cache['indexable_expression']));
+
+            $container->getDefinition('fazland_elastica.indexable')
+                ->addMethodCall('setExpressionLanguage', $expressionLanguageDef);
+        }
     }
 }

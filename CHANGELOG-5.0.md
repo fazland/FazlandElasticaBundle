@@ -19,3 +19,5 @@ in 5.0 versions.
  * Removed deprecated Doctrine `RepositoryManager`.
  * All the bundle's exception classes are now implementing `Fazland\ElasticaBundle\Exception\ExceptionInterface`: you can use that to catch all the exceptions thrown by this bundle.
  * Indexable callbacks dropped support for array-callable with @-prefixed services. Use `service()` expression function instead.
+ * Added `cache` configuration, containing:
+   * `indexable_expression`: a service id to a cache object accepted by `ExpressionLanguage` class.
