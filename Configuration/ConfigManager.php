@@ -22,16 +22,6 @@ class ConfigManager implements ManagerInterface
     private $indexes = [];
 
     /**
-     * @param Source\SourceInterface[] $sources
-     */
-    public function __construct(array $sources)
-    {
-        foreach ($sources as $source) {
-            $this->indexes = array_merge($source->getConfiguration(), $this->indexes);
-        }
-    }
-
-    /**
      * @param string $indexName
      *
      * @return IndexConfig
@@ -76,5 +66,15 @@ class ConfigManager implements ManagerInterface
     public function hasIndexConfiguration($indexName)
     {
         return isset($this->indexes[$indexName]);
+    }
+
+    /**
+     * Add an IndexConfig to the manager.
+     *
+     * @param IndexConfig $indexConfig
+     */
+    public function addIndexConfiguration(IndexConfig $indexConfig) : void
+    {
+        $this->indexes[$indexConfig->getName()] = $indexConfig;
     }
 }

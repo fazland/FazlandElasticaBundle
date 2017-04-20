@@ -19,7 +19,6 @@ class FazlandElasticaBundle extends Bundle
     {
         parent::build($container);
 
-        $container->addCompilerPass(new ConfigSourcePass());
         $container->addCompilerPass(new IndexPass());
         $container->addCompilerPass(new RegisterProvidersPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new TransformerPass());

@@ -1,10 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\Index;
 
+use Fazland\ElasticaBundle\Elastica\Index;
 use Fazland\ElasticaBundle\Index\IndexManager;
+use PHPUnit\Framework\TestCase;
 
-class IndexManagerTest extends \PHPUnit_Framework_TestCase
+class IndexManagerTest extends TestCase
 {
     private $indexes = [];
 
@@ -15,19 +17,15 @@ class IndexManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $this->indexManager = new IndexManager();
+
         foreach (['index1', 'index2', 'index3'] as $indexName) {
-            $index = $this->getMockBuilder('Fazland\\ElasticaBundle\\Elastica\\Index')
-                ->disableOriginalConstructor()
-                ->getMock();
+            $index = $this->prophesize(Index::class);
+            $index->getName()->willReturn($indexName);
 
-            $index->expects($this->any())
-                ->method('getName')
-                ->will($this->returnValue($indexName));
-
-            $this->indexes[$indexName] = $index;
+            $this->indexes[$indexName] = $index->reveal();
+            $this->indexManager->addIndex($indexName, $index->reveal());
         }
-
-        $this->indexManager = new IndexManager($this->indexes, $this->indexes['index2']);
     }
 
     public function testGetAllIndexes()
@@ -37,9 +35,9 @@ class IndexManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetIndex()
     {
-        $this->assertEquals($this->indexes['index1'], $this->indexManager->getIndex('index1'));
-        $this->assertEquals($this->indexes['index2'], $this->indexManager->getIndex('index2'));
-        $this->assertEquals($this->indexes['index3'], $this->indexManager->getIndex('index3'));
+        $this->assertSame($this->indexes['index1'], $this->indexManager->getIndex('index1'));
+        $this->assertSame($this->indexes['index2'], $this->indexManager->getIndex('index2'));
+        $this->assertSame($this->indexes['index3'], $this->indexManager->getIndex('index3'));
     }
 
     /**
@@ -48,11 +46,5 @@ class IndexManagerTest extends \PHPUnit_Framework_TestCase
     public function testGetIndexShouldThrowExceptionForInvalidName()
     {
         $this->indexManager->getIndex('index4');
-    }
-
-    public function testGetDefaultIndex()
-    {
-        $this->assertEquals('index2', $this->indexManager->getIndex()->getName());
-        $this->assertEquals('index2', $this->indexManager->getDefaultIndex()->getName());
     }
 }

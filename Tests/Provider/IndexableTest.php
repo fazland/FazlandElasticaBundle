@@ -12,16 +12,35 @@
 namespace Fazland\ElasticaBundle\Tests\Provider;
 
 use Fazland\ElasticaBundle\Provider\Indexable;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class IndexableTest extends \PHPUnit_Framework_TestCase
+class IndexableTest extends TestCase
 {
-    public $container;
+    /**
+     * @var ContainerInterface|ObjectProphecy
+     */
+    private $container;
+
+    /**
+     * @var Indexable
+     */
+    private $indexable;
+
+    protected function setUp()
+    {
+        $this->container = $this->prophesize(ContainerInterface::class);
+        $this->container->get('indexableService')
+            ->willReturn(new IndexableDecider());
+
+        $this->indexable = new Indexable();
+        $this->indexable->setContainer($this->container->reveal());
+    }
 
     public function testIndexableUnknown()
     {
-        $indexable = new Indexable([]);
-        $indexable->setContainer($this->container);
-        $index = $indexable->isObjectIndexable('index', 'type', new Entity());
+        $index = $this->indexable->isObjectIndexable('index', 'type', new Entity());
 
         $this->assertTrue($index);
     }
@@ -31,11 +50,8 @@ class IndexableTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidIndexableCallbacks($callback, $return)
     {
-        $indexable = new Indexable([
-            'index/type' => $callback,
-        ]);
-        $indexable->setContainer($this->container);
-        $index = $indexable->isObjectIndexable('index', 'type', new Entity());
+        $this->indexable->addCallback('index/type', $callback);
+        $index = $this->indexable->isObjectIndexable('index', 'type', new Entity());
 
         $this->assertEquals($return, $index);
     }
@@ -46,11 +62,8 @@ class IndexableTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidIsIndexableCallbacks($callback)
     {
-        $indexable = new Indexable([
-            'index/type' => $callback,
-        ]);
-        $indexable->setContainer($this->container);
-        $indexable->isObjectIndexable('index', 'type', new Entity());
+        $this->indexable->addCallback('index/type', $callback);
+        $this->indexable->isObjectIndexable('index', 'type', new Entity());
     }
 
     public function provideInvalidIsIndexableCallbacks()
@@ -69,28 +82,17 @@ class IndexableTest extends \PHPUnit_Framework_TestCase
         return [
             ['isIndexable', false],
             [[new IndexableDecider(), 'isIndexable'], true],
-            [['@indexableService', 'isIndexable'], true],
-            [['@indexableService'], true],
+            ['service("indexableService").isIndexable(object)', true],
+            ['service("indexableService").__invoke(object)', true],
             [function (Entity $entity) {
                 return $entity->maybeIndex();
             }, true],
-            ['entity.maybeIndex()', true],
-            ['!object.isIndexable() && entity.property == "abc"', true],
-            ['entity.property != "abc"', false],
+            ['object.maybeIndex()', true],
+            ['!object.isIndexable() && object.property == "abc"', true],
+            ['object.property != "abc"', false],
             ['["array", "values"]', true],
             ['[]', false],
         ];
-    }
-
-    protected function setUp()
-    {
-        $this->container = $this->getMockBuilder('Symfony\\Component\\DependencyInjection\\ContainerInterface')
-            ->getMock();
-
-        $this->container->expects($this->any())
-            ->method('get')
-            ->with('indexableService')
-            ->will($this->returnValue(new IndexableDecider()));
     }
 }
 

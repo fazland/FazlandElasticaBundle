@@ -2,7 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Exception;
 
-class AliasIsIndexException extends \Exception
+class AliasIsIndexException extends \Exception implements ExceptionInterface
 {
     /**
      * @param string $indexName

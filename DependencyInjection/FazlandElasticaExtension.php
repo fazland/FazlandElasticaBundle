@@ -1,11 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\DependencyInjection;
 
+use Doctrine\ORM\Events as ORMEvents;
+use Doctrine\ODM\PHPCR\Event as PHPCREvents;
+use Doctrine\ODM\MongoDB\Events as MongoDBEvents;
+use Fazland\ElasticaBundle\DependencyInjection\Config\IndexConfig;
+use Fazland\ElasticaBundle\DependencyInjection\Config\TypeConfig;
 use InvalidArgumentException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
@@ -23,7 +29,7 @@ class FazlandElasticaExtension extends Extension
     /**
      * An array of indexes as configured by the extension.
      *
-     * @var array
+     * @var IndexConfig[]
      */
     private $indexConfigs = [];
 
@@ -47,18 +53,13 @@ class FazlandElasticaExtension extends Extension
             return;
         }
 
-        foreach (['config', 'index', 'persister', 'provider', 'source', 'transformer'] as $basename) {
+        foreach (['config', 'index', 'persister', 'provider', 'transformer'] as $basename) {
             $loader->load(sprintf('%s.xml', $basename));
         }
 
         if (empty($config['default_client'])) {
             $keys = array_keys($config['clients']);
             $config['default_client'] = reset($keys);
-        }
-
-        if (empty($config['default_index'])) {
-            $keys = array_keys($config['indexes']);
-            $config['default_index'] = reset($keys);
         }
 
         if (isset($config['serializer'])) {
@@ -71,13 +72,7 @@ class FazlandElasticaExtension extends Extension
         $container->setAlias('fazland_elastica.client', sprintf('fazland_elastica.client.%s', $config['default_client']));
 
         $this->loadIndexes($config['indexes'], $container);
-        $container->setAlias('fazland_elastica.index', sprintf('fazland_elastica.index.%s', $config['default_index']));
-
-        $container->getDefinition('fazland_elastica.config_source.container')->replaceArgument(0, $this->indexConfigs);
-
         $this->loadIndexManager($container);
-
-        $this->createDefaultManagerAlias($config['default_manager'], $container);
     }
 
     /**
@@ -96,10 +91,8 @@ class FazlandElasticaExtension extends Extension
      *
      * @param array            $clients   An array of clients configurations
      * @param ContainerBuilder $container A ContainerBuilder instance
-     *
-     * @return array
      */
-    private function loadClients(array $clients, ContainerBuilder $container)
+    private function loadClients(array $clients, ContainerBuilder $container): void
     {
         foreach ($clients as $name => $clientConfig) {
             $clientId = sprintf('fazland_elastica.client.%s', $name);
@@ -130,400 +123,315 @@ class FazlandElasticaExtension extends Extension
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
      * @throws \InvalidArgumentException
-     *
-     * @return array
      */
-    private function loadIndexes(array $indexes, ContainerBuilder $container)
+    private function loadIndexes(array $indexes, ContainerBuilder $container): void
     {
-        $indexableCallbacks = [];
-
         foreach ($indexes as $name => $index) {
-            $indexId = sprintf('fazland_elastica.index.%s', $name);
-            $indexName = isset($index['index_name']) ? $index['index_name'] : $name;
+            $indexConfig = new IndexConfig($name, $index);
+            $this->indexConfigs[$name] = $indexConfig;
 
             $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
-            $indexDef->setFactory([new Reference('fazland_elastica.client'), 'getIndex']);
-            $indexDef->replaceArgument(0, $indexName);
-            $indexDef->addTag('fazland_elastica.index', [
-                'name' => $name,
-            ]);
+            $indexDef->setFactory([$this->getClient($indexConfig->client), 'getIndex']);
+            $indexDef->replaceArgument(0, $indexConfig->indexName);
+            $indexDef->addTag('fazland_elastica.index', ['name' => $name]);
 
-            if (isset($index['client'])) {
-                $client = $this->getClient($index['client']);
-
-                $indexDef->setFactory([$client, 'getIndex']);
-            }
-
-            $container->setDefinition($indexId, $indexDef);
-            $reference = new Reference($indexId);
-
-            $this->indexConfigs[$name] = [
-                'elasticsearch_name' => $indexName,
-                'reference' => $reference,
-                'name' => $name,
-                'settings' => $index['settings'],
-                'type_prototype' => isset($index['type_prototype']) ? $index['type_prototype'] : [],
-                'use_alias' => $index['use_alias'],
-            ];
+            $container->setDefinition($indexConfig->service, $indexDef);
 
             if ($index['finder']) {
-                $this->loadIndexFinder($container, $name, $reference);
+                $this->loadIndexFinder($indexConfig, $container);
             }
 
-            $this->loadTypes((array) $index['types'], $container, $this->indexConfigs[$name], $indexableCallbacks);
+            foreach ($indexConfig->types as $type) {
+                $this->loadType($type, $container);
+            }
         }
-
-        $indexable = $container->getDefinition('fazland_elastica.indexable');
-        $indexable->replaceArgument(0, $indexableCallbacks);
     }
 
     /**
      * Loads the configured index finders.
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     * @param string                                                  $name      The index name
-     * @param Reference                                               $index     Reference to the related index
-     *
-     * @return string
+     * @param IndexConfig $indexConfig
+     * @param ContainerBuilder $container
      */
-    private function loadIndexFinder(ContainerBuilder $container, $name, Reference $index)
+    private function loadIndexFinder(IndexConfig $indexConfig, ContainerBuilder $container): void
     {
-        /* Note: transformer services may conflict with "collection.index", if
+        /*
+         * Note: transformer services may conflict with "collection.index", if
          * an index and type names were "collection" and an index, respectively.
          */
-        $transformerId = sprintf('fazland_elastica.elastica_to_model_transformer.collection.%s', $name);
+
+        $transformerId = sprintf('fazland_elastica.elastica_to_model_transformer.collection.%s', $indexConfig->name);
         $transformerDef = new DefinitionDecorator('fazland_elastica.elastica_to_model_transformer.collection');
         $container->setDefinition($transformerId, $transformerDef);
 
-        $finderId = sprintf('fazland_elastica.finder.%s', $name);
+        $finderId = sprintf('fazland_elastica.finder.%s', $indexConfig->name);
+
         $finderDef = new DefinitionDecorator('fazland_elastica.finder');
-        $finderDef->replaceArgument(0, $index);
+        $finderDef->replaceArgument(0, $indexConfig->getReference());
         $finderDef->replaceArgument(1, new Reference($transformerId));
 
         $container->setDefinition($finderId, $finderDef);
     }
 
     /**
-     * Loads the configured types.
+     * Loads the configured type.
      *
-     * @param array            $types
+     * @param TypeConfig $type
      * @param ContainerBuilder $container
-     * @param array            $indexConfig
-     * @param array            $indexableCallbacks
      */
-    private function loadTypes(array $types, ContainerBuilder $container, array $indexConfig, array &$indexableCallbacks)
+    private function loadType(TypeConfig $type, ContainerBuilder $container)
     {
-        foreach ($types as $name => $type) {
-            $indexName = $indexConfig['name'];
+        $indexConfig = $type->index;
 
-            $typeId = sprintf('%s.%s', $indexConfig['reference'], $name);
-            $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
-            $typeDef->setFactory([$indexConfig['reference'], 'getType']);
-            $typeDef->replaceArgument(0, $name);
+        $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
+        $typeDef->setFactory([$indexConfig->getReference(), 'getType']);
+        $typeDef->replaceArgument(0, $type->name);
 
-            $container->setDefinition($typeId, $typeDef);
+        $container->setDefinition($type->service, $typeDef);
 
-            $typeConfig = [
-                'name' => $name,
-                'mapping' => [], // An array containing anything that gets sent directly to ElasticSearch
-                'config' => [],
-            ];
+        if ($type->indexableCallback) {
+            $container->getDefinition('fazland_elastica.indexable')
+                ->addMethodCall('addCallback', [sprintf('%s/%s', $indexConfig->name, $type->name), $type->indexableCallback]);
+        }
 
-            foreach ([
-                'dynamic_templates',
-                'properties',
-                '_all',
-                '_boost',
-                '_id',
-                '_parent',
-                '_routing',
-                '_source',
-                '_timestamp',
-                '_ttl',
-            ] as $field) {
-                if (isset($type[$field])) {
-                    $typeConfig['mapping'][$field] = $type[$field];
-                }
+        if ($type->hasPersistenceIntegration()) {
+            $this->loadTypePersistenceIntegration($type, $container);
+        }
+
+        if (isset($type->mapping['_parent'])) {
+            // _parent mapping cannot contain `property` and `identifier`, so removing them after building `persistence`
+            unset($type->mapping['_parent']['property'], $type->mapping['_parent']['identifier']);
+        }
+
+        if ($container->hasDefinition('fazland_elastica.serializer_callback_prototype')) {
+            $typeSerializerId = sprintf('%s.serializer.callback', $type->service);
+            $typeSerializerDef = new DefinitionDecorator('fazland_elastica.serializer_callback_prototype');
+
+            if (isset($type->serializerOptions['groups'])) {
+                $typeSerializerDef->addMethodCall('setGroups', [$type->serializerOptions['groups']]);
             }
 
-            foreach ([
-                'persistence',
-                'serializer',
-                'analyzer',
-                'search_analyzer',
-                'dynamic',
-                'date_detection',
-                'dynamic_date_formats',
-                'numeric_detection',
-            ] as $field) {
-                $typeConfig['config'][$field] = array_key_exists($field, $type) ?
-                    $type[$field] :
-                    null;
+            if (isset($type->serializerOptions['serialize_null'])) {
+                $typeSerializerDef->addMethodCall('setSerializeNull', [$type->serializerOptions['serialize_null']]);
             }
 
-            $this->indexConfigs[$indexName]['types'][$name] = $typeConfig;
-
-            if (isset($type['persistence'])) {
-                $this->loadTypePersistenceIntegration($type['persistence'], $container, new Reference($typeId), $indexName, $name);
-
-                $typeConfig['persistence'] = $type['persistence'];
+            if (isset($type->serializerOptions['version'])) {
+                $typeSerializerDef->addMethodCall('setVersion', [$type->serializerOptions['version']]);
             }
 
-            if (isset($type['_parent'])) {
-                // _parent mapping cannot contain `property` and `identifier`, so removing them after building `persistence`
-                unset($indexConfig['types'][$name]['mapping']['_parent']['property'], $indexConfig['types'][$name]['mapping']['_parent']['identifier']);
-            }
-
-            if (isset($type['indexable_callback'])) {
-                $indexableCallbacks[sprintf('%s/%s', $indexName, $name)] = $type['indexable_callback'];
-            }
-
-            if ($container->hasDefinition('fazland_elastica.serializer_callback_prototype')) {
-                $typeSerializerId = sprintf('%s.serializer.callback', $typeId);
-                $typeSerializerDef = new DefinitionDecorator('fazland_elastica.serializer_callback_prototype');
-
-                if (isset($type['serializer']['groups'])) {
-                    $typeSerializerDef->addMethodCall('setGroups', [$type['serializer']['groups']]);
-                }
-
-                if (isset($type['serializer']['serialize_null'])) {
-                    $typeSerializerDef->addMethodCall('setSerializeNull', [$type['serializer']['serialize_null']]);
-                }
-
-                if (isset($type['serializer']['version'])) {
-                    $typeSerializerDef->addMethodCall('setVersion', [$type['serializer']['version']]);
-                }
-
-                $typeDef->addMethodCall('setSerializer', [[new Reference($typeSerializerId), 'serialize']]);
-                $container->setDefinition($typeSerializerId, $typeSerializerDef);
-            }
+            $typeDef->addMethodCall('setSerializer', [[new Reference($typeSerializerId), 'serialize']]);
+            $container->setDefinition($typeSerializerId, $typeSerializerDef);
         }
     }
 
     /**
      * Loads the optional provider and finder for a type.
      *
-     * @param array            $typeConfig
+     * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
-     * @param Reference        $typeRef
-     * @param string           $indexName
-     * @param string           $typeName
      */
-    private function loadTypePersistenceIntegration(array $typeConfig, ContainerBuilder $container, Reference $typeRef, $indexName, $typeName)
+    private function loadTypePersistenceIntegration(TypeConfig $typeConfig, ContainerBuilder $container)
     {
-        if (isset($typeConfig['driver'])) {
-            $this->loadDriver($container, $typeConfig['driver']);
-            $elasticaToModelTransformerId = $this->loadElasticaToModelTransformer($typeConfig, $container, $indexName, $typeName);
-            $modelToElasticaTransformerId = $this->loadModelToElasticaTransformer($typeConfig, $container, $typeRef, $indexName, $typeName);
-            $objectPersisterId = $this->loadObjectPersister($typeConfig, $typeRef, $container, $indexName, $typeName, $modelToElasticaTransformerId);
-        } else {
-            $elasticaToModelTransformerId = null;
-            $objectPersisterId = null;
+        if ($typeConfig->persistenceDriver) {
+            $this->loadDriver($container, $typeConfig->persistenceDriver);
+
+            $this->loadElasticaToModelTransformer($typeConfig, $container);
+            $this->loadModelToElasticaTransformer($typeConfig, $container);
+            $this->loadObjectPersister($typeConfig, $container);
         }
 
-        if (isset($typeConfig['provider'])) {
-            $this->loadTypeProvider($typeConfig, $container, $objectPersisterId, $indexName, $typeName);
+        if ($typeConfig->provider) {
+            $this->loadTypeProvider($typeConfig, $container);
         }
-        if (isset($typeConfig['finder'])) {
-            $this->loadTypeFinder($typeConfig, $container, $elasticaToModelTransformerId, $typeRef, $indexName, $typeName);
-        }
-        if (isset($typeConfig['listener'])) {
-            $this->loadTypeListener($typeConfig, $container, $objectPersisterId, $indexName, $typeName);
+
+        $this->loadTypeFinder($typeConfig, $container);
+
+        if ($typeConfig->listener) {
+            $this->loadTypeListener($typeConfig, $container);
         }
     }
 
     /**
      * Creates and loads an ElasticaToModelTransformer.
      *
-     * @param array            $typeConfig
+     * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
-     * @param string           $indexName
-     * @param string           $typeName
-     *
-     * @return string
      */
-    private function loadElasticaToModelTransformer(array $typeConfig, ContainerBuilder $container, $indexName, $typeName)
+    private function loadElasticaToModelTransformer(TypeConfig $typeConfig, ContainerBuilder $container): void
     {
-        if (isset($typeConfig['elastica_to_model_transformer']['service'])) {
-            return $typeConfig['elastica_to_model_transformer']['service'];
+        if (null !== $typeConfig->elasticaToModelTransformer) {
+            return;
         }
 
-        /* Note: transformer services may conflict with "prototype.driver", if
+        /*
+         * Note: transformer services may conflict with "prototype.driver", if
          * the index and type names were "prototype" and a driver, respectively.
          */
-        $abstractId = sprintf('fazland_elastica.elastica_to_model_transformer.prototype.%s', $typeConfig['driver']);
-        $serviceId = sprintf('fazland_elastica.elastica_to_model_transformer.%s.%s', $indexName, $typeName);
+        $abstractId = sprintf('fazland_elastica.elastica_to_model_transformer.prototype.%s', $typeConfig->persistenceDriver);
+        $serviceId = sprintf('fazland_elastica.elastica_to_model_transformer.%s.%s', $typeConfig->index->name, $typeConfig->name);
         $serviceDef = new DefinitionDecorator($abstractId);
-        $serviceDef->addTag('fazland_elastica.elastica_to_model_transformer', ['type' => $typeName, 'index' => $indexName]);
+        $serviceDef->addTag('fazland_elastica.elastica_to_model_transformer', ['type' => $typeConfig->name, 'index' => $typeConfig->index->name]);
 
         // Doctrine has a mandatory service as first argument
-        $argPos = ('propel' === $typeConfig['driver']) ? 0 : 1;
+        $argPos = ('propel' === $typeConfig->persistenceDriver) ? 0 : 1;
 
-        $serviceDef->replaceArgument($argPos, $typeConfig['model']);
-        $serviceDef->replaceArgument($argPos + 1, array_merge($typeConfig['elastica_to_model_transformer'], [
-            'identifier' => $typeConfig['identifier'],
+        $serviceDef->replaceArgument($argPos, $typeConfig->model);
+        $serviceDef->replaceArgument($argPos + 1, array_merge($typeConfig->elasticaToModelTransformerOptions, [
+            'identifier' => $typeConfig->modelIdentifier,
         ]));
-        $container->setDefinition($serviceId, $serviceDef);
 
-        return $serviceId;
+        $container->setDefinition($serviceId, $serviceDef);
+        $typeConfig->elasticaToModelTransformer = $serviceId;
     }
 
     /**
      * Creates and loads a ModelToElasticaTransformer for an index/type.
      *
-     * @param array $typeConfig
+     * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
-     * @param Reference $typeRef
-     * @param string $indexName
-     * @param string $typeName
-     *
-     * @return string
      */
-    private function loadModelToElasticaTransformer(array $typeConfig, ContainerBuilder $container, Reference $typeRef, $indexName, $typeName)
+    private function loadModelToElasticaTransformer(TypeConfig $typeConfig, ContainerBuilder $container): void
     {
-        if (isset($typeConfig['model_to_elastica_transformer']['service'])) {
-            return $typeConfig['model_to_elastica_transformer']['service'];
+        if (null !== $typeConfig->modelToElasticaTransformer) {
+            return;
         }
 
         $abstractId = $container->hasDefinition('fazland_elastica.serializer_callback_prototype') ?
             'fazland_elastica.model_to_elastica_identifier_transformer' :
             'fazland_elastica.model_to_elastica_transformer';
 
-        $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $indexName, $typeName);
+        $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $typeConfig->index->name, $typeConfig->name);
         $serviceDef = new DefinitionDecorator($abstractId);
+        $serviceDef->replaceArgument(0, $typeConfig->getReference());
         $serviceDef->replaceArgument(1, [
-            'identifier' => $typeConfig['identifier'],
+            'identifier' => $typeConfig->modelIdentifier,
         ]);
-        $serviceDef->replaceArgument(0, $typeRef);
-        $container->setDefinition($serviceId, $serviceDef);
 
-        return $serviceId;
+        $container->setDefinition($serviceId, $serviceDef);
+        $typeConfig->modelToElasticaTransformer = $serviceId;
     }
 
     /**
      * Creates and loads an object persister for a type.
      *
-     * @param array            $typeConfig
-     * @param Reference        $typeRef
+     * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
-     * @param string           $indexName
-     * @param string           $typeName
-     * @param string           $transformerId
-     *
-     * @return string
      */
-    private function loadObjectPersister(array $typeConfig, Reference $typeRef, ContainerBuilder $container, $indexName, $typeName, $transformerId)
+    private function loadObjectPersister(TypeConfig $typeConfig, ContainerBuilder $container): void
     {
-        if (isset($typeConfig['persister']['service'])) {
-            return $typeConfig['persister']['service'];
+        if (null !== $typeConfig->persister) {
+            return;
         }
 
-        if (!isset($typeConfig['model'])) {
-            return null;
+        if (! $typeConfig->model) {
+            $typeConfig->persister = null;
+            return;
         }
 
         $arguments = [
-            $typeRef,
-            new Reference($transformerId),
-            $typeConfig['model'],
+            $typeConfig->getReference(),
+            new Reference($typeConfig->modelToElasticaTransformer),
+            $typeConfig->model,
         ];
 
         if ($container->hasDefinition('fazland_elastica.serializer_callback_prototype')) {
             $abstractId = 'fazland_elastica.object_serializer_persister';
-            $callbackId = sprintf('%s.%s.serializer.callback', $this->indexConfigs[$indexName]['reference'], $typeName);
+            $callbackId = sprintf('%s.%s.serializer.callback', $typeConfig->index->service, $typeConfig->name);
             $arguments[] = [new Reference($callbackId), 'serialize'];
         } else {
             $abstractId = 'fazland_elastica.object_persister';
-            $mapping = $this->indexConfigs[$indexName]['types'][$typeName]['mapping'];
+            $mapping = $typeConfig->mapping;
             $argument = $mapping['properties'];
+
             if (isset($mapping['_parent'])) {
                 $argument['_parent'] = $mapping['_parent'];
             }
+
             $arguments[] = $argument;
         }
 
-        $serviceId = sprintf('fazland_elastica.object_persister.%s.%s', $indexName, $typeName);
+        $serviceId = sprintf('fazland_elastica.object_persister.%s.%s', $typeConfig->index->name, $typeConfig->name);
         $serviceDef = new DefinitionDecorator($abstractId);
         foreach ($arguments as $i => $argument) {
             $serviceDef->replaceArgument($i, $argument);
         }
 
         $container->setDefinition($serviceId, $serviceDef);
-
-        return $serviceId;
+        $typeConfig->persister = $serviceId;
     }
 
     /**
      * Loads a provider for a type.
      *
-     * @param array            $typeConfig
+     * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
-     * @param string           $objectPersisterId
-     * @param string           $indexName
-     * @param string           $typeName
      */
-    private function loadTypeProvider(array $typeConfig, ContainerBuilder $container, $objectPersisterId, $indexName, $typeName)
+    private function loadTypeProvider(TypeConfig $typeConfig, ContainerBuilder $container): void
     {
-        if (null === $objectPersisterId || isset($typeConfig['provider']['service'])) {
+        if (null === $typeConfig->persister || (null !== $typeConfig->provider && true !== $typeConfig->provider)) {
             return;
         }
 
-        /* Note: provider services may conflict with "prototype.driver", if the
+        /*
+         * Note: provider services may conflict with "prototype.driver", if the
          * index and type names were "prototype" and a driver, respectively.
          */
-        $providerId = sprintf('fazland_elastica.provider.%s.%s', $indexName, $typeName);
-        $providerDef = new DefinitionDecorator('fazland_elastica.provider.prototype.'.$typeConfig['driver']);
-        $providerDef->addTag('fazland_elastica.provider', ['index' => $indexName, 'type' => $typeName]);
-        $providerDef->replaceArgument(0, new Reference($objectPersisterId));
-        $providerDef->replaceArgument(2, $typeConfig['model']);
+        $providerId = sprintf('fazland_elastica.provider.%s.%s', $typeConfig->index->name, $typeConfig->name);
+
+        $providerDef = new DefinitionDecorator('fazland_elastica.provider.prototype.'.$typeConfig->persistenceDriver);
+        $providerDef->addTag('fazland_elastica.provider', ['index' => $typeConfig->index->name, 'type' => $typeConfig->name]);
+        $providerDef->replaceArgument(0, new Reference($typeConfig->persister));
+        $providerDef->replaceArgument(2, $typeConfig->model);
         // Propel provider can simply ignore Doctrine-specific options
-        $providerDef->replaceArgument(3, array_merge(array_diff_key($typeConfig['provider'], ['service' => 1]), [
-            'indexName' => $indexName,
-            'typeName' => $typeName,
+        $providerDef->replaceArgument(3, array_merge($typeConfig->providerOptions, [
+            'indexName' => $typeConfig->index->name,
+            'typeName' => $typeConfig->name,
         ]));
+
         $container->setDefinition($providerId, $providerDef);
+        $typeConfig->provider = $providerId;
     }
 
     /**
      * Loads doctrine listeners to handle indexing of new or updated objects.
      *
-     * @param array            $typeConfig
+     * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
-     * @param string           $objectPersisterId
-     * @param string           $indexName
-     * @param string           $typeName
      */
-    private function loadTypeListener(array $typeConfig, ContainerBuilder $container, $objectPersisterId, $indexName, $typeName)
+    private function loadTypeListener(TypeConfig $typeConfig, ContainerBuilder $container): void
     {
-        if (null === $objectPersisterId || isset($typeConfig['listener']['service'])) {
+        if (null === $typeConfig->persister || (null !== $typeConfig->listener && true !== $typeConfig->listener)) {
             return;
         }
 
-        /* Note: listener services may conflict with "prototype.driver", if the
+        /*
+         * Note: listener services may conflict with "prototype.driver", if the
          * index and type names were "prototype" and a driver, respectively.
          */
-        $abstractListenerId = sprintf('fazland_elastica.listener.prototype.%s', $typeConfig['driver']);
-        $listenerId = sprintf('fazland_elastica.listener.%s.%s', $indexName, $typeName);
+        $abstractListenerId = sprintf('fazland_elastica.listener.prototype.%s', $typeConfig->persistenceDriver);
+        $listenerId = sprintf('fazland_elastica.listener.%s.%s', $typeConfig->index->name, $typeConfig->name);
         $listenerDef = new DefinitionDecorator($abstractListenerId);
-        $listenerDef->replaceArgument(0, new Reference($objectPersisterId));
+        $listenerDef->replaceArgument(0, new Reference($typeConfig->persister));
         $listenerDef->replaceArgument(2, [
-            'identifier' => $typeConfig['identifier'],
-            'indexName' => $indexName,
-            'typeName' => $typeName,
+            'identifier' => $typeConfig->modelIdentifier,
+            'indexName' => $typeConfig->index->name,
+            'typeName' => $typeConfig->name,
         ]);
-        $listenerDef->replaceArgument(3, $typeConfig['listener']['logger'] ?
-            new Reference($typeConfig['listener']['logger']) :
+        $listenerDef->replaceArgument(3, $typeConfig->listenerOptions['logger'] ?
+            new Reference($typeConfig->listenerOptions['logger']) :
             null
         );
 
         $tagName = null;
-        switch ($typeConfig['driver']) {
+        switch ($typeConfig->persistenceDriver) {
             case 'orm':
                 $tagName = 'doctrine.event_listener';
                 break;
+
             case 'phpcr':
                 $tagName = 'doctrine_phpcr.event_listener';
                 break;
+
             case 'mongodb':
                 $tagName = 'doctrine_mongodb.odm.event_listener';
                 break;
@@ -536,84 +444,76 @@ class FazlandElasticaExtension extends Extension
         }
 
         $container->setDefinition($listenerId, $listenerDef);
+        $typeConfig->listener = $listenerId;
     }
 
     /**
      * Map Elastica to Doctrine events for the current driver.
+     *
+     * @param TypeConfig $typeConfig
+     *
+     * @return \Generator
      */
-    private function getDoctrineEvents(array $typeConfig)
+    private function getDoctrineEvents(TypeConfig $typeConfig): \Generator
     {
-        switch ($typeConfig['driver']) {
+        switch ($typeConfig->persistenceDriver) {
             case 'orm':
-                $eventsClass = '\Doctrine\ORM\Events';
+                $eventsClass = ORMEvents::class;
                 break;
+
             case 'phpcr':
-                $eventsClass = '\Doctrine\ODM\PHPCR\Event';
+                $eventsClass = PHPCREvents::class;
                 break;
+
             case 'mongodb':
-                $eventsClass = '\Doctrine\ODM\MongoDB\Events';
+                $eventsClass = MongoDBEvents::class;
                 break;
+
             default:
-                throw new InvalidArgumentException(sprintf('Cannot determine events for driver "%s"', $typeConfig['driver']));
+                throw new InvalidArgumentException(sprintf('Cannot determine events for driver "%s"', $typeConfig->persistenceDriver));
         }
 
-        $events = [];
         $eventMapping = [
-            'insert' => [constant($eventsClass.'::postPersist')],
-            'update' => [constant($eventsClass.'::postUpdate')],
-            'delete' => [constant($eventsClass.'::preRemove')],
-            'flush' => [constant($eventsClass.'::postFlush')],
+            'insert' => constant($eventsClass.'::postPersist'),
+            'update' => constant($eventsClass.'::postUpdate'),
+            'delete' => constant($eventsClass.'::preRemove'),
+            'flush' => constant($eventsClass.'::postFlush'),
         ];
 
-        foreach ($eventMapping as $event => $doctrineEvents) {
-            if (isset($typeConfig['listener'][$event]) && $typeConfig['listener'][$event]) {
-                $events = array_merge($events, $doctrineEvents);
+        foreach ($eventMapping as $event => $doctrineEvent) {
+            if (isset($typeConfig->listenerOptions[$event]) && $typeConfig->listenerOptions[$event]) {
+                yield $doctrineEvent;
             }
         }
-
-        return $events;
     }
 
     /**
      * Loads a Type specific Finder.
      *
-     * @param array            $typeConfig
+     * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
-     * @param string           $elasticaToModelId
-     * @param Reference        $typeRef
-     * @param string           $indexName
-     * @param string           $typeName
-     *
-     * @return string
      */
-    private function loadTypeFinder(array $typeConfig, ContainerBuilder $container, $elasticaToModelId, Reference $typeRef, $indexName, $typeName)
+    private function loadTypeFinder(TypeConfig $typeConfig, ContainerBuilder $container): void
     {
-        if (isset($typeConfig['finder']['service'])) {
-            $finderId = $typeConfig['finder']['service'];
-        } else {
-            $finderId = sprintf('fazland_elastica.finder.%s.%s', $indexName, $typeName);
+        $indexName = $typeConfig->index->name;
+        $typeName = $typeConfig->name;
+
+        if (null === $typeConfig->finder) {
+            $typeConfig->finder = sprintf('fazland_elastica.finder.%s.%s', $indexName, $typeName);
             $finderDef = new DefinitionDecorator('fazland_elastica.finder');
-            $finderDef->replaceArgument(0, $typeRef);
-            $finderDef->replaceArgument(1, new Reference($elasticaToModelId));
-            $container->setDefinition($finderId, $finderDef);
+            $finderDef->replaceArgument(0, $typeConfig->getReference());
+            $finderDef->replaceArgument(1, new Reference($typeConfig->elasticaToModelTransformer));
+            $container->setDefinition($typeConfig->finder, $finderDef);
         }
 
         $indexTypeName = "$indexName/$typeName";
-        $arguments = [$indexTypeName, new Reference($finderId)];
-        if (isset($typeConfig['repository'])) {
-            $arguments[] = $typeConfig['repository'];
+        $arguments = [$indexTypeName, new Reference($typeConfig->finder)];
+        if ($typeConfig->repository) {
+            $arguments[] = $typeConfig->repository;
         }
 
         $container->getDefinition('fazland_elastica.repository_manager')
             ->addMethodCall('addType', $arguments);
-
-        if (isset($typeConfig['driver'])) {
-            $managerId = sprintf('fazland_elastica.manager.%s', $typeConfig['driver']);
-            $container->getDefinition($managerId)
-                ->addMethodCall('addEntity', [$typeConfig['model'], $indexTypeName]);
-        }
-
-        return $finderId;
     }
 
     /**
@@ -623,29 +523,54 @@ class FazlandElasticaExtension extends Extension
      **/
     private function loadIndexManager(ContainerBuilder $container)
     {
-        $indexRefs = array_map(function ($index) {
-            return $index['reference'];
-        }, $this->indexConfigs);
-
         $managerDef = $container->getDefinition('fazland_elastica.index_manager');
-        $managerDef->replaceArgument(0, $indexRefs);
+        $configManagerDef = $container->getDefinition('fazland_elastica.config_manager');
+
+        foreach ($this->indexConfigs as $indexConfig) {
+            $managerDef->addMethodCall('addIndex', [$indexConfig->name, $indexConfig->getReference()]);
+            $types = [];
+
+            foreach ($indexConfig->types as $typeConfig) {
+                $typeDef = new Definition(\Fazland\ElasticaBundle\Configuration\TypeConfig::class);
+                $typeDef->setArguments([
+                    $typeConfig->name,
+                    $typeConfig->mapping,
+                    $typeConfig->config
+                ]);
+
+                $types[$typeConfig->name] = $typeDef;
+            }
+
+            $indexDef = new Definition(\Fazland\ElasticaBundle\Configuration\IndexConfig::class);
+            $indexDef->setArguments([
+                $indexConfig->name,
+                $types,
+                [
+                    'elasticSearchName' => $indexConfig->indexName,
+                    'settings' => $indexConfig->settings,
+                    'useAlias' => $indexConfig->useAlias
+                ]
+            ]);
+
+            $configManagerDef->addMethodCall('addIndexConfiguration', [$indexDef]);
+        }
     }
 
     /**
      * Makes sure a specific driver has been loaded.
      *
      * @param ContainerBuilder $container
-     * @param string           $driver
+     * @param string $driver
      */
-    private function loadDriver(ContainerBuilder $container, $driver)
+    private function loadDriver(ContainerBuilder $container, string $driver): void
     {
-        if (in_array($driver, $this->loadedDrivers)) {
+        if (isset($this->loadedDrivers[$driver])) {
             return;
         }
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load($driver.'.xml');
-        $this->loadedDrivers[] = $driver;
+        $this->loadedDrivers[$driver] = true;
     }
 
     /**
@@ -679,37 +604,20 @@ class FazlandElasticaExtension extends Extension
     }
 
     /**
-     * Creates a default manager alias for defined default manager or the first loaded driver.
-     *
-     * @param string           $defaultManager
-     * @param ContainerBuilder $container
-     */
-    private function createDefaultManagerAlias($defaultManager, ContainerBuilder $container)
-    {
-        if (0 == count($this->loadedDrivers)) {
-            return;
-        }
-
-        if (count($this->loadedDrivers) > 1 && in_array($defaultManager, $this->loadedDrivers)) {
-            $defaultManagerService = $defaultManager;
-        } else {
-            $defaultManagerService = $this->loadedDrivers[0];
-        }
-
-        $container->setAlias('fazland_elastica.manager', sprintf('fazland_elastica.manager.%s', $defaultManagerService));
-    }
-
-    /**
      * Returns a reference to a client given its configured name.
      *
      * @param string $clientName
      *
-     * @throws \InvalidArgumentException
      * @return Reference
      *
+     * @throws \InvalidArgumentException
      */
-    private function getClient($clientName)
+    private function getClient(string $clientName = null): Reference
     {
+        if (null === $clientName) {
+            return new Reference('fazland_elastica.client');
+        }
+
         if (! array_key_exists($clientName, $this->clients)) {
             throw new InvalidArgumentException(sprintf('The elastica client with name "%s" is not defined', $clientName));
         }

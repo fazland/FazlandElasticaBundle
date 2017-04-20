@@ -1,14 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\Resetter\DependencyInjection;
 
 use Fazland\ElasticaBundle\DependencyInjection\Configuration;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
 /**
  * ConfigurationTest.
  */
-class ConfigurationTest extends \PHPUnit_Framework_TestCase
+class ConfigurationTest extends TestCase
 {
     /**
      * @var Processor
@@ -20,13 +22,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->processor = new Processor();
     }
 
-    private function getConfigs(array $configArray)
-    {
-        $configuration = new Configuration(true);
-
-        return $this->processor->processConfiguration($configuration, [$configArray]);
-    }
-
     public function testUnconfiguredConfiguration()
     {
         $configuration = $this->getConfigs([]);
@@ -34,7 +29,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([
             'clients' => [],
             'indexes' => [],
-            'default_manager' => 'orm',
         ], $configuration);
     }
 
@@ -330,5 +324,71 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('AWS_SECRET', $connection['aws_secret_access_key']);
         $this->assertEquals('AWS_REGION', $connection['aws_region']);
         $this->assertEquals('AWS_SESSION_TOKEN', $connection['aws_session_token']);
+    }
+
+    public function testConnectionStrategy()
+    {
+        $configuration = $this->getConfigs([
+            'clients' => [
+                'default' => [
+                    'connections' => [
+                        []
+                    ],
+                    'connectionStrategy' => 'Simple'
+                ],
+            ]
+        ]);
+
+        $this->assertEquals('Simple', $configuration['clients']['default']['connectionStrategy']);
+
+        $configuration = $this->getConfigs([
+            'clients' => [
+                'default' => [
+                    'connections' => [
+                        []
+                    ],
+                    'connectionStrategy' => 'RoundRobin'
+                ],
+            ]
+        ]);
+
+        $this->assertEquals('RoundRobin', $configuration['clients']['default']['connectionStrategy']);
+
+        $configuration = $this->getConfigs([
+            'clients' => [
+                'default' => [
+                    'connections' => [
+                        []
+                    ],
+                    'connectionStrategy' => 'rand'
+                ],
+            ]
+        ]);
+
+        $this->assertEquals('rand', $configuration['clients']['default']['connectionStrategy']);
+
+        try {
+            $this->getConfigs([
+                'clients' => [
+                    'default' => [
+                        'connections' => [
+                            []
+                        ],
+                        'connectionStrategy' => 'undefined_function'
+                    ],
+                ]
+            ]);
+
+            $this->fail('Expected '.InvalidConfigurationException::class.' to be thrown');
+        } catch (InvalidConfigurationException $e) {
+            $this->assertRegExp('/ConnectionStrategy must be "Simple", "RoundRobin" or a callable/', $e->getMessage());
+        }
+    }
+
+    private function getConfigs(array $configArray)
+    {
+        $configuration = new Configuration(true);
+
+        return $this->processor->processConfiguration($configuration, [$configArray]);
     }
 }

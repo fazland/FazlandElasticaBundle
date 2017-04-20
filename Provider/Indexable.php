@@ -11,54 +11,35 @@
 
 namespace Fazland\ElasticaBundle\Provider;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\ExpressionLanguage\Expression;
+use Fazland\ElasticaBundle\Exception\InvalidCallbackException;
+use Symfony\Component\DependencyInjection as DI;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
-use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-class Indexable implements IndexableInterface, ContainerAwareInterface
+class Indexable implements IndexableInterface, DI\ContainerAwareInterface
 {
-    use ContainerAwareTrait;
+    use DI\ContainerAwareTrait;
 
     /**
      * An array of raw configured callbacks for all types.
      *
      * @var array
      */
-    private $callbacks = [];
-
-    /**
-     * An instance of ExpressionLanguage.
-     *
-     * @var ExpressionLanguage
-     */
-    private $expressionLanguage;
+    protected $callbacks = [];
 
     /**
      * An array of initialised callbacks.
      *
      * @var array
      */
-    private $initialisedCallbacks = [];
+    protected $initialisedCallbacks = [];
 
     /**
-     * PropertyAccessor instance.
+     * An instance of ExpressionLanguage.
      *
-     * @var PropertyAccessorInterface
+     * @var ExpressionLanguage
      */
-    private $propertyAccessor;
-
-    /**
-     * @param array $callbacks
-     */
-    public function __construct(array $callbacks)
-    {
-        $this->callbacks = $callbacks;
-        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
-    }
+    protected $expressionLanguage;
 
     /**
      * Return whether the object is indexable with respect to the callback.
@@ -69,86 +50,35 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
      *
      * @return bool
      */
-    public function isObjectIndexable($indexName, $typeName, $object)
+    public function isObjectIndexable(string $indexName, string $typeName, $object): bool
     {
         $type = sprintf('%s/%s', $indexName, $typeName);
-        $callback = $this->getCallback($type, $object);
-        if (! $callback) {
+
+        if (! array_key_exists($type, $this->callbacks)) {
             return true;
         }
 
-        if ($callback instanceof Expression) {
-            return (bool) $this->getExpressionLanguage()->evaluate($callback, [
-                'object' => $object,
-                $this->getExpressionVar($object) => $object,
-            ]);
-        }
-
-        return is_string($callback)
-            ? call_user_func([$object, $callback])
-            : call_user_func($callback, $object);
-    }
-
-    /**
-     * Builds and initialises a callback.
-     *
-     * @param string $type
-     * @param object $object
-     *
-     * @return mixed
-     */
-    private function buildCallback($type, $object)
-    {
-        if (! array_key_exists($type, $this->callbacks)) {
-            return;
-        }
-
-        $callback = $this->callbacks[$type];
-
-        if (is_callable($callback) or is_callable([$object, $callback])) {
-            return $callback;
-        }
-
-        if (is_array($callback) && ! is_object($callback[0])) {
-            return $this->processArrayToCallback($type, $callback);
-        }
-
-        if (is_string($callback)) {
-            return $this->buildExpressionCallback($type, $object, $callback);
-        }
-
-        throw new \InvalidArgumentException(sprintf('Callback for type "%s" is not a valid callback.', $type));
-    }
-
-    /**
-     * Processes a string expression into an Expression.
-     *
-     * @param string $type
-     * @param mixed $object
-     * @param string $callback
-     *
-     * @return Expression
-     */
-    private function buildExpressionCallback($type, $object, $callback)
-    {
-        $expression = $this->getExpressionLanguage();
-        if (! $expression) {
-            throw new \RuntimeException('Unable to process an expression without the ExpressionLanguage component.');
-        }
+        $callback = $this->getCallback($type, $object);
 
         try {
-            $callback = new Expression($callback);
-            $expression->compile($callback, [
-                'object', $this->getExpressionVar($object),
-            ]);
-
-            return $callback;
+            return (bool) (is_string($callback)
+                ? call_user_func([$object, $callback])
+                : call_user_func($callback, $object));
         } catch (SyntaxError $e) {
-            throw new \InvalidArgumentException(sprintf(
-                'Callback for type "%s" is an invalid expression',
-                $type
-            ), $e->getCode(), $e);
+            throw new InvalidCallbackException(sprintf('Callback for type "%s" is an invalid expression', $type), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * Add a callback to the indexable manager.
+     *
+     * @param string $type
+     * @param $callback
+     */
+    public function addCallback(string $type, $callback): void
+    {
+        $this->callbacks[$type] = $callback;
+        unset($this->initialisedCallbacks[$type]);
     }
 
     /**
@@ -159,7 +89,7 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
      *
      * @return mixed
      */
-    private function getCallback($type, $object)
+    protected function getCallback($type, $object)
     {
         if (! array_key_exists($type, $this->initialisedCallbacks)) {
             $this->initialisedCallbacks[$type] = $this->buildCallback($type, $object);
@@ -169,69 +99,45 @@ class Indexable implements IndexableInterface, ContainerAwareInterface
     }
 
     /**
+     * Builds and initialises a callback.
+     *
+     * @param string $type
+     * @param object $object
+     *
+     * @return mixed
+     */
+    protected function buildCallback($type, $object)
+    {
+        $callback = $this->callbacks[$type];
+
+        if (is_callable($callback) || is_callable([$object, $callback])) {
+            return $callback;
+        }
+
+        if (is_string($callback)) {
+            return function () use ($callback, $object) {
+                return (bool) $this->getExpressionLanguage()->evaluate($callback, [
+                    'object' => $object,
+                    'container' => $this->container,
+                ]);
+            };
+        }
+
+        throw new InvalidCallbackException(sprintf('Callback for type "%s" is not a valid callback.', $type));
+    }
+
+    /**
      * Returns the ExpressionLanguage class if it is available.
      *
      * @return ExpressionLanguage|null
      */
-    private function getExpressionLanguage()
+    protected function getExpressionLanguage()
     {
         if (null === $this->expressionLanguage) {
             $this->expressionLanguage = new ExpressionLanguage();
+            $this->expressionLanguage->registerProvider(new DI\ExpressionLanguageProvider());
         }
 
         return $this->expressionLanguage;
-    }
-
-    /**
-     * Returns the variable name to be used to access the object when using the ExpressionLanguage
-     * component to parse and evaluate an expression.
-     *
-     * @param mixed $object
-     *
-     * @return string
-     */
-    private function getExpressionVar($object = null)
-    {
-        if (! is_object($object)) {
-            return 'object';
-        }
-
-        $ref = new \ReflectionClass($object);
-
-        return strtolower($ref->getShortName());
-    }
-
-    /**
-     * Processes an array into a callback. Replaces the first element with a service if
-     * it begins with an @.
-     *
-     * @param string $type
-     * @param array $callback
-     *
-     * @return array
-     */
-    private function processArrayToCallback($type, array $callback)
-    {
-        list($class, $method) = $callback + [null, '__invoke'];
-
-        if (strpos($class, '@') === 0) {
-            $service = $this->container->get(substr($class, 1));
-            $callback = [$service, $method];
-
-            if (! is_callable($callback)) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Method "%s" on service "%s" is not callable.',
-                    $method,
-                    substr($class, 1)
-                ));
-            }
-
-            return $callback;
-        }
-
-        throw new \InvalidArgumentException(sprintf(
-            'Unable to parse callback array for type "%s"',
-            $type
-        ));
     }
 }

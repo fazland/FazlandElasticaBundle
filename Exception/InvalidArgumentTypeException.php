@@ -2,7 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Exception;
 
-class InvalidArgumentTypeException extends \InvalidArgumentException
+class InvalidArgumentTypeException extends \InvalidArgumentException implements ExceptionInterface
 {
     /**
      * @param string $value

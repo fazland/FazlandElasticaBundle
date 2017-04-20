@@ -16,9 +16,8 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
         $registryDefinition = new Definition();
 
         $container->setDefinition('fazland_elastica.provider_registry', $registryDefinition);
-        $container->setAlias('fazland_elastica.index', 'fazland_elastica.index.foo');
 
-        $container->setDefinition('provider.foo.a', $this->createProviderDefinition(['type' => 'a']));
+        $container->setDefinition('provider.foo.a', $this->createProviderDefinition(['index' => 'foo', 'type' => 'a']));
         $container->setDefinition('provider.foo.b', $this->createProviderDefinition(['index' => 'foo', 'type' => 'b']));
         $container->setDefinition('provider.bar.a', $this->createProviderDefinition(['index' => 'bar', 'type' => 'a']));
 
@@ -40,7 +39,6 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
         $pass = new RegisterProvidersPass();
 
         $container->setDefinition('fazland_elastica.provider_registry', new Definition());
-        $container->setAlias('fazland_elastica.index', 'fazland_elastica.index.foo');
 
         $providerDef = $this->createProviderDefinition();
         $providerDef->setClass('stdClass');
@@ -52,6 +50,22 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Elastica provider "provider.foo.a" must specify the "index" attribute.
+     */
+    public function testProcessShouldRequireIndexAttribute()
+    {
+        $container = new ContainerBuilder();
+        $pass = new RegisterProvidersPass();
+
+        $container->setDefinition('fazland_elastica.provider_registry', new Definition());
+        $container->setDefinition('provider.foo.a', $this->createProviderDefinition());
+
+        $pass->process($container);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Elastica provider "provider.foo.a" must specify the "type" attribute.
      */
     public function testProcessShouldRequireTypeAttribute()
     {
@@ -59,9 +73,7 @@ class RegisterProvidersPassTest extends \PHPUnit_Framework_TestCase
         $pass = new RegisterProvidersPass();
 
         $container->setDefinition('fazland_elastica.provider_registry', new Definition());
-        $container->setAlias('fazland_elastica.index', 'fazland_elastica.index.foo');
-
-        $container->setDefinition('provider.foo.a', $this->createProviderDefinition());
+        $container->setDefinition('provider.foo.a', $this->createProviderDefinition(['index' => 'foo']));
 
         $pass->process($container);
     }

@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection;
 
+use Fazland\ElasticaBundle\Serializer\Callback;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -45,14 +46,10 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('default_client')
                     ->info('Defaults to the first client defined')
                 ->end()
-                ->scalarNode('default_index')
-                    ->info('Defaults to the first index defined')
-                ->end()
-                ->scalarNode('default_manager')->defaultValue('orm')->end()
                 ->arrayNode('serializer')
                     ->treatNullLike([])
                     ->children()
-                        ->scalarNode('callback_class')->defaultValue('Fazland\ElasticaBundle\Serializer\Callback')->end()
+                        ->scalarNode('callback_class')->defaultValue(Callback::class)->end()
                         ->scalarNode('serializer')->defaultValue('serializer')->end()
                         ->arrayNode('groups')
                             ->treatNullLike([])
@@ -133,7 +130,7 @@ class Configuration implements ConfigurationInterface
                                             ->treatNullLike('fazland_elastica.logger')
                                             ->treatTrueLike('fazland_elastica.logger')
                                         ->end()
-                                        ->booleanNode('compression')->defaultValue(false)->end()
+                                        ->booleanNode('compression')->defaultFalse()->end()
                                         ->arrayNode('headers')
                                             ->useAttributeAsKey('name')
                                             ->prototype('scalar')->end()
@@ -150,7 +147,15 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('timeout')->end()
                             ->scalarNode('connectTimeout')->end()
                             ->scalarNode('headers')->end()
-                            ->scalarNode('connectionStrategy')->defaultValue('Simple')->end()
+                            ->scalarNode('connectionStrategy')
+                                ->defaultValue('Simple')
+                                ->validate()
+                                    ->ifTrue(function ($strategy) {
+                                        return ! is_callable($strategy) && ! in_array($strategy, ['Simple', 'RoundRobin']);
+                                    })
+                                    ->thenInvalid('ConnectionStrategy must be "Simple", "RoundRobin" or a callable')
+                                ->end()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()
@@ -173,7 +178,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('index_name')
                                 ->info('Defaults to the name of the index, but can be modified if the index name is different in ElasticSearch')
                             ->end()
-                            ->booleanNode('use_alias')->defaultValue(false)->end()
+                            ->booleanNode('use_alias')->defaultFalse()->end()
                             ->scalarNode('client')->end()
                             ->scalarNode('finder')
                                 ->treatNullLike(true)

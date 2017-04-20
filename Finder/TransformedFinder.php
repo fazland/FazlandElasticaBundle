@@ -20,7 +20,7 @@ class TransformedFinder implements PaginatedFinderInterface
     protected $transformer;
 
     /**
-     * @param SearchableInterface                 $searchable
+     * @param SearchableInterface $searchable
      * @param ElasticaToModelTransformerInterface $transformer
      */
     public function __construct(SearchableInterface $searchable, ElasticaToModelTransformerInterface $transformer)

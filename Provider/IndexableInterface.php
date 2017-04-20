@@ -22,5 +22,5 @@ interface IndexableInterface
      *
      * @return bool
      */
-    public function isObjectIndexable($indexName, $typeName, $object);
+    public function isObjectIndexable(string $indexName, string $typeName, $object): bool;
 }

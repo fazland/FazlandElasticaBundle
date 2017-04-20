@@ -7,31 +7,16 @@ use Fazland\ElasticaBundle\Elastica\Index;
 class IndexManager
 {
     /**
-     * @var Index
+     * @var Index[]
      */
-    private $defaultIndex;
-
-    /**
-     * @var array
-     */
-    private $indexes;
-
-    /**
-     * @param array $indexes
-     * @param Index $defaultIndex
-     */
-    public function __construct(array $indexes, Index $defaultIndex)
-    {
-        $this->defaultIndex = $defaultIndex;
-        $this->indexes = $indexes;
-    }
+    private $indexes = [];
 
     /**
      * Gets all registered indexes.
      *
-     * @return array
+     * @return Index[]
      */
-    public function getAllIndexes()
+    public function getAllIndexes(): array
     {
         return $this->indexes;
     }
@@ -45,12 +30,8 @@ class IndexManager
      *
      * @throws \InvalidArgumentException if no index exists for the given name
      */
-    public function getIndex($name = null)
+    public function getIndex(string $name): Index
     {
-        if (null === $name) {
-            return $this->defaultIndex;
-        }
-
         if (! isset($this->indexes[$name])) {
             throw new \InvalidArgumentException(sprintf('The index "%s" does not exist', $name));
         }
@@ -59,12 +40,13 @@ class IndexManager
     }
 
     /**
-     * Gets the default index.
+     * Adds an index to the manager.
      *
-     * @return Index
+     * @param string $name
+     * @param Index $index
      */
-    public function getDefaultIndex()
+    public function addIndex(string $name, Index $index) : void
     {
-        return $this->defaultIndex;
+        $this->indexes[$name] = $index;
     }
 }

@@ -96,15 +96,6 @@ In the case where you need many different methods for different searching terms,
 may be better to separate methods for each type into their own dedicated repository
 classes, just like Doctrine ORM's EntityRepository classes.
 
-The manager class that handles repositories has a service key of `fazland_elastica.manager`.
-The manager will default to handling ORM entities, and the configuration must be changed
-for MongoDB users.
-
-```yaml
-fazland_elastica:
-    default_manager: mongodb
-```
-
 An example for using a repository:
 
 ```php
@@ -112,7 +103,7 @@ An example for using a repository:
 $repositoryManager = $this->container->get('fazland_elastica.manager');
 
 /** var Fazland\ElasticaBundle\Repository */
-$repository = $repositoryManager->getRepository('UserBundle:User');
+$repository = $repositoryManager->getRepository('index_one/user_type');
 
 /** var array of Acme\UserBundle\Entity\User */
 $users = $repository->find('bob');

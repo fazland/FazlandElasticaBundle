@@ -40,7 +40,7 @@ fazland_elastica:
                 type2:
                     properties:
                         field1: ~
-                    indexable_callback: [ "@indexable_service", 'isIndexable' ]
+                    indexable_callback: 'service("indexable_service").isIndexable(object)'
                     persistence:
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj

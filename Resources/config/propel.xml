@@ -18,9 +18,5 @@
                 <argument type="service" id="fazland_elastica.property_accessor" />
             </call>
         </service>
-
-        <service id="fazland_elastica.manager.propel" class="Fazland\ElasticaBundle\Doctrine\RepositoryManager">
-            <argument type="service" id="fazland_elastica.repository_manager" />
-        </service>
     </services>
 </container>

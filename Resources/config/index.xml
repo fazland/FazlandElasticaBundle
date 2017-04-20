@@ -8,20 +8,18 @@
         <parameter key="fazland_elastica.alias_processor.class">Fazland\ElasticaBundle\Index\AliasProcessor</parameter>
         <parameter key="fazland_elastica.finder.class">Fazland\ElasticaBundle\Finder\TransformedFinder</parameter>
         <parameter key="fazland_elastica.index.class">Fazland\ElasticaBundle\Elastica\Index</parameter>
-        <parameter key="fazland_elastica.indexable.class">Fazland\ElasticaBundle\Provider\Indexable</parameter>
         <parameter key="fazland_elastica.index_manager.class">Fazland\ElasticaBundle\Index\IndexManager</parameter>
         <parameter key="fazland_elastica.resetter.class">Fazland\ElasticaBundle\Index\Resetter</parameter>
         <parameter key="fazland_elastica.type.class">Elastica\Type</parameter>
-        <parameter key="fazland_elastica.repository_manager.class">Fazland\ElasticaBundle\Manager\RepositoryManager</parameter>
     </parameters>
 
     <services>
-        <service id="fazland_elastica.repository_manager" class="%fazland_elastica.repository_manager.class%" />
+        <service id="fazland_elastica.repository_manager" class="Fazland\ElasticaBundle\Manager\RepositoryManager" />
+        <service id="fazland_elastica.manager" alias="fazland_elastica.repository_manager" />
 
         <service id="fazland_elastica.alias_processor" class="%fazland_elastica.alias_processor.class%" />
 
-        <service id="fazland_elastica.indexable" class="%fazland_elastica.indexable.class%">
-            <argument type="collection" /> <!-- array of indexable callbacks keyed by type name -->
+        <service id="fazland_elastica.indexable" class="Fazland\ElasticaBundle\Provider\Indexable">
             <call method="setContainer">
                 <argument type="service" id="service_container" />
             </call>
@@ -38,7 +36,6 @@
 
         <service id="fazland_elastica.index_manager" class="%fazland_elastica.index_manager.class%">
             <argument /> <!-- indexes -->
-            <argument type="service" id="fazland_elastica.index" /> <!-- default index -->
         </service>
 
         <service id="fazland_elastica.resetter" class="%fazland_elastica.resetter.class%">

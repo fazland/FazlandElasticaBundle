@@ -24,9 +24,6 @@ class RegisterProvidersPass implements CompilerPassInterface
             return;
         }
 
-        // Infer the default index name from the service alias
-        $defaultIndex = substr($container->getAlias('fazland_elastica.index'), 23);
-
         $registry = $container->getDefinition('fazland_elastica.provider_registry');
         $providers = $container->findTaggedServiceIds('fazland_elastica.provider');
 
@@ -50,11 +47,15 @@ class RegisterProvidersPass implements CompilerPassInterface
             }
 
             foreach ($tags as $tag) {
+                if (! isset($tag['index'])) {
+                    throw new \InvalidArgumentException(sprintf('Elastica provider "%s" must specify the "index" attribute.', $providerId));
+                }
+
                 if (! isset($tag['type'])) {
                     throw new \InvalidArgumentException(sprintf('Elastica provider "%s" must specify the "type" attribute.', $providerId));
                 }
 
-                $index = isset($tag['index']) ? $tag['index'] : $defaultIndex;
+                $index = $tag['index'];
                 $type = $tag['type'];
             }
 
