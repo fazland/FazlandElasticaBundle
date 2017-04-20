@@ -2,7 +2,6 @@
 
 namespace Fazland\ElasticaBundle;
 
-use Fazland\ElasticaBundle\DependencyInjection\Compiler\ConfigSourcePass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\IndexPass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\RegisterProvidersPass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\TransformerPass;

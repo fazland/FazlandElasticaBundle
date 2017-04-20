@@ -2,9 +2,9 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection;
 
-use Doctrine\ORM\Events as ORMEvents;
-use Doctrine\ODM\PHPCR\Event as PHPCREvents;
 use Doctrine\ODM\MongoDB\Events as MongoDBEvents;
+use Doctrine\ODM\PHPCR\Event as PHPCREvents;
+use Doctrine\ORM\Events as ORMEvents;
 use Fazland\ElasticaBundle\DependencyInjection\Config\IndexConfig;
 use Fazland\ElasticaBundle\DependencyInjection\Config\TypeConfig;
 use InvalidArgumentException;
@@ -92,7 +92,7 @@ class FazlandElasticaExtension extends Extension
      * @param array            $clients   An array of clients configurations
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    private function loadClients(array $clients, ContainerBuilder $container): void
+    private function loadClients(array $clients, ContainerBuilder $container)
     {
         foreach ($clients as $name => $clientConfig) {
             $clientId = sprintf('fazland_elastica.client.%s', $name);
@@ -124,7 +124,7 @@ class FazlandElasticaExtension extends Extension
      *
      * @throws \InvalidArgumentException
      */
-    private function loadIndexes(array $indexes, ContainerBuilder $container): void
+    private function loadIndexes(array $indexes, ContainerBuilder $container)
     {
         foreach ($indexes as $name => $index) {
             $indexConfig = new IndexConfig($name, $index);
@@ -153,7 +153,7 @@ class FazlandElasticaExtension extends Extension
      * @param IndexConfig $indexConfig
      * @param ContainerBuilder $container
      */
-    private function loadIndexFinder(IndexConfig $indexConfig, ContainerBuilder $container): void
+    private function loadIndexFinder(IndexConfig $indexConfig, ContainerBuilder $container)
     {
         /*
          * Note: transformer services may conflict with "collection.index", if
@@ -257,7 +257,7 @@ class FazlandElasticaExtension extends Extension
      * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
      */
-    private function loadElasticaToModelTransformer(TypeConfig $typeConfig, ContainerBuilder $container): void
+    private function loadElasticaToModelTransformer(TypeConfig $typeConfig, ContainerBuilder $container)
     {
         if (null !== $typeConfig->elasticaToModelTransformer) {
             return;
@@ -290,7 +290,7 @@ class FazlandElasticaExtension extends Extension
      * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
      */
-    private function loadModelToElasticaTransformer(TypeConfig $typeConfig, ContainerBuilder $container): void
+    private function loadModelToElasticaTransformer(TypeConfig $typeConfig, ContainerBuilder $container)
     {
         if (null !== $typeConfig->modelToElasticaTransformer) {
             return;
@@ -317,7 +317,7 @@ class FazlandElasticaExtension extends Extension
      * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
      */
-    private function loadObjectPersister(TypeConfig $typeConfig, ContainerBuilder $container): void
+    private function loadObjectPersister(TypeConfig $typeConfig, ContainerBuilder $container)
     {
         if (null !== $typeConfig->persister) {
             return;
@@ -366,7 +366,7 @@ class FazlandElasticaExtension extends Extension
      * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
      */
-    private function loadTypeProvider(TypeConfig $typeConfig, ContainerBuilder $container): void
+    private function loadTypeProvider(TypeConfig $typeConfig, ContainerBuilder $container)
     {
         if (null === $typeConfig->persister || (null !== $typeConfig->provider && true !== $typeConfig->provider)) {
             return;
@@ -398,7 +398,7 @@ class FazlandElasticaExtension extends Extension
      * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
      */
-    private function loadTypeListener(TypeConfig $typeConfig, ContainerBuilder $container): void
+    private function loadTypeListener(TypeConfig $typeConfig, ContainerBuilder $container)
     {
         if (null === $typeConfig->persister || (null !== $typeConfig->listener && true !== $typeConfig->listener)) {
             return;
@@ -493,7 +493,7 @@ class FazlandElasticaExtension extends Extension
      * @param TypeConfig $typeConfig
      * @param ContainerBuilder $container
      */
-    private function loadTypeFinder(TypeConfig $typeConfig, ContainerBuilder $container): void
+    private function loadTypeFinder(TypeConfig $typeConfig, ContainerBuilder $container)
     {
         $indexName = $typeConfig->index->name;
         $typeName = $typeConfig->name;
@@ -562,7 +562,7 @@ class FazlandElasticaExtension extends Extension
      * @param ContainerBuilder $container
      * @param string $driver
      */
-    private function loadDriver(ContainerBuilder $container, string $driver): void
+    private function loadDriver(ContainerBuilder $container, string $driver)
     {
         if (isset($this->loadedDrivers[$driver])) {
             return;

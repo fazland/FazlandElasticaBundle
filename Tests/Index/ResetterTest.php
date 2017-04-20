@@ -9,7 +9,6 @@ use Fazland\ElasticaBundle\Configuration\TypeConfig;
 use Fazland\ElasticaBundle\Elastica\Index;
 use Fazland\ElasticaBundle\Event\IndexResetEvent;
 use Fazland\ElasticaBundle\Event\TypeResetEvent;
-use Fazland\ElasticaBundle\Index\AliasProcessor;
 use Fazland\ElasticaBundle\Index\Resetter;
 
 class ResetterTest extends \PHPUnit_Framework_TestCase

@@ -73,7 +73,7 @@ class ConfigManager implements ManagerInterface
      *
      * @param IndexConfig $indexConfig
      */
-    public function addIndexConfiguration(IndexConfig $indexConfig) : void
+    public function addIndexConfiguration(IndexConfig $indexConfig)
     {
         $this->indexes[$indexConfig->getName()] = $indexConfig;
     }

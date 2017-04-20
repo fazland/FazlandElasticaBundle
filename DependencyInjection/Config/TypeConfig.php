@@ -136,7 +136,7 @@ class TypeConfig
         return $this->persistenceIntegration;
     }
 
-    private function loadMapping(array $config): void
+    private function loadMapping(array $config)
     {
         $fields = [
             'dynamic_templates',
@@ -158,7 +158,7 @@ class TypeConfig
         }
     }
 
-    private function loadConfig(array $config): void
+    private function loadConfig(array $config)
     {
         $fields = [
             'persistence',
@@ -178,7 +178,7 @@ class TypeConfig
         $this->loadPersistence($this->config);
     }
 
-    private function loadPersistence(array $config): void
+    private function loadPersistence(array $config)
     {
         if (empty($config['persistence'])) {
             return;

@@ -75,7 +75,7 @@ class Indexable implements IndexableInterface, DI\ContainerAwareInterface
      * @param string $type
      * @param $callback
      */
-    public function addCallback(string $type, $callback): void
+    public function addCallback(string $type, $callback)
     {
         $this->callbacks[$type] = $callback;
         unset($this->initialisedCallbacks[$type]);

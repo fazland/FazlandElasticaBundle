@@ -45,7 +45,7 @@ class IndexManager
      * @param string $name
      * @param Index $index
      */
-    public function addIndex(string $name, Index $index) : void
+    public function addIndex(string $name, Index $index)
     {
         $this->indexes[$name] = $index;
     }
