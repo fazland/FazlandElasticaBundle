@@ -11,6 +11,11 @@ use Elastica\Index as BaseIndex;
  */
 class Index extends BaseIndex
 {
+    /**
+     * Store the original name
+     *
+     * @var string
+     */
     private $originalName;
 
     /**
