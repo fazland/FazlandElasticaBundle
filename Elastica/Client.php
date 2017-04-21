@@ -4,6 +4,8 @@ namespace Fazland\ElasticaBundle\Elastica;
 
 use Elastica\Client as BaseClient;
 use Elastica\Request;
+use Fazland\ElasticaBundle\Configuration\IndexConfig;
+use Fazland\ElasticaBundle\Exception\UnknownIndexException;
 use Fazland\ElasticaBundle\Logger\ElasticaLogger;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -16,11 +18,18 @@ use Symfony\Component\Stopwatch\Stopwatch;
 class Client extends BaseClient
 {
     /**
+     * Indexes configurations for this client.
+     *
+     * @var IndexConfig[]
+     */
+    private $indexConfigs = [];
+
+    /**
      * Stores created indexes to avoid recreation.
      *
-     * @var array
+     * @var Index[]
      */
-    private $indexCache = [];
+    private $indexes = [];
 
     /**
      * Symfony's debugging Stopwatch.
@@ -66,11 +75,25 @@ class Client extends BaseClient
      */
     public function getIndex($name)
     {
-        if (isset($this->indexCache[$name])) {
-            return $this->indexCache[$name];
+        if (isset($this->indexes[$name])) {
+            return $this->indexes[$name];
         }
 
-        return $this->indexCache[$name] = new Index($this, $name);
+        if (! isset($this->indexConfigs[$name])) {
+            throw new UnknownIndexException(sprintf('Unknown index "%s" requested.', $name));
+        }
+
+        return $this->indexes[$name] = new Index($this, $this->indexConfigs[$name]);
+    }
+
+    /**
+     * Register a new index configuration in this client.
+     *
+     * @param IndexConfig $indexConfig
+     */
+    public function registerIndex(IndexConfig $indexConfig)
+    {
+        $this->indexConfigs[$indexConfig->getName()] = $indexConfig;
     }
 
     /**

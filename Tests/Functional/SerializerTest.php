@@ -90,7 +90,7 @@ class SerializerTest extends WebTestCase
     {
         $client = $this->createClient(['test_case' => 'Serializer']);
         $resetter = $client->getContainer()->get('fazland_elastica.resetter');
-        $resetter->resetIndex('index');
+        $resetter->resetIndex($client->getContainer()->get('fazland_elastica.index.index'));
     }
 
     protected function setUp()

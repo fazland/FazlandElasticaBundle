@@ -106,6 +106,11 @@ class IndexConfig
         return $this->types[$typeName];
     }
 
+    public function hasType($name)
+    {
+        return array_key_exists($name, $this->types);
+    }
+
     /**
      * @return \Fazland\ElasticaBundle\Configuration\TypeConfig[]
      */

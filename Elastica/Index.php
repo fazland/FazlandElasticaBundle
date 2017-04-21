@@ -2,9 +2,10 @@
 
 namespace Fazland\ElasticaBundle\Elastica;
 
-use Elastica\Client;
-use Elastica\Index as BaseIndex;
+use Elastica;
 use Fazland\ElasticaBundle\Configuration\IndexConfig;
+use Fazland\ElasticaBundle\Configuration\TypeConfig;
+use Fazland\ElasticaBundle\Exception\UnknownTypeException;
 use Fazland\ElasticaBundle\Index\AliasStrategy\AliasStrategyInterface;
 use Fazland\ElasticaBundle\Index\AliasStrategy\NullAliasStrategy;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
@@ -14,7 +15,7 @@ use Fazland\ElasticaBundle\Index\MappingBuilder;
  *
  * @author Konstantin Tjuterev <kostik.lv@gmail.com>
  */
-class Index extends BaseIndex
+class Index extends Elastica\Index
 {
     /**
      * Store the original name
@@ -26,9 +27,9 @@ class Index extends BaseIndex
     /**
      * Stores created types to avoid recreation.
      *
-     * @var array
+     * @var Elastica\Type[]
      */
-    private $typeCache = [];
+    private $types = [];
 
     /**
      * @var AliasStrategyInterface
@@ -40,7 +41,7 @@ class Index extends BaseIndex
      */
     private $indexConfig;
 
-    public function __construct(Client $client, IndexConfig $indexConfig)
+    public function __construct(Elastica\Client $client, IndexConfig $indexConfig)
     {
         $this->indexConfig = $indexConfig;
 
@@ -59,7 +60,7 @@ class Index extends BaseIndex
 
         $this->create($mapping, true);
 
-        $this->aliasStrategy->prePopulate();
+        $this->getAliasStrategy()->prePopulate();
     }
 
     public function setAliasStrategy(AliasStrategyInterface $aliasStrategy = null)
@@ -90,22 +91,25 @@ class Index extends BaseIndex
             $this->originalName = $this->_name;
         }
 
-        $this->_name = $this->aliasStrategy->buildName($this->originalName);
-        $this->_name = sprintf('%s_%s', $this->originalName, date('Y-m-d-His'));
+        $this->_name = $this->getAliasStrategy()->buildName($this->originalName);
     }
 
     /**
-     * @param string $type
+     * @param string $name
      *
-     * @return mixed
+     * @return Elastica\Type
      */
-    public function getType($type)
+    public function getType($name): Elastica\Type
     {
-        if (isset($this->typeCache[$type])) {
-            return $this->typeCache[$type];
+        if (isset($this->types[$name])) {
+            return $this->types[$name];
         }
 
-        return $this->typeCache[$type] = parent::getType($type);
+        if (! $this->indexConfig->hasType($name)) {
+            throw new UnknownTypeException(sprintf('Unknown type "%s" for index "%s" requested.', $name, $this->indexConfig->getName()));
+        }
+
+        return $this->types[$name] = $this->createType($this->indexConfig->getType($name));
     }
 
     /**
@@ -116,5 +120,17 @@ class Index extends BaseIndex
     protected function getMappingBuilder(): MappingBuilder
     {
         return new MappingBuilder();
+    }
+
+    /**
+     * Creates a Type object.
+     *
+     * @param TypeConfig $typeConfig
+     *
+     * @return Elastica\Type
+     */
+    protected function createType(TypeConfig $typeConfig): Elastica\Type
+    {
+        return new Type($this, $typeConfig);
     }
 }

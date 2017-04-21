@@ -11,6 +11,7 @@
 
 namespace Fazland\ElasticaBundle\Tests\Functional;
 
+use Fazland\ElasticaBundle\Index\Resetter;
 use Symfony\Bundle\FrameworkBundle\Client;
 
 /**
@@ -22,7 +23,7 @@ class MappingToElasticaTest extends WebTestCase
     {
         $client = $this->createClient(['test_case' => 'Basic']);
         $resetter = $this->getResetter($client);
-        $resetter->resetIndex('index');
+        $resetter->resetIndex($this->getIndex($client, 'index'));
 
         $type = $this->getType($client);
         $mapping = $type->getMapping();
@@ -38,38 +39,11 @@ class MappingToElasticaTest extends WebTestCase
         $this->assertEquals('true', $mapping['type']['properties']['dynamic_allowed']['dynamic']);
     }
 
-    public function testResetType()
-    {
-        $client = $this->createClient(['test_case' => 'Basic']);
-        $resetter = $this->getResetter($client);
-        $resetter->resetIndexType('index', 'type');
-
-        $type = $this->getType($client);
-        $mapping = $type->getMapping();
-
-        $this->assertNotEmpty($mapping, 'Mapping was populated');
-        $this->assertFalse($mapping['type']['date_detection']);
-        $this->assertTrue($mapping['type']['numeric_detection']);
-        $this->assertEquals(['yyyy-MM-dd'], $mapping['type']['dynamic_date_formats']);
-    }
-
     public function testORMResetIndexAddsMappings()
     {
         $client = $this->createClient(['test_case' => 'ORM']);
         $resetter = $this->getResetter($client);
-        $resetter->resetIndex('index');
-
-        $type = $this->getType($client);
-        $mapping = $type->getMapping();
-
-        $this->assertNotEmpty($mapping, 'Mapping was populated');
-    }
-
-    public function testORMResetType()
-    {
-        $client = $this->createClient(['test_case' => 'ORM']);
-        $resetter = $this->getResetter($client);
-        $resetter->resetIndexType('index', 'type');
+        $resetter->resetIndex($this->getIndex($client, 'index'));
 
         $type = $this->getType($client);
         $mapping = $type->getMapping();
@@ -96,11 +70,22 @@ class MappingToElasticaTest extends WebTestCase
     /**
      * @param Client $client
      *
-     * @return \Fazland\ElasticaBundle\Resetter $resetter
+     * @return Resetter $resetter
      */
     private function getResetter(Client $client)
     {
         return $client->getContainer()->get('fazland_elastica.resetter');
+    }
+
+    /**
+     * @param Client $client
+     * @param string $index
+     *
+     * @return \Elastica\Type
+     */
+    private function getIndex(Client $client, $index = 'index')
+    {
+        return $client->getContainer()->get('fazland_elastica.index.'.$index);
     }
 
     /**

@@ -18,60 +18,6 @@ namespace Fazland\ElasticaBundle\Event;
  */
 class IndexResetEvent extends IndexEvent
 {
-    /**
-     * @Event("Fazland\ElasticaBundle\Event\IndexResetEvent")
-     */
     const PRE_INDEX_RESET = 'elastica.index.pre_reset';
-
-    /**
-     * @Event("Fazland\ElasticaBundle\Event\IndexResetEvent")
-     */
     const POST_INDEX_RESET = 'elastica.index.post_reset';
-
-    /**
-     * @var bool
-     */
-    private $force;
-
-    /**
-     * @var bool
-     */
-    private $populating;
-
-    /**
-     * @param string $index
-     * @param bool   $populating
-     * @param bool   $force
-     */
-    public function __construct($index, $populating, $force)
-    {
-        parent::__construct($index);
-
-        $this->force = $force;
-        $this->populating = $populating;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isForce()
-    {
-        return $this->force;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isPopulating()
-    {
-        return $this->populating;
-    }
-
-    /**
-     * @param boolean $force
-     */
-    public function setForce($force)
-    {
-        $this->force = $force;
-    }
 }

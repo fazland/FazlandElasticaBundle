@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection\Config;
 
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 class IndexConfig
@@ -46,6 +47,11 @@ class IndexConfig
      */
     public $types;
 
+    /**
+     * @var Definition
+     */
+    public $configurationDefinition;
+
     public function __construct(string $name, array $config)
     {
         $this->name = $name;
@@ -60,10 +66,41 @@ class IndexConfig
         foreach ($config['types'] as $typeName => $typeConfig) {
             $this->types[$typeName] = new TypeConfig($typeName, $this, $typeConfig);
         }
+
+        $this->buildConfigDefinition();
     }
 
     public function getReference(): Reference
     {
         return new Reference($this->service);
+    }
+
+    private function buildConfigDefinition()
+    {
+        $types = [];
+        foreach ($this->types as $typeConfig) {
+            $typeDef = new Definition(\Fazland\ElasticaBundle\Configuration\TypeConfig::class);
+            $typeDef->setArguments([
+                $typeConfig->name,
+                $typeConfig->mapping,
+                $typeConfig->config
+            ]);
+
+            $types[$typeConfig->name] = $typeDef;
+            $typeConfig->configurationDefinition = $typeDef;
+        }
+
+        $indexConfigDef = new Definition(\Fazland\ElasticaBundle\Configuration\IndexConfig::class);
+        $indexConfigDef->setArguments([
+            $this->name,
+            $types,
+            [
+                'elasticSearchName' => $this->indexName,
+                'settings' => $this->settings,
+                'useAlias' => $this->useAlias
+            ]
+        ]);
+
+        $this->configurationDefinition = $indexConfigDef;
     }
 }

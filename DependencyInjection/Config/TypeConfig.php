@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection\Config;
 
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 class TypeConfig
@@ -110,6 +111,11 @@ class TypeConfig
      * @var array
      */
     public $serializerOptions;
+
+    /**
+     * @var Definition
+     */
+    public $configurationDefinition;
 
     public function __construct(string $name, IndexConfig $index, array $config)
     {

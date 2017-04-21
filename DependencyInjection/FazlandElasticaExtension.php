@@ -134,14 +134,12 @@ class FazlandElasticaExtension extends Extension
             $indexConfig = new IndexConfig($name, $index);
             $this->indexConfigs[$name] = $indexConfig;
 
-            $indexConfigDef = $this->getIndexConfigDefinition($indexConfig);
-
             $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
-            $indexDef->replaceArgument(0, $this->getClient($indexConfig->client));
-            $indexDef->replaceArgument(1, $indexConfigDef);
-            $indexDef->addTag('fazland_elastica.index', ['name' => $name]);
+            $indexDef->setFactory([$this->getClient($indexConfig->client), 'getIndex']);
+            $indexDef->replaceArgument(0, $indexConfig->name);
 
             $container->setDefinition($indexConfig->service, $indexDef);
+            $this->addIndexToClient($indexConfig, $container);
 
             if ($index['finder']) {
                 $this->loadIndexFinder($indexConfig, $container);
@@ -190,7 +188,7 @@ class FazlandElasticaExtension extends Extension
         $indexConfig = $type->index;
 
         $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
-        $typeDef->setFactory([$indexConfig->getReference(), 'getType']);
+        $typeDef->setFactory([$type->index->getReference(), 'getType']);
         $typeDef->replaceArgument(0, $type->name);
 
         $container->setDefinition($type->service, $typeDef);
@@ -530,35 +528,9 @@ class FazlandElasticaExtension extends Extension
     private function loadIndexManager(ContainerBuilder $container)
     {
         $managerDef = $container->getDefinition('fazland_elastica.index_manager');
-        $configManagerDef = $container->getDefinition('fazland_elastica.config_manager');
 
         foreach ($this->indexConfigs as $indexConfig) {
             $managerDef->addMethodCall('addIndex', [$indexConfig->name, $indexConfig->getReference()]);
-            $types = [];
-
-            foreach ($indexConfig->types as $typeConfig) {
-                $typeDef = new Definition(\Fazland\ElasticaBundle\Configuration\TypeConfig::class);
-                $typeDef->setArguments([
-                    $typeConfig->name,
-                    $typeConfig->mapping,
-                    $typeConfig->config
-                ]);
-
-                $types[$typeConfig->name] = $typeDef;
-            }
-
-            $indexDef = new Definition(\Fazland\ElasticaBundle\Configuration\IndexConfig::class);
-            $indexDef->setArguments([
-                $indexConfig->name,
-                $types,
-                [
-                    'elasticSearchName' => $indexConfig->indexName,
-                    'settings' => $indexConfig->settings,
-                    'useAlias' => $indexConfig->useAlias
-                ]
-            ]);
-
-            $configManagerDef->addMethodCall('addIndexConfiguration', [$indexDef]);
         }
     }
 
@@ -631,6 +603,14 @@ class FazlandElasticaExtension extends Extension
         return $this->clients[$clientName]['reference'];
     }
 
+    private function addIndexToClient(IndexConfig $indexConfig, ContainerBuilder $container)
+    {
+        $clientName = $indexConfig->client;
+        $clientDef = $container->findDefinition(null === $clientName ? 'fazland_elastica.client' : $this->clients[$clientName]['id']);
+
+        $clientDef->addMethodCall('registerIndex', [$indexConfig->configurationDefinition]);
+    }
+
     private function loadCaches(array $cache, ContainerBuilder $container)
     {
         if ($cache['indexable_expression']) {
@@ -641,38 +621,5 @@ class FazlandElasticaExtension extends Extension
             $container->getDefinition('fazland_elastica.indexable')
                 ->addMethodCall('setExpressionLanguage', $expressionLanguageDef);
         }
-    }
-
-    /**
-     * @param IndexConfig $indexConfig
-     *
-     * @return Definition
-     */
-    private function getIndexConfigDefinition(IndexConfig $indexConfig): Definition
-    {
-        $types = [];
-        foreach ($indexConfig->types as $typeConfig) {
-            $typeDef = new Definition(\Fazland\ElasticaBundle\Configuration\TypeConfig::class);
-            $typeDef->setArguments([
-                $typeConfig->name,
-                $typeConfig->mapping,
-                $typeConfig->config
-            ]);
-
-            $types[$typeConfig->name] = $typeDef;
-        }
-
-        $indexConfigDef = new Definition(\Fazland\ElasticaBundle\Configuration\IndexConfig::class);
-        $indexConfigDef->setArguments([
-            $indexConfig->name,
-            $types,
-            [
-                'elasticSearchName' => $indexConfig->indexName,
-                'settings' => $indexConfig->settings,
-                'useAlias' => $indexConfig->useAlias
-            ]
-        ]);
-
-        return $indexConfigDef;
     }
 }

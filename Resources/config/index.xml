@@ -5,18 +5,12 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="fazland_elastica.alias_processor.class">Fazland\ElasticaBundle\Index\AliasProcessor</parameter>
         <parameter key="fazland_elastica.finder.class">Fazland\ElasticaBundle\Finder\TransformedFinder</parameter>
-        <parameter key="fazland_elastica.index.class">Fazland\ElasticaBundle\Elastica\Index</parameter>
-        <parameter key="fazland_elastica.resetter.class">Fazland\ElasticaBundle\Index\Resetter</parameter>
-        <parameter key="fazland_elastica.type.class">Elastica\Type</parameter>
     </parameters>
 
     <services>
         <service id="fazland_elastica.repository_manager" class="Fazland\ElasticaBundle\Manager\RepositoryManager" />
         <service id="fazland_elastica.manager" alias="fazland_elastica.repository_manager" />
-
-        <service id="fazland_elastica.alias_processor" class="%fazland_elastica.alias_processor.class%" />
 
         <service id="fazland_elastica.indexable" class="Fazland\ElasticaBundle\Provider\Indexable">
             <call method="setContainer">
@@ -24,25 +18,22 @@
             </call>
         </service>
 
-        <service id="fazland_elastica.index_prototype" class="%fazland_elastica.index.class%" abstract="true">
+        <service id="fazland_elastica.index_prototype" class="Fazland\ElasticaBundle\Elastica\Index" abstract="true" lazy="true">
             <argument /> <!-- Client -->
             <argument /> <!-- Index config -->
-            <!-- tagged with fazland_elastica.index in the Extension -->
         </service>
 
-        <service id="fazland_elastica.type_prototype" class="%fazland_elastica.type.class%" abstract="true">
+        <service id="fazland_elastica.type_prototype" class="Fazland\ElasticaBundle\Elastica\Type" abstract="true" lazy="true">
             <argument /> <!-- type name -->
+            <argument /> <!-- Type config -->
         </service>
 
         <service id="fazland_elastica.index_manager" class="Fazland\ElasticaBundle\Index\IndexManager">
             <argument /> <!-- indexes -->
         </service>
 
-        <service id="fazland_elastica.resetter" class="%fazland_elastica.resetter.class%">
-            <argument type="service" id="fazland_elastica.config_manager" />
+        <service id="fazland_elastica.resetter" class="Fazland\ElasticaBundle\Index\Resetter">
             <argument type="service" id="fazland_elastica.index_manager" />
-            <argument type="service" id="fazland_elastica.alias_processor" />
-            <argument type="service" id="fazland_elastica.mapping_builder" />
             <argument type="service" id="event_dispatcher"/>
         </service>
 
