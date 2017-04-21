@@ -21,17 +21,11 @@ class ResetCommand extends Command
      */
     private $indexManager;
 
-    /**
-     * @var Resetter
-     */
-    private $resetter;
-
-    public function __construct(IndexManager $indexManager, Resetter $resetter)
+    public function __construct(IndexManager $indexManager)
     {
         parent::__construct();
 
         $this->indexManager = $indexManager;
-        $this->resetter = $resetter;
     }
 
     protected function configure()
@@ -53,7 +47,7 @@ class ResetCommand extends Command
         /** @var Index $index */
         foreach ($indexes as $index) {
             $io->note('Resetting '.$index->getName());
-            $this->resetter->resetIndex($index);
+            $index->reset();
         }
     }
 }

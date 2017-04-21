@@ -11,8 +11,6 @@
 
 namespace Fazland\ElasticaBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
-
 /**
  * Type Populate Event.
  *
@@ -21,14 +19,14 @@ use Symfony\Component\EventDispatcher\Event;
 class TypePopulateEvent extends IndexPopulateEvent
 {
     /**
-     * @Event("Fazland\ElasticaBundle\Event\TypePopulateEvent")
+     * @deprecated
      */
-    const PRE_TYPE_POPULATE = 'elastica.index.type_pre_populate';
+    const PRE_TYPE_POPULATE = Events::PRE_TYPE_POPULATE;
 
     /**
-     * @Event("Fazland\ElasticaBundle\Event\TypePopulateEvent")
+     * @deprecated
      */
-    const POST_TYPE_POPULATE = 'elastica.index.type_post_populate';
+    const POST_TYPE_POPULATE = Events::POST_TYPE_POPULATE;
 
     /**
      * @var string

@@ -185,7 +185,14 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('index_name')
                                 ->info('Defaults to the name of the index, but can be modified if the index name is different in ElasticSearch')
                             ->end()
-                            ->booleanNode('use_alias')->defaultFalse()->end()
+                            ->booleanNode('use_alias')
+                                ->defaultFalse()
+                                ->beforeNormalization()
+                                    ->ifTrue()->then(function () {
+                                        return 'simple';
+                                    })
+                                ->end()
+                            ->end()
                             ->scalarNode('client')->end()
                             ->scalarNode('finder')
                                 ->treatNullLike(true)
@@ -220,29 +227,28 @@ class Configuration implements ConfigurationInterface
             ->prototype('array')
                 ->treatNullLike([])
                 ->beforeNormalization()
-                ->ifNull()
-                    ->thenEmptyArray()
+                    ->ifNull()->thenEmptyArray()
                 ->end()
                 // Support multiple dynamic_template formats to match the old bundle style
                 // and the way ElasticSearch expects them
                 ->beforeNormalization()
-                ->ifTrue(function ($v) {
-                    return isset($v['dynamic_templates']);
-                })
-                ->then(function ($v) {
-                    $dt = [];
-                    foreach ($v['dynamic_templates'] as $key => $type) {
-                        if (is_int($key)) {
-                            $dt[] = $type;
-                        } else {
-                            $dt[][$key] = $type;
+                    ->ifTrue(function ($v) {
+                        return isset($v['dynamic_templates']);
+                    })
+                    ->then(function ($v) {
+                        $dt = [];
+                        foreach ($v['dynamic_templates'] as $key => $type) {
+                            if (is_int($key)) {
+                                $dt[] = $type;
+                            } else {
+                                $dt[][$key] = $type;
+                            }
                         }
-                    }
 
-                    $v['dynamic_templates'] = $dt;
+                        $v['dynamic_templates'] = $dt;
 
-                    return $v;
-                })
+                        return $v;
+                    })
                 ->end()
                 ->children()
                     ->booleanNode('date_detection')->end()

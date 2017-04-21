@@ -36,11 +36,6 @@ class PopulateCommand extends ContainerAwareCommand
     private $providerRegistry;
 
     /**
-     * @var Resetter
-     */
-    private $resetter;
-
-    /**
      * @var SymfonyStyle
      */
     private $io;
@@ -72,7 +67,6 @@ class PopulateCommand extends ContainerAwareCommand
         $this->dispatcher = $this->getContainer()->get('event_dispatcher');
         $this->indexManager = $this->getContainer()->get('fazland_elastica.index_manager');
         $this->providerRegistry = $this->getContainer()->get('fazland_elastica.provider_registry');
-        $this->resetter = $this->getContainer()->get('fazland_elastica.resetter');
     }
 
     /**

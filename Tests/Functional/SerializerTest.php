@@ -19,15 +19,18 @@ class SerializerTest extends WebTestCase
     public function testMappingIteratorToArrayField()
     {
         $client = $this->createClient(['test_case' => 'Serializer']);
+        $client->getContainer()->get('fazland_elastica.index.index')->reset();
+
         $persister = $client->getContainer()->get('fazland_elastica.object_persister.index.type');
 
         $object = new TypeObj();
         $object->id = 1;
-        $object->coll = new \ArrayIterator(['foo', 'bar']);
+        $object->coll = ['foo', 'bar'];
         $persister->insertOne($object);
 
-        $object->coll = new \ArrayIterator(['foo', 'bar', 'bazz']);
-        $object->coll->offsetUnset(1);
+        $object->coll = ['foo', 'bar', 'bazz'];
+        unset($object->coll[1]);
+        $object->coll = array_values($object->coll);
 
         $persister->replaceOne($object);
     }
@@ -89,8 +92,7 @@ class SerializerTest extends WebTestCase
     public function testUnmappedType()
     {
         $client = $this->createClient(['test_case' => 'Serializer']);
-        $resetter = $client->getContainer()->get('fazland_elastica.resetter');
-        $resetter->resetIndex($client->getContainer()->get('fazland_elastica.index.index'));
+        $client->getContainer()->get('fazland_elastica.index.index')->reset();
     }
 
     protected function setUp()

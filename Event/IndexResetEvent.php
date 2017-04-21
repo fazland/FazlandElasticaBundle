@@ -18,6 +18,13 @@ namespace Fazland\ElasticaBundle\Event;
  */
 class IndexResetEvent extends IndexEvent
 {
-    const PRE_INDEX_RESET = 'elastica.index.pre_reset';
-    const POST_INDEX_RESET = 'elastica.index.post_reset';
+    /**
+     * @deprecated
+     */
+    const PRE_INDEX_RESET = Events::PRE_INDEX_RESET;
+
+    /**
+     * @deprecated
+     */
+    const POST_INDEX_RESET = Events::POST_INDEX_RESET;
 }

@@ -33,9 +33,9 @@ class IndexConfig
     public $typePrototype;
 
     /**
-     * @var bool
+     * @var string
      */
-    public $useAlias;
+    public $alias;
 
     /**
      * @var string
@@ -59,7 +59,7 @@ class IndexConfig
         $this->client = $config['client'] ?? null;
         $this->settings = $config['settings'] ?? [];
         $this->typePrototype = $config['type_prototype'] ?? [];
-        $this->useAlias = $config['use_alias'];
+        $this->alias = $config['use_alias'];
         $this->service = sprintf('fazland_elastica.index.%s', $name);
         $this->types = [];
 
@@ -97,7 +97,7 @@ class IndexConfig
             [
                 'elasticSearchName' => $this->indexName,
                 'settings' => $this->settings,
-                'useAlias' => $this->useAlias
+                'aliasStrategy' => $this->alias,
             ]
         ]);
 

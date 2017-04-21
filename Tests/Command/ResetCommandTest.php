@@ -19,11 +19,6 @@ class ResetCommandTest extends TestCase
     private $command;
 
     /**
-     * @var Resetter|ObjectProphecy
-     */
-    private $resetter;
-
-    /**
      * @var IndexManager|ObjectProphecy
      */
     private $indexManager;
@@ -31,9 +26,8 @@ class ResetCommandTest extends TestCase
     public function setup()
     {
         $this->indexManager = $this->prophesize(IndexManager::class);
-        $this->resetter = $this->prophesize(Resetter::class);
 
-        $this->command = new ResetCommand($this->indexManager->reveal(), $this->resetter->reveal());
+        $this->command = new ResetCommand($this->indexManager->reveal());
     }
 
     public function testResetAllIndexes()
@@ -44,8 +38,10 @@ class ResetCommandTest extends TestCase
                 'index2' => $index2 = $this->prophesize(Index::class),
             ]);
 
-        $this->resetter->resetIndex($index1)->shouldBeCalled();
-        $this->resetter->resetIndex($index2)->shouldBeCalled();
+        $index1->getName()->willReturn('index1');
+        $index1->reset()->shouldBeCalled();
+        $index2->getName()->willReturn('index2');
+        $index2->reset()->shouldBeCalled();
 
         $this->command->run(new ArrayInput([]), new NullOutput());
     }
@@ -56,7 +52,8 @@ class ResetCommandTest extends TestCase
         $this->indexManager->getIndex('index1')
             ->willReturn($index1 = $this->prophesize(Index::class));
 
-        $this->resetter->resetIndex($index1)->shouldBeCalled();
+        $index1->getName()->willReturn('index1');
+        $index1->reset()->shouldBeCalled();
 
         $this->command->run(new ArrayInput(['--index' => 'index1']), new NullOutput());
     }

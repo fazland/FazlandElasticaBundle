@@ -7,7 +7,6 @@
     <services>
         <service id="fazland_elastica.command.reset" class="Fazland\ElasticaBundle\Command\ResetCommand">
             <argument type="service" id="fazland_elastica.index_manager" />
-            <argument type="service" id="fazland_elastica.resetter" />
             <tag name="console.command" />
         </service>
     </services>

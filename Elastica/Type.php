@@ -5,6 +5,7 @@ namespace Fazland\ElasticaBundle\Elastica;
 use Elastica;
 use Fazland\ElasticaBundle\Configuration\TypeConfig;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Type extends Elastica\Type
 {
@@ -12,6 +13,11 @@ class Type extends Elastica\Type
      * @var TypeConfig
      */
     private $typeConfig;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     public function __construct(Elastica\Index $index, TypeConfig $typeConfig)
     {
@@ -30,6 +36,14 @@ class Type extends Elastica\Type
         }
 
         $this->setMapping($mapping);
+    }
+
+    /**
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     protected function getMappingBuilder()

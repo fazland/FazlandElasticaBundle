@@ -5,15 +5,16 @@ namespace Fazland\ElasticaBundle\Elastica;
 use Elastica;
 use Fazland\ElasticaBundle\Configuration\IndexConfig;
 use Fazland\ElasticaBundle\Configuration\TypeConfig;
+use Fazland\ElasticaBundle\Event\Events;
+use Fazland\ElasticaBundle\Event\IndexResetEvent;
 use Fazland\ElasticaBundle\Exception\UnknownTypeException;
 use Fazland\ElasticaBundle\Index\AliasStrategy\AliasStrategyInterface;
 use Fazland\ElasticaBundle\Index\AliasStrategy\NullAliasStrategy;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Overridden Elastica Index class that provides dynamic index name changes.
- *
- * @author Konstantin Tjuterev <kostik.lv@gmail.com>
  */
 class Index extends Elastica\Index
 {
@@ -41,6 +42,11 @@ class Index extends Elastica\Index
      */
     private $indexConfig;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     public function __construct(Elastica\Client $client, IndexConfig $indexConfig)
     {
         $this->indexConfig = $indexConfig;
@@ -53,6 +59,8 @@ class Index extends Elastica\Index
      */
     public function reset()
     {
+        $this->eventDispatcher->dispatch(Events::PRE_INDEX_RESET, new IndexResetEvent($this));
+
         $this->overrideName();
 
         $mappingBuilder = $this->getMappingBuilder();
@@ -61,6 +69,8 @@ class Index extends Elastica\Index
         $this->create($mapping, true);
 
         $this->getAliasStrategy()->prePopulate();
+
+        $this->eventDispatcher->dispatch(Events::POST_INDEX_RESET, new IndexResetEvent($this));
     }
 
     public function setAliasStrategy(AliasStrategyInterface $aliasStrategy = null)
@@ -115,6 +125,14 @@ class Index extends Elastica\Index
     public function getAlias(): string
     {
         return $this->indexConfig->getElasticSearchName();
+    }
+
+    /**
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**

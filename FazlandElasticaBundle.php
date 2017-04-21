@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle;
 
+use Fazland\ElasticaBundle\DependencyInjection\Compiler\RegisterProfilerListenerPass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\RegisterProvidersPass;
 use Fazland\ElasticaBundle\DependencyInjection\Compiler\TransformerPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
@@ -17,6 +18,7 @@ class FazlandElasticaBundle extends Bundle
     {
         parent::build($container);
 
+        $container->addCompilerPass(new RegisterProfilerListenerPass());
         $container->addCompilerPass(new RegisterProvidersPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new TransformerPass());
     }

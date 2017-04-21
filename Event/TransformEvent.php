@@ -17,14 +17,14 @@ use Symfony\Component\EventDispatcher\Event;
 class TransformEvent extends Event
 {
     /**
-     * @Event("Fazland\ElasticaBundle\Event\TransformEvent")
+     * @deprecated
      */
-    const PRE_TRANSFORM = 'fazland_elastica.pre_transform';
+    const PRE_TRANSFORM = Events::PRE_TRANSFORM;
 
     /**
-     * @Event("Fazland\ElasticaBundle\Event\TransformEvent")
+     * @deprecated
      */
-    const POST_TRANSFORM = 'fazland_elastica.post_transform';
+    const POST_TRANSFORM = Events::POST_TRANSFORM;
 
     /**
      * @var mixed

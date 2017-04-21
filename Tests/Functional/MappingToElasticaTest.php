@@ -22,8 +22,7 @@ class MappingToElasticaTest extends WebTestCase
     public function testResetIndexAddsMappings()
     {
         $client = $this->createClient(['test_case' => 'Basic']);
-        $resetter = $this->getResetter($client);
-        $resetter->resetIndex($this->getIndex($client, 'index'));
+        $this->getIndex($client, 'index')->reset();
 
         $type = $this->getType($client);
         $mapping = $type->getMapping();
@@ -42,8 +41,7 @@ class MappingToElasticaTest extends WebTestCase
     public function testORMResetIndexAddsMappings()
     {
         $client = $this->createClient(['test_case' => 'ORM']);
-        $resetter = $this->getResetter($client);
-        $resetter->resetIndex($this->getIndex($client, 'index'));
+        $this->getIndex($client, 'index')->reset();
 
         $type = $this->getType($client);
         $mapping = $type->getMapping();
@@ -54,6 +52,8 @@ class MappingToElasticaTest extends WebTestCase
     public function testMappingIteratorToArrayField()
     {
         $client = $this->createClient(['test_case' => 'ORM']);
+        $this->getIndex($client, 'index')->reset();
+
         $persister = $client->getContainer()->get('fazland_elastica.object_persister.index.type');
 
         $object = new TypeObj();
@@ -65,16 +65,6 @@ class MappingToElasticaTest extends WebTestCase
         $object->coll->offsetUnset(1);
 
         $persister->replaceOne($object);
-    }
-
-    /**
-     * @param Client $client
-     *
-     * @return Resetter $resetter
-     */
-    private function getResetter(Client $client)
-    {
-        return $client->getContainer()->get('fazland_elastica.resetter');
     }
 
     /**

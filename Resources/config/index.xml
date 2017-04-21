@@ -28,17 +28,14 @@
             <argument /> <!-- Type config -->
         </service>
 
+        <service id="fazland_elastica.alias_strategy.factory" class="Fazland\ElasticaBundle\Index\AliasStrategy\Factory" public="false" />
+
         <service id="fazland_elastica.simple_alias_strategy_prototype" class="Fazland\ElasticaBundle\Index\AliasStrategy\SimpleAliasStrategy" abstract="true">
             <argument /> <!-- Index -->
         </service>
 
         <service id="fazland_elastica.index_manager" class="Fazland\ElasticaBundle\Index\IndexManager">
             <argument /> <!-- indexes -->
-        </service>
-
-        <service id="fazland_elastica.resetter" class="Fazland\ElasticaBundle\Index\Resetter">
-            <argument type="service" id="fazland_elastica.index_manager" />
-            <argument type="service" id="event_dispatcher"/>
         </service>
 
         <!-- Abstract definition for all finders. -->

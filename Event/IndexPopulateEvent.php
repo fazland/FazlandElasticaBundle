@@ -19,14 +19,14 @@ namespace Fazland\ElasticaBundle\Event;
 class IndexPopulateEvent extends IndexEvent
 {
     /**
-     * @Event("Fazland\ElasticaBundle\Event\IndexPopulateEvent")
+     * @deprecated
      */
-    const PRE_INDEX_POPULATE = 'elastica.index.index_pre_populate';
+    const PRE_INDEX_POPULATE = Events::PRE_INDEX_POPULATE;
 
     /**
-     * @Event("Fazland\ElasticaBundle\Event\IndexPopulateEvent")
+     * @deprecated
      */
-    const POST_INDEX_POPULATE = 'elastica.index.index_post_populate';
+    const POST_INDEX_POPULATE = Events::POST_INDEX_POPULATE;
 
     /**
      * @var bool

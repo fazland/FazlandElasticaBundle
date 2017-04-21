@@ -5,9 +5,12 @@ namespace Fazland\ElasticaBundle\Elastica;
 use Elastica\Client as BaseClient;
 use Elastica\Request;
 use Fazland\ElasticaBundle\Configuration\IndexConfig;
+use Fazland\ElasticaBundle\Event\Events;
+use Fazland\ElasticaBundle\Event\RequestEvent;
+use Fazland\ElasticaBundle\Event\ResponseEvent;
 use Fazland\ElasticaBundle\Exception\UnknownIndexException;
-use Fazland\ElasticaBundle\Logger\ElasticaLogger;
-use Symfony\Component\Stopwatch\Stopwatch;
+use Fazland\ElasticaBundle\Index\AliasStrategy\FactoryInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Extends the default Elastica client to provide logging for errors that occur
@@ -32,11 +35,14 @@ class Client extends BaseClient
     private $indexes = [];
 
     /**
-     * Symfony's debugging Stopwatch.
-     *
-     * @var Stopwatch|null
+     * @var EventDispatcherInterface
      */
-    private $stopwatch;
+    private $eventDispatcher;
+
+    /**
+     * @var FactoryInterface
+     */
+    private $aliasStrategyFactory;
 
     /**
      * @param string $path
@@ -48,21 +54,15 @@ class Client extends BaseClient
      */
     public function request($path, $method = Request::GET, $data = [], array $query = [])
     {
-        if ($this->stopwatch) {
-            $this->stopwatch->start('es_request', 'fazland_elastica');
+        $event = new RequestEvent($path, $method, $data, $query);
+        if (null !== $this->eventDispatcher) {
+            $this->eventDispatcher->dispatch(Events::REQUEST, $event);
         }
 
-        $response = parent::request($path, $method, $data, $query);
-        $responseData = $response->getData();
+        $response = parent::request($event->getPath(), $event->getMethod(), $event->getData(), $event->getQuery());
 
-        if (isset($responseData['took']) && isset($responseData['hits'])) {
-            $this->logQuery($path, $method, $data, $query, $response->getQueryTime(), $response->getEngineTime(), $responseData['hits']['total']);
-        } else {
-            $this->logQuery($path, $method, $data, $query, $response->getQueryTime(), 0, 0);
-        }
-
-        if ($this->stopwatch) {
-            $this->stopwatch->stop('es_request');
+        if (null !== $this->eventDispatcher) {
+            $this->eventDispatcher->dispatch(Events::RESPONSE, new ResponseEvent($this->_lastRequest, $this->_lastResponse));
         }
 
         return $response;
@@ -83,7 +83,15 @@ class Client extends BaseClient
             throw new UnknownIndexException(sprintf('Unknown index "%s" requested.', $name));
         }
 
-        return $this->indexes[$name] = new Index($this, $this->indexConfigs[$name]);
+        $config = $this->indexConfigs[$name];
+        $index = new Index($this, $this->indexConfigs[$name]);
+        $index->setEventDispatcher($this->eventDispatcher);
+
+        if ($config->getAliasStrategy()) {
+            $index->setAliasStrategy($this->aliasStrategyFactory->factory($config->getAliasStrategy(), $index));
+        }
+
+        return $this->indexes[$name] = $index;
     }
 
     /**
@@ -97,42 +105,20 @@ class Client extends BaseClient
     }
 
     /**
-     * Sets a stopwatch instance for debugging purposes.
-     *
-     * @param Stopwatch $stopwatch
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function setStopwatch(Stopwatch $stopwatch = null)
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null)
     {
-        $this->stopwatch = $stopwatch;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
-     * Log the query if we have an instance of ElasticaLogger.
+     * Sets the alias strategy factory.
      *
-     * @param string $path
-     * @param string $method
-     * @param array  $data
-     * @param array  $query
-     * @param int    $queryTime
-     * @param int    $engineMS
-     * @param int    $itemCount
+     * @param FactoryInterface $factory
      */
-    private function logQuery($path, $method, $data, array $query, $queryTime, $engineMS = 0, $itemCount = 0)
+    public function setAliasStrategyFactory(FactoryInterface $factory)
     {
-        if (! $this->_logger or ! $this->_logger instanceof ElasticaLogger) {
-            return;
-        }
-
-        $connection = $this->getLastRequest()->getConnection();
-        $connectionArray = [
-            'host' => $connection->getHost(),
-            'port' => $connection->getPort(),
-            'transport' => $connection->getTransport(),
-            'headers' => $connection->hasConfig('headers') ? $connection->getConfig('headers') : [],
-        ];
-
-        /** @var ElasticaLogger $logger */
-        $logger = $this->_logger;
-        $logger->logQuery($path, $method, $data, $queryTime, $connectionArray, $query, $engineMS, $itemCount);
+        $this->aliasStrategyFactory = $factory;
     }
 }
