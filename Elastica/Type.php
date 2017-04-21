@@ -3,7 +3,6 @@
 namespace Fazland\ElasticaBundle\Elastica;
 
 use Elastica;
-use Elastica\Index;
 use Fazland\ElasticaBundle\Configuration\TypeConfig;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
 
@@ -14,7 +13,7 @@ class Type extends Elastica\Type
      */
     private $typeConfig;
 
-    public function __construct(Index $index, TypeConfig $typeConfig)
+    public function __construct(Elastica\Index $index, TypeConfig $typeConfig)
     {
         parent::__construct($index, $typeConfig->getName());
 
