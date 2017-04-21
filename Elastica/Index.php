@@ -112,6 +112,11 @@ class Index extends Elastica\Index
         return $this->types[$name] = $this->createType($this->indexConfig->getType($name));
     }
 
+    public function getAlias(): string
+    {
+        return $this->indexConfig->getElasticSearchName();
+    }
+
     /**
      * Create a new instance of MappingBuilder
      *

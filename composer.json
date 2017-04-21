@@ -30,6 +30,7 @@
         "knplabs/knp-components": "~1.2",
         "knplabs/knp-paginator-bundle": "~2.4",
         "pagerfanta/pagerfanta": "~1.0",
+        "php-mock/php-mock-prophecy": "^0.0.2",
         "phpunit/phpunit": "^5.7",
         "propel/propel1": "1.6.*",
         "symfony/asset": "~2.7|~3.0",
