@@ -19,7 +19,6 @@ final class SimpleAliasStrategy implements AliasStrategyInterface
      */
     private $client;
 
-
     /**
      * SimpleAliasStrategy constructor.
      * @param Index $index
@@ -30,10 +29,14 @@ final class SimpleAliasStrategy implements AliasStrategyInterface
         $this->client = $index->getClient();
     }
 
-
     public function buildName(string $originalName): string
     {
         return sprintf('%s_%s', $originalName, date('Y-m-d-His'));
+    }
+
+    public function getName(string $method, string $path): string
+    {
+        return $this->index->getName();
     }
 
     public function prePopulate()

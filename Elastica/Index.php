@@ -3,6 +3,7 @@
 namespace Fazland\ElasticaBundle\Elastica;
 
 use Elastica;
+use Elasticsearch\Endpoints\AbstractEndpoint;
 use Fazland\ElasticaBundle\Configuration\IndexConfig;
 use Fazland\ElasticaBundle\Configuration\TypeConfig;
 use Fazland\ElasticaBundle\Event\Events;
@@ -81,7 +82,7 @@ class Index extends Elastica\Index
     public function getAliasStrategy(): AliasStrategyInterface
     {
         if (null === $this->aliasStrategy) {
-            $this->aliasStrategy = new NullAliasStrategy();
+            $this->aliasStrategy = new NullAliasStrategy($this);
         }
 
         return $this->aliasStrategy;
@@ -133,6 +134,27 @@ class Index extends Elastica\Index
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function request($path, $method, $data = [], array $query = [])
+    {
+        $path = $this->getName().'/'.$path;
+
+        return $this->getClient()->request($path, $method, $data, $query);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function requestEndpoint(AbstractEndpoint $endpoint)
+    {
+        $cloned = clone $endpoint;
+        $cloned->setIndex($this->getName());
+
+        return $this->getClient()->requestEndpoint($cloned);
     }
 
     /**
