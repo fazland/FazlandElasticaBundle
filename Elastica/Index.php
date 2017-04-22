@@ -141,7 +141,8 @@ class Index extends Elastica\Index
      */
     public function request($path, $method, $data = [], array $query = [])
     {
-        $path = $this->getName().'/'.$path;
+        $name = $this->getAliasStrategy()->getName($method, $path);
+        $path = $name.'/'.$path;
 
         return $this->getClient()->request($path, $method, $data, $query);
     }
@@ -153,6 +154,9 @@ class Index extends Elastica\Index
     {
         $cloned = clone $endpoint;
         $cloned->setIndex($this->getName());
+
+        $name = $this->getAliasStrategy()->getName($cloned->getMethod(), $cloned->getURI());
+        $cloned->setIndex($name);
 
         return $this->getClient()->requestEndpoint($cloned);
     }
