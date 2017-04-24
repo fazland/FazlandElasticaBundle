@@ -4,7 +4,9 @@ namespace Fazland\ElasticaBundle\Transformer;
 
 use Elastica\Document;
 use Elastica\Type;
+use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\TransformEvent;
+use Fazland\ElasticaBundle\Exception\IdentifierNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -25,9 +27,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
      *
      * @var array
      */
-    protected $options = [
-        'identifier' => 'id',
-    ];
+    protected $options = [];
 
     /**
      * PropertyAccessor instance.
@@ -75,10 +75,32 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
      **/
     public function transform($object, array $fields)
     {
-        $identifier = (string) $this->propertyAccessor->getValue($object, $this->options['identifier']);
-        $document = $this->transformObjectToDocument($object, $fields, $identifier);
+        $document = $this->transformObjectToDocument($object, $fields, $this->getIdentifier($object));
 
         return $document;
+    }
+
+    /**
+     * Gets an identifier string for the given object
+     *
+     * @param object $object
+     *
+     * @return string
+     *
+     * @throws IdentifierNotFoundException
+     */
+    protected function getIdentifier($object)
+    {
+        if (isset($this->options['identifier'])) {
+            $fields = (array)$this->options['identifier'];
+            $identifier = array_map(function(string $field) use ($object) {
+                return $this->propertyAccessor->getValue($object, $field);
+            }, $fields);
+
+            return implode(' ', $identifier);
+        }
+
+        throw new IdentifierNotFoundException('Cannot retrieve an identifier for object');
     }
 
     /**
@@ -149,7 +171,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
 
         if ($this->dispatcher) {
             $event = new TransformEvent($document, $fields, $object, $this->type);
-            $this->dispatcher->dispatch(TransformEvent::PRE_TRANSFORM, $event);
+            $this->dispatcher->dispatch(Events::PRE_TRANSFORM, $event);
 
             $document = $event->getDocument();
         }
@@ -158,7 +180,11 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
             if ($key == '_parent') {
                 $property = (null !== $mapping['property']) ? $mapping['property'] : $mapping['type'];
                 $value = $this->propertyAccessor->getValue($object, $property);
-                $document->setParent($this->propertyAccessor->getValue($value, $mapping['identifier']));
+
+                $parentIdentifier = implode(' ', array_map(function($field) use ($value) {
+                    return $this->propertyAccessor->getValue($value, $field);
+                }, (array)$mapping['identifier']));
+                $document->setParent($parentIdentifier);
 
                 continue;
             }
@@ -199,7 +225,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
 
         if ($this->dispatcher) {
             $event = new TransformEvent($document, $fields, $object, $this->type);
-            $this->dispatcher->dispatch(TransformEvent::POST_TRANSFORM, $event);
+            $this->dispatcher->dispatch(Events::POST_TRANSFORM, $event);
 
             $document = $event->getDocument();
         }

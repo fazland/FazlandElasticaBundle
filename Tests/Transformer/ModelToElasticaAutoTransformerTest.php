@@ -546,7 +546,7 @@ class ModelToElasticaAutoTransformerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $transformer = new ModelToElasticaAutoTransformer($typeMock, [], $dispatcher);
+        $transformer = new ModelToElasticaAutoTransformer($typeMock, ['identifier' => 'id'], $dispatcher);
         $transformer->setPropertyAccessor(PropertyAccess::createPropertyAccessor());
 
         return $transformer;

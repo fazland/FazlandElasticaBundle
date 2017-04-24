@@ -11,7 +11,6 @@
 
 namespace Fazland\ElasticaBundle\Tests\Functional;
 
-use Fazland\ElasticaBundle\Index\Resetter;
 use Symfony\Bundle\FrameworkBundle\Client;
 
 /**

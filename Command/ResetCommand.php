@@ -4,7 +4,6 @@ namespace Fazland\ElasticaBundle\Command;
 
 use Fazland\ElasticaBundle\Elastica\Index;
 use Fazland\ElasticaBundle\Index\IndexManager;
-use Fazland\ElasticaBundle\Index\Resetter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

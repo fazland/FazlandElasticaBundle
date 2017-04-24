@@ -11,8 +11,6 @@
 
 namespace Fazland\ElasticaBundle\Configuration;
 
-use Fazland\ElasticaBundle\Index\AliasStrategy\AliasStrategyInterface;
-
 class IndexConfig
 {
     /**

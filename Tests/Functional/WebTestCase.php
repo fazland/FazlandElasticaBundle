@@ -12,6 +12,8 @@
 namespace Fazland\ElasticaBundle\Tests\Functional;
 
 use Symfony\Bundle\FrameworkBundle\Tests\Functional\WebTestCase as BaseWebTestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\Kernel;
 
 class WebTestCase extends BaseWebTestCase
 {
@@ -36,5 +38,19 @@ class WebTestCase extends BaseWebTestCase
             isset($options['environment']) ? $options['environment'] : 'fazlandelasticabundle'.strtolower($options['test_case']),
             isset($options['debug']) ? $options['debug'] : true
         );
+    }
+
+    protected static function deleteTmpDir(string $testCase = null)
+    {
+        if (null === $testCase) {
+            return parent::deleteTmpDir();
+        }
+
+        if (!file_exists($dir = sys_get_temp_dir().'/'.Kernel::VERSION.'/'.$testCase)) {
+            return;
+        }
+
+        $fs = new Filesystem();
+        $fs->remove($dir);
     }
 }

@@ -110,7 +110,7 @@ class ObjectSerializerPersisterTest extends \PHPUnit_Framework_TestCase
      */
     private function getTransformer(Type $type)
     {
-        $transformer = new ModelToElasticaIdentifierTransformer($type);
+        $transformer = new ModelToElasticaIdentifierTransformer($type, ['identifier' => 'id']);
         $transformer->setPropertyAccessor(PropertyAccess::createPropertyAccessor());
 
         return $transformer;

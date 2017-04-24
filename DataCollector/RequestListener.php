@@ -55,7 +55,7 @@ class RequestListener implements EventSubscriberInterface, LoggerAwareInterface
 
     private function getKey(string $method, string $path)
     {
-        return 'elastica ' . $method . ' ' . $path;
+        return 'elastica '.$method.' '.$path;
     }
 
     /**

@@ -54,7 +54,7 @@ class ModelToElasticaIdentifierTransformerTest extends \PHPUnit_Framework_TestCa
             ->disableOriginalConstructor()
             ->getMock();
 
-        $transformer = new ModelToElasticaIdentifierTransformer($typeMock);
+        $transformer = new ModelToElasticaIdentifierTransformer($typeMock, ['identifier' => 'id']);
         $transformer->setPropertyAccessor(PropertyAccess::createPropertyAccessor());
 
         return $transformer;

@@ -142,9 +142,7 @@ class ConfigurationTest extends TestCase
                                 'body' => null,
                             ],
                             'persistence' => [
-                                'listener' => [
-                                    'logger' => true,
-                                ],
+                                'listener' => [],
                             ],
                         ],
                         'test2' => [

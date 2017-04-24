@@ -2,11 +2,12 @@
 
 namespace Fazland\ElasticaBundle\Doctrine;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
-use Fazland\ElasticaBundle\Persister\ObjectPersister;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Util\ClassUtils;
 use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Fazland\ElasticaBundle\Provider\IndexableInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -14,7 +15,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
  * Automatically update ElasticSearch based on changes to the Doctrine source
  * data. One listener is generated for each Doctrine entity / ElasticSearch type.
  */
-class Listener
+class Listener implements EventSubscriber
 {
     /**
      * Object persister.
@@ -69,24 +70,16 @@ class Listener
      * @param ObjectPersisterInterface $objectPersister
      * @param IndexableInterface       $indexable
      * @param array                    $config
-     * @param LoggerInterface          $logger
      */
     public function __construct(
         ObjectPersisterInterface $objectPersister,
         IndexableInterface $indexable,
-        array $config = [],
-        LoggerInterface $logger = null
+        array $config = []
     ) {
-        $this->config = array_merge([
-            'identifier' => 'id',
-        ], $config);
+        $this->config = $config;
         $this->indexable = $indexable;
         $this->objectPersister = $objectPersister;
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
-
-        if ($logger && $this->objectPersister instanceof ObjectPersister) {
-            $this->objectPersister->setLogger($logger);
-        }
     }
 
     /**
@@ -117,7 +110,7 @@ class Listener
                 $this->scheduledForUpdate[] = $entity;
             } else {
                 // Delete if no longer indexable
-                $this->scheduleForDeletion($entity);
+                $this->scheduleForDeletion($entity, $eventArgs->getObjectManager());
             }
         }
     }
@@ -133,8 +126,24 @@ class Listener
         $entity = $eventArgs->getObject();
 
         if ($this->objectPersister->handlesObject($entity)) {
-            $this->scheduleForDeletion($entity);
+            $this->scheduleForDeletion($entity, $eventArgs->getObjectManager());
         }
+    }
+
+    /**
+     * Iterating through scheduled actions *after* flushing ensures that the
+     * ElasticSearch index will be affected only if the query is successful.
+     */
+    public function postFlush()
+    {
+        $this->persistScheduled();
+    }
+
+    public function getSubscribedEvents()
+    {
+        return [
+            'postFlush'
+        ];
     }
 
     /**
@@ -147,10 +156,12 @@ class Listener
             $this->objectPersister->insertMany($this->scheduledForInsertion);
             $this->scheduledForInsertion = [];
         }
+
         if (count($this->scheduledForUpdate)) {
             $this->objectPersister->replaceMany($this->scheduledForUpdate);
             $this->scheduledForUpdate = [];
         }
+
         if (count($this->scheduledForDeletion)) {
             $this->objectPersister->deleteManyByIdentifiers($this->scheduledForDeletion);
             $this->scheduledForDeletion = [];
@@ -158,40 +169,26 @@ class Listener
     }
 
     /**
-     * Iterate through scheduled actions before flushing to emulate 2.x behavior.
-     * Note that the ElasticSearch index will fall out of sync with the source
-     * data in the event of a crash during flush.
-     *
-     * This method is only called in legacy configurations of the listener.
-     *
-     * @deprecated This method should only be called in applications that depend
-     *             on the behaviour that entities are indexed regardless of if a
-     *             flush is successful.
-     */
-    public function preFlush()
-    {
-        $this->persistScheduled();
-    }
-
-    /**
-     * Iterating through scheduled actions *after* flushing ensures that the
-     * ElasticSearch index will be affected only if the query is successful.
-     */
-    public function postFlush()
-    {
-        $this->persistScheduled();
-    }
-
-    /**
      * Record the specified identifier to delete. Do not need to entire object.
      *
      * @param object $object
+     * @param ObjectManager $om
      */
-    private function scheduleForDeletion($object)
+    private function scheduleForDeletion($object, ObjectManager $om)
     {
-        if ($identifierValue = $this->propertyAccessor->getValue($object, $this->config['identifier'])) {
-            $this->scheduledForDeletion[] = $identifierValue;
+        if (! isset($this->config['identifier'])) {
+            $metadata = $om->getClassMetadata(ClassUtils::getClass($object));
+            $identifier = $metadata->getIdentifierValues($object);
+        } else {
+            $identifierFields = (array)$this->config['identifier'];
+            $identifier = [];
+
+            foreach ($identifierFields as $field) {
+                $identifier[] = $this->propertyAccessor->getValue($object, $field);
+            }
         }
+
+        $this->scheduledForDeletion[] = implode(' ', $identifier);
     }
 
     /**

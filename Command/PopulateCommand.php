@@ -6,7 +6,6 @@ use Fazland\ElasticaBundle\Elastica\Index;
 use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
 use Fazland\ElasticaBundle\Event\TypePopulateEvent;
 use Fazland\ElasticaBundle\Index\IndexManager;
-use Fazland\ElasticaBundle\Index\Resetter;
 use Fazland\ElasticaBundle\Provider\ProviderRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;

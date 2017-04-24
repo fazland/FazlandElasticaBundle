@@ -1,0 +1,20 @@
+Fazland\ElasticaBundle\Tests\Functional\TypeObj:
+    type: entity
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: NONE
+        coll:
+            type: array
+            nullable: true
+        field1:
+            type: string
+            nullable: true
+        field2:
+            type: string
+            nullable: true
+        field3:
+            type: string
+            nullable: true

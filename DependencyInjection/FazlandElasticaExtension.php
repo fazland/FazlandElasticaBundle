@@ -300,9 +300,14 @@ class FazlandElasticaExtension extends Extension
             return;
         }
 
-        $abstractId = $container->hasDefinition('fazland_elastica.serializer_callback_prototype') ?
-            'fazland_elastica.model_to_elastica_identifier_transformer' :
-            'fazland_elastica.model_to_elastica_transformer';
+        if (in_array($typeConfig->persistenceDriver, ['orm', 'mongodb', 'phpcr'])) {
+            $prefix = 'fazland_elastica.doctrine.';
+        } else {
+            $prefix = 'fazland_elastica.propel.';
+        }
+
+        $abstractId = $prefix . ($container->hasDefinition('fazland_elastica.serializer_callback_prototype') ?
+            'model_to_elastica_identifier_transformer' : 'model_to_elastica_transformer');
 
         $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $typeConfig->index->name, $typeConfig->name);
         $serviceDef = new DefinitionDecorator($abstractId);
@@ -310,6 +315,14 @@ class FazlandElasticaExtension extends Extension
         $serviceDef->replaceArgument(1, [
             'identifier' => $typeConfig->modelIdentifier,
         ]);
+
+        if ($typeConfig->persistenceDriver === 'orm') {
+            $serviceDef->addMethodCall('setDoctrine', [ new Reference('doctrine') ]);
+        } elseif ($typeConfig->persistenceDriver === 'mongodb') {
+            $serviceDef->addMethodCall('setDoctrine', [ new Reference('doctrine_mongodb') ]);
+        } elseif ($typeConfig->persistenceDriver === 'phpcr') {
+            $serviceDef->addMethodCall('setDoctrine', [ new Reference('doctrine_phpcr') ]);
+        }
 
         $container->setDefinition($serviceId, $serviceDef);
         $typeConfig->modelToElasticaTransformer = $serviceId;
@@ -421,10 +434,6 @@ class FazlandElasticaExtension extends Extension
             'indexName' => $typeConfig->index->name,
             'typeName' => $typeConfig->name,
         ]);
-        $listenerDef->replaceArgument(3, $typeConfig->listenerOptions['logger'] ?
-            new Reference($typeConfig->listenerOptions['logger']) :
-            null
-        );
 
         $tagName = null;
         switch ($typeConfig->persistenceDriver) {
@@ -446,6 +455,8 @@ class FazlandElasticaExtension extends Extension
                 $listenerDef->addTag($tagName, ['event' => $event]);
             }
         }
+
+        $listenerDef->addTag('doctrine.event_subscriber', ['priority' => 50]);
 
         $container->setDefinition($listenerId, $listenerDef);
         $typeConfig->listener = $listenerId;
@@ -481,7 +492,6 @@ class FazlandElasticaExtension extends Extension
             'insert' => constant($eventsClass.'::postPersist'),
             'update' => constant($eventsClass.'::postUpdate'),
             'delete' => constant($eventsClass.'::preRemove'),
-            'flush' => constant($eventsClass.'::postFlush'),
         ];
 
         foreach ($eventMapping as $event => $doctrineEvent) {

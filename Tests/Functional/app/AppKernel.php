@@ -35,6 +35,7 @@ while ($dir !== $lastDir) {
     $dir = dirname($dir);
 }
 
+use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Kernel;
@@ -87,6 +88,30 @@ class AppKernel extends Kernel
     public function getLogDir()
     {
         return sys_get_temp_dir().'/'.Kernel::VERSION.'/'.$this->testCase.'/logs';
+    }
+
+    /**
+     * Initializes the service container.
+     *
+     * The cached version of the service container is used when fresh, otherwise the
+     * container is built.
+     */
+    protected function initializeContainer()
+    {
+        $class = $this->getContainerClass();
+        $cache = new ConfigCache($this->getCacheDir().'/'.$class.'.php', $this->debug);
+        $container = $this->buildContainer();
+        $container->compile();
+        $this->dumpContainer($cache, $container, $class, $this->getContainerBaseClass());
+
+        require_once $cache->getPath();
+
+        $this->container = new $class();
+        $this->container->set('kernel', $this);
+
+        if ($this->container->has('cache_warmer')) {
+            $this->container->get('cache_warmer')->warmUp($this->container->getParameter('kernel.cache_dir'));
+        }
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)

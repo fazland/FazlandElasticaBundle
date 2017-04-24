@@ -10,24 +10,26 @@
  */
 
 namespace Fazland\ElasticaBundle\Tests\Functional;
+use Elastica\Connection\Strategy\RoundRobin;
+use Elastica\Connection\Strategy\Simple;
 
 /**
  * @group functional
  */
 class ClientTest extends WebTestCase
 {
-    public function testContainerSource()
+    public function testConnectionStrategy()
     {
         $client = $this->createClient(['test_case' => 'Basic']);
 
         $es = $client->getContainer()->get('fazland_elastica.client.default');
-        $this->assertInstanceOf('Elastica\\Connection\\Strategy\\RoundRobin', $es->getConnectionStrategy());
+        $this->assertInstanceOf(RoundRobin::class, $es->getConnectionStrategy());
 
         $es = $client->getContainer()->get('fazland_elastica.client.second_server');
-        $this->assertInstanceOf('Elastica\\Connection\\Strategy\\RoundRobin', $es->getConnectionStrategy());
+        $this->assertInstanceOf(RoundRobin::class, $es->getConnectionStrategy());
 
         $es = $client->getContainer()->get('fazland_elastica.client.third');
-        $this->assertInstanceOf('Elastica\\Connection\\Strategy\\Simple', $es->getConnectionStrategy());
+        $this->assertInstanceOf(Simple::class, $es->getConnectionStrategy());
     }
 
     protected function setUp()

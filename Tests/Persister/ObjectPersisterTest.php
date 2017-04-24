@@ -1,10 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\ObjectPersister;
 
 use Elastica\Type;
 use Fazland\ElasticaBundle\Persister\ObjectPersister;
 use Fazland\ElasticaBundle\Transformer\ModelToElasticaAutoTransformer;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class POPO
@@ -30,21 +32,17 @@ class InvalidObjectPersister extends ObjectPersister
     }
 }
 
-class ObjectPersisterTest extends \PHPUnit_Framework_TestCase
+class ObjectPersisterTest extends TestCase
 {
     public function testThatCanReplaceObject()
     {
-        /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
-        $typeMock = $this->getMockBuilder('Elastica\Type')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $typeMock->expects($this->once())
-            ->method('updateDocuments');
+        $type = $this->prophesize(Type::class);
+        $type->updateDocuments(Argument::any())->shouldBeCalledTimes(1);
 
-        $transformer = $this->getTransformer($typeMock);
+        $transformer = $this->getTransformer($type);
         $fields = ['name' => []];
 
-        $objectPersister = new ObjectPersister($typeMock, $transformer, 'SomeClass', $fields);
+        $objectPersister = new ObjectPersister($type->reveal(), $transformer, 'SomeClass', $fields);
         $objectPersister->replaceOne(new POPO());
     }
 
@@ -53,37 +51,27 @@ class ObjectPersisterTest extends \PHPUnit_Framework_TestCase
      */
     public function testThatErrorIsHandledWhenCannotReplaceObject()
     {
-        /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
-        $typeMock = $this->getMockBuilder('Elastica\Type')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $typeMock->expects($this->never())
-            ->method('deleteById');
-        $typeMock->expects($this->never())
-            ->method('addDocument');
+        $type = $this->prophesize(Type::class);
+        $type->deleteById(Argument::cetera())->shouldNotBeCalled();
+        $type->addDocument(Argument::cetera())->shouldNotBeCalled();
 
-        $transformer = $this->getTransformer($typeMock);
+        $transformer = $this->getTransformer($type);
         $fields = ['name' => []];
 
-        $objectPersister = new InvalidObjectPersister($typeMock, $transformer, 'SomeClass', $fields);
+        $objectPersister = new InvalidObjectPersister($type->reveal(), $transformer, 'SomeClass', $fields);
         $objectPersister->replaceOne(new POPO());
     }
 
     public function testThatCanInsertObject()
     {
-        /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
-        $typeMock = $this->getMockBuilder('Elastica\Type')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $typeMock->expects($this->never())
-            ->method('deleteById');
-        $typeMock->expects($this->once())
-            ->method('addDocuments');
+        $type = $this->prophesize(Type::class);
+        $type->deleteById(Argument::cetera())->shouldNotBeCalled();
+        $type->addDocuments(Argument::cetera())->shouldBeCalledTimes(1);
 
-        $transformer = $this->getTransformer($typeMock);
+        $transformer = $this->getTransformer($type);
         $fields = ['name' => []];
 
-        $objectPersister = new ObjectPersister($typeMock, $transformer, 'SomeClass', $fields);
+        $objectPersister = new ObjectPersister($type->reveal(), $transformer, 'SomeClass', $fields);
         $objectPersister->insertOne(new POPO());
     }
 
@@ -92,38 +80,27 @@ class ObjectPersisterTest extends \PHPUnit_Framework_TestCase
      */
     public function testThatErrorIsHandledWhenCannotInsertObject()
     {
+        $type = $this->prophesize(Type::class);
+        $type->deleteById(Argument::cetera())->shouldNotBeCalled();
+        $type->addDocument(Argument::cetera())->shouldNotBeCalled();
 
-        /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
-        $typeMock = $this->getMockBuilder('Elastica\Type')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $typeMock->expects($this->never())
-            ->method('deleteById');
-        $typeMock->expects($this->never())
-            ->method('addDocument');
-
-        $transformer = $this->getTransformer($typeMock);
+        $transformer = $this->getTransformer($type);
         $fields = ['name' => []];
 
-        $objectPersister = new InvalidObjectPersister($typeMock, $transformer, 'SomeClass', $fields);
+        $objectPersister = new InvalidObjectPersister($type->reveal(), $transformer, 'SomeClass', $fields);
         $objectPersister->insertOne(new POPO());
     }
 
     public function testThatCanDeleteObject()
     {
-        /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
-        $typeMock = $this->getMockBuilder('Elastica\Type')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $typeMock->expects($this->once())
-            ->method('deleteDocuments');
-        $typeMock->expects($this->never())
-            ->method('addDocument');
+        $type = $this->prophesize(Type::class);
+        $type->deleteDocuments(Argument::cetera())->shouldBeCalledTimes(1);
+        $type->addDocument(Argument::cetera())->shouldNotBeCalled();
 
-        $transformer = $this->getTransformer($typeMock);
+        $transformer = $this->getTransformer($type);
         $fields = ['name' => []];
 
-        $objectPersister = new ObjectPersister($typeMock, $transformer, 'SomeClass', $fields);
+        $objectPersister = new ObjectPersister($type->reveal(), $transformer, 'SomeClass', $fields);
         $objectPersister->deleteOne(new POPO());
     }
 
@@ -132,39 +109,28 @@ class ObjectPersisterTest extends \PHPUnit_Framework_TestCase
      */
     public function testThatErrorIsHandledWhenCannotDeleteObject()
     {
-        /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
-        $typeMock = $this->getMockBuilder('Elastica\Type')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $typeMock->expects($this->never())
-            ->method('deleteById');
-        $typeMock->expects($this->never())
-            ->method('addDocument');
+        $type = $this->prophesize(Type::class);
+        $type->deleteById(Argument::cetera())->shouldNotBeCalled();
+        $type->addDocument(Argument::cetera())->shouldNotBeCalled();
 
-        $transformer = $this->getTransformer($typeMock);
+        $transformer = $this->getTransformer($type);
         $fields = ['name' => []];
 
-        $objectPersister = new InvalidObjectPersister($typeMock, $transformer, 'SomeClass', $fields);
+        $objectPersister = new InvalidObjectPersister($type->reveal(), $transformer, 'SomeClass', $fields);
         $objectPersister->deleteOne(new POPO());
     }
 
     public function testThatCanInsertManyObjects()
     {
-        /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
-        $typeMock = $this->getMockBuilder('Elastica\Type')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $typeMock->expects($this->never())
-            ->method('deleteById');
-        $typeMock->expects($this->never())
-            ->method('addDocument');
-        $typeMock->expects($this->once())
-            ->method('addDocuments');
+        $type = $this->prophesize(Type::class);
+        $type->deleteById(Argument::cetera())->shouldNotBeCalled();
+        $type->addDocument(Argument::cetera())->shouldNotBeCalled();
+        $type->addDocuments(Argument::cetera())->shouldBeCalledTimes(1);
 
-        $transformer = $this->getTransformer($typeMock);
+        $transformer = $this->getTransformer($type);
         $fields = ['name' => []];
 
-        $objectPersister = new ObjectPersister($typeMock, $transformer, 'SomeClass', $fields);
+        $objectPersister = new ObjectPersister($type->reveal(), $transformer, 'SomeClass', $fields);
         $objectPersister->insertMany([new POPO(), new POPO()]);
     }
 
@@ -173,31 +139,22 @@ class ObjectPersisterTest extends \PHPUnit_Framework_TestCase
      */
     public function testThatErrorIsHandledWhenCannotInsertManyObject()
     {
-        /** @var $typeMock \PHPUnit_Framework_MockObject_MockObject|\Elastica\Type */
-        $typeMock = $this->getMockBuilder('Elastica\Type')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $typeMock->expects($this->never())
-            ->method('deleteById');
-        $typeMock->expects($this->never())
-            ->method('addDocument');
-        $typeMock->expects($this->never())
-            ->method('addDocuments');
+        $type = $this->prophesize(Type::class);
+        $type->deleteById(Argument::cetera())->shouldNotBeCalled();
+        $type->addDocument(Argument::cetera())->shouldNotBeCalled();
+        $type->addDocuments(Argument::cetera())->shouldNotBeCalled();
 
-        $transformer = $this->getTransformer($typeMock);
+        $transformer = $this->getTransformer($type);
 
         $fields = ['name' => []];
 
-        $objectPersister = new InvalidObjectPersister($typeMock, $transformer, 'SomeClass', $fields);
+        $objectPersister = new InvalidObjectPersister($type->reveal(), $transformer, 'SomeClass', $fields);
         $objectPersister->insertMany([new POPO(), new POPO()]);
     }
 
-    /**
-     * @return ModelToElasticaAutoTransformer
-     */
-    private function getTransformer(Type $type)
+    private function getTransformer($type)
     {
-        $transformer = new ModelToElasticaAutoTransformer($type);
+        $transformer = new ModelToElasticaAutoTransformer($type->reveal(), ['identifier' => 'id']);
         $transformer->setPropertyAccessor(PropertyAccess::createPropertyAccessor());
 
         return $transformer;

@@ -2,6 +2,6 @@
 
 namespace Fazland\ElasticaBundle\Exception;
 
-interface ExceptionInterface
+interface ExceptionInterface extends \Throwable
 {
 }

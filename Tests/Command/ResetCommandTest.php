@@ -5,7 +5,6 @@ namespace Fazland\ElasticaBundle\Tests\Command;
 use Fazland\ElasticaBundle\Command\ResetCommand;
 use Fazland\ElasticaBundle\Elastica\Index;
 use Fazland\ElasticaBundle\Index\IndexManager;
-use Fazland\ElasticaBundle\Index\Resetter;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Input\ArrayInput;

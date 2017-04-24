@@ -1,13 +1,9 @@
 <?php
 
-namespace Fazland\ElasticaBundle\Transformer;
+namespace Fazland\ElasticaBundle\Transformer\Doctrine;
 
 use Elastica\Document;
 
-/**
- * Creates an Elastica document with the ID of
- * the Doctrine object as Elastica document ID.
- */
 class ModelToElasticaIdentifierTransformer extends ModelToElasticaAutoTransformer
 {
     /**
