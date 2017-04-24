@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the FazlandElasticaBundle project.
@@ -10,6 +10,8 @@
  */
 
 namespace Fazland\ElasticaBundle\Event;
+
+use Elastica\Type;
 
 /**
  * Type Populate Event.
@@ -29,27 +31,21 @@ class TypePopulateEvent extends IndexPopulateEvent
     const POST_TYPE_POPULATE = Events::POST_TYPE_POPULATE;
 
     /**
-     * @var string
+     * @var Type
      */
     private $type;
 
-    /**
-     * @param string $index
-     * @param string $type
-     * @param bool   $reset
-     * @param array  $options
-     */
-    public function __construct($index, $type, $reset, $options)
+    public function __construct(Type $type)
     {
-        parent::__construct($index, $reset, $options);
+        parent::__construct($type->getIndex());
 
         $this->type = $type;
     }
 
     /**
-     * @return string
+     * @return Type
      */
-    public function getType()
+    public function getType(): Type
     {
         return $this->type;
     }

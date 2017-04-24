@@ -7,12 +7,16 @@ use Elasticsearch\Endpoints\AbstractEndpoint;
 use Fazland\ElasticaBundle\Configuration\IndexConfig;
 use Fazland\ElasticaBundle\Configuration\TypeConfig;
 use Fazland\ElasticaBundle\Event\Events;
+use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
 use Fazland\ElasticaBundle\Event\IndexResetEvent;
+use Fazland\ElasticaBundle\Exception\InvalidProviderException;
 use Fazland\ElasticaBundle\Exception\UnknownTypeException;
 use Fazland\ElasticaBundle\Index\AliasStrategy\AliasStrategyInterface;
 use Fazland\ElasticaBundle\Index\AliasStrategy\NullAliasStrategy;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
+use Fazland\ElasticaBundle\Provider\ProviderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Overridden Elastica Index class that provides dynamic index name changes.
@@ -56,9 +60,13 @@ class Index extends Elastica\Index
     }
 
     /**
+     * Resets the current index and push its mapping.
+     *
+     * @param bool $populate Flag to indicate whether the reset is part of the populate process.
+     *
      * @return void
      */
-    public function reset()
+    public function reset($populate = false)
     {
         $this->eventDispatcher->dispatch(Events::PRE_INDEX_RESET, new IndexResetEvent($this));
 
@@ -72,6 +80,44 @@ class Index extends Elastica\Index
         $this->getAliasStrategy()->prePopulate();
 
         $this->eventDispatcher->dispatch(Events::POST_INDEX_RESET, new IndexResetEvent($this));
+
+        if (! $populate) {
+            $this->getAliasStrategy()->finalize();
+        }
+    }
+
+    public function populate(array $options = [])
+    {
+        $resolver = new OptionsResolver();
+        $resolver->setDefaults([
+            'no-reset' => false,
+            'offset' => null,
+            'size' => null,
+            'sleep' => null,
+            'batch_size' => 100,
+            'ignore_errors' => false,
+        ]);
+
+        $options = $resolver->resolve($options);
+        $reset = ! $options['no-reset'];
+
+        unset($options['no-reset']);
+
+        if ($reset) {
+            $this->reset(true);
+        }
+
+        $this->eventDispatcher->dispatch(Events::PRE_INDEX_POPULATE, new IndexPopulateEvent($this));
+
+        foreach ($this->indexConfig->getTypes() as $typeConfig) {
+            $this->getType($typeConfig->getName())->populate($options);
+        }
+
+        $this->eventDispatcher->dispatch(Events::POST_INDEX_POPULATE, new IndexPopulateEvent($this));
+
+        if ($reset) {
+            $this->getAliasStrategy()->finalize();
+        }
     }
 
     public function setAliasStrategy(AliasStrategyInterface $aliasStrategy = null)

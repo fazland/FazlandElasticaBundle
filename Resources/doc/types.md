@@ -279,20 +279,6 @@ persistence configuration.
                         identifier: searchId
 ```
 
-### Turning on the persistence backend logger in production
-
-FazlandElasticaBundle will turn of your persistence backend's logging configuration by default
-when Symfony2 is not in debug mode. You can force FazlandElasticaBundle to always disable
-logging by setting debug_logging to false, to leave logging alone by setting it to true,
-or leave it set to its default value which will mirror %kernel.debug%.
-
-```yaml
-                user:
-                    persistence:
-                        provider:
-                            debug_logging: false
-```
-
 Listener Configuration
 ----------------------
 

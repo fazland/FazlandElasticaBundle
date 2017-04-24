@@ -12,11 +12,12 @@
         <service id="fazland_elastica.repository_manager" class="Fazland\ElasticaBundle\Manager\RepositoryManager" />
         <service id="fazland_elastica.manager" alias="fazland_elastica.repository_manager" />
 
-        <service id="fazland_elastica.indexable" class="Fazland\ElasticaBundle\Provider\Indexable">
+        <service id="fazland_elastica.indexable.default" class="Fazland\ElasticaBundle\Provider\Indexable">
             <call method="setContainer">
                 <argument type="service" id="service_container" />
             </call>
         </service>
+        <service id="fazland_elastica.indexable" alias="fazland_elastica.indexable.default" />
 
         <service id="fazland_elastica.index_prototype" class="Fazland\ElasticaBundle\Elastica\Index" abstract="true" lazy="true">
             <argument /> <!-- Client -->

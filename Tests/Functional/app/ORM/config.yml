@@ -41,8 +41,7 @@ fazland_elastica:
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                         listener: ~
-                        provider:
-                            debug_logging: true
+                        provider: ~
                 type2:
                     properties:
                         field1: ~

@@ -11,27 +11,28 @@
 
 namespace Fazland\ElasticaBundle\Event;
 
+use Elastica\Index;
 use Symfony\Component\EventDispatcher\Event;
 
 class IndexEvent extends Event
 {
     /**
-     * @var string
+     * @var Index
      */
     private $index;
 
     /**
-     * @param string $index
+     * @param Index $index
      */
-    public function __construct($index)
+    public function __construct(Index $index)
     {
         $this->index = $index;
     }
 
     /**
-     * @return string
+     * @return Index
      */
-    public function getIndex()
+    public function getIndex(): Index
     {
         return $this->index;
     }

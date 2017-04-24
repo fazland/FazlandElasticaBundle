@@ -7,7 +7,7 @@ namespace Fazland\ElasticaBundle\Provider;
  *
  * @author Thibault Duplessis <thibault.duplessis@gmail.com>
  */
-interface ProviderInterface
+interface CountAwareProviderInterface extends ProviderInterface
 {
     /**
      * Provides objects for index/type population.
@@ -17,12 +17,5 @@ interface ProviderInterface
      *
      * @return iterable
      */
-    public function provide(int $offset = null, int $size = null);
-
-    /**
-     * Clean up resources/free used memory between two batch operations.
-     *
-     * @return void
-     */
-    public function clear();
+    public function count(int $offset = null, int $size = null);
 }

@@ -10,69 +10,50 @@ use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 class Provider extends AbstractProvider
 {
     const ENTITY_ALIAS = 'a';
-
-    /**
-     * Disables logging and returns the logger that was previously set.
-     *
-     * @return mixed
-     */
-    protected function disableLogging()
+    public function count(int $offset = null, int $size = null)
     {
-        return;
-    }
+        /** @var QueryBuilder $qb */
+        $qb = $this->createQueryBuilder($this->options['query_builder_method']);
 
-    /**
-     * Reenables the logger with the previously returned logger from disableLogging();
-     *
-     * @param mixed $logger
-     * @return mixed
-     */
-    protected function enableLogging($logger)
-    {
-        return;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function countObjects($queryBuilder)
-    {
-        if (! $queryBuilder instanceof QueryBuilder) {
-            throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder');
+        if (null !== $offset) {
+            $qb->setFirstResult($offset);
         }
 
-        return $queryBuilder
+        if (null !== $size) {
+            $qb->setMaxResults($size);
+        }
+
+        return $qb
             ->getQuery()
             ->execute(null, Query::HYDRATE_PHPCR)
             ->getRows()
             ->count();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function fetchSlice($queryBuilder, $limit, $offset)
+    public function provide(int $offset = null, int $size = null)
     {
-        if (! $queryBuilder instanceof QueryBuilder) {
-            throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder');
+        /** @var QueryBuilder $qb */
+        $qb = $this->createQueryBuilder($this->options['query_builder_method']);
+
+        if (null !== $offset) {
+            $qb->setFirstResult($offset);
         }
 
-        return $queryBuilder
-            ->getQuery()
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getResult()
-            ->toArray();
+        if (null !== $size) {
+            $qb->setMaxResults($size);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function createQueryBuilder($method, array $arguments=[])
+    protected function createQueryBuilder($method, array $arguments = [])
     {
-        return $this->managerRegistry
-            ->getManager()
-            ->getRepository($this->objectClass)
-            ->{$method}(static::ENTITY_ALIAS);
+        $repository = $this->managerRegistry
+            ->getRepository($this->modelClass);
+
+        return $repository->{$method}(...$arguments);
     }
 }

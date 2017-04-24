@@ -3,17 +3,19 @@
 namespace Fazland\ElasticaBundle\Doctrine;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\ObjectManager;
 use Elastica\Exception\Bulk\ResponseException as BulkResponseException;
 use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Fazland\ElasticaBundle\Provider\AbstractProvider as BaseAbstractProvider;
+use Fazland\ElasticaBundle\Provider\CountAwareProviderInterface;
 use Fazland\ElasticaBundle\Provider\IndexableInterface;
 
-abstract class AbstractProvider extends BaseAbstractProvider
+abstract class AbstractProvider extends BaseAbstractProvider implements CountAwareProviderInterface
 {
     /**
-     * @var SliceFetcherInterface
+     * @var string
      */
-    private $sliceFetcher;
+    protected $modelClass;
 
     /**
      * @var ManagerRegistry
@@ -21,37 +23,18 @@ abstract class AbstractProvider extends BaseAbstractProvider
     protected $managerRegistry;
 
     /**
-     * Constructor.
-     *
-     * @param ObjectPersisterInterface $objectPersister
-     * @param IndexableInterface       $indexable
-     * @param string                   $objectClass
-     * @param array                    $baseOptions
-     * @param ManagerRegistry          $managerRegistry
-     * @param SliceFetcherInterface    $sliceFetcher
+     * @var array
      */
-    public function __construct(
-        ObjectPersisterInterface $objectPersister,
-        IndexableInterface $indexable,
-        $objectClass,
-        array $baseOptions,
-        ManagerRegistry $managerRegistry,
-        SliceFetcherInterface $sliceFetcher = null
-    ) {
-        parent::__construct($objectPersister, $indexable, $objectClass, $baseOptions);
+    protected $options;
 
+    public function __construct(string $index, string $type, string $modelClass, ManagerRegistry $managerRegistry, array $options = [])
+    {
+        parent::__construct($index, $type);
+
+        $this->modelClass = $modelClass;
         $this->managerRegistry = $managerRegistry;
-        $this->sliceFetcher = $sliceFetcher;
+        $this->options = $this->resolver->resolve($options);
     }
-
-    /**
-     * Counts objects that would be indexed using the query builder.
-     *
-     * @param object $queryBuilder
-     *
-     * @return integer
-     */
-    abstract protected function countObjects($queryBuilder);
 
     /**
      * Creates the query builder, which will be used to fetch objects to index.
@@ -63,63 +46,11 @@ abstract class AbstractProvider extends BaseAbstractProvider
      */
     abstract protected function createQueryBuilder($method, array $arguments = []);
 
-    /**
-     * Fetches a slice of objects using the query builder.
-     *
-     * @param object  $queryBuilder
-     * @param integer $limit
-     * @param integer $offset
-     *
-     * @return array
-     */
-    abstract protected function fetchSlice($queryBuilder, $limit, $offset);
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function doPopulate($options, \Closure $loggerClosure = null)
+    public function clear()
     {
-        $manager = $this->managerRegistry->getManagerForClass($this->objectClass);
-        $offset = $options['offset'];
-
-        $queryBuilder = $this->createQueryBuilder($options['query_builder_method']);
-        $nbObjects = $this->countObjects($queryBuilder);
-
-        $countObjects = max(0, $nbObjects - $offset);
-
-        $objects = [];
-        for (; $offset < $nbObjects; $offset += $options['batch_size']) {
-            $sliceSize = $options['batch_size'];
-            $errorMessage = null;
-
-            try {
-                $objects = $this->getSlice($queryBuilder, $options['batch_size'], $offset, $objects);
-                $sliceSize = count($objects);
-                $objects = $this->filterObjects($options, $objects);
-
-                if (! empty($objects)) {
-                    $this->objectPersister->insertMany($objects);
-                }
-            } catch (BulkResponseException $e) {
-                if (! $options['ignore_errors']) {
-                    throw $e;
-                }
-
-                if (null !== $loggerClosure) {
-                    $errorMessage = $e->getMessage();
-                }
-            }
-
-            if ($options['clear_object_manager']) {
-                $manager->clear();
-            }
-
-            usleep($options['sleep']);
-
-            if (null !== $loggerClosure) {
-                $loggerClosure($sliceSize, $countObjects, $errorMessage);
-            }
-        }
+        $this->managerRegistry
+            ->getManagerForClass($this->modelClass)
+            ->clear();
     }
 
     /**
@@ -130,43 +61,7 @@ abstract class AbstractProvider extends BaseAbstractProvider
         parent::configureOptions();
 
         $this->resolver->setDefaults([
-            'clear_object_manager' => true,
-            'debug_logging'        => false,
-            'ignore_errors'        => false,
-            'offset'               => 0,
             'query_builder_method' => 'createQueryBuilder',
-            'sleep'                => 0
         ]);
-    }
-
-    /**
-     * If this Provider has a SliceFetcher defined, we use it instead of falling back to
-     * the fetchSlice methods defined in the ORM/MongoDB subclasses.
-     *
-     * @param $queryBuilder
-     * @param int   $limit
-     * @param int   $offset
-     * @param array $lastSlice
-     *
-     * @return array
-     */
-    private function getSlice($queryBuilder, $limit, $offset, $lastSlice)
-    {
-        if (! $this->sliceFetcher) {
-            return $this->fetchSlice($queryBuilder, $limit, $offset);
-        }
-
-        $manager = $this->managerRegistry->getManagerForClass($this->objectClass);
-        $identifierFieldNames = $manager
-            ->getClassMetadata($this->objectClass)
-            ->getIdentifierFieldNames();
-
-        return $this->sliceFetcher->fetch(
-            $queryBuilder,
-            $limit,
-            $offset,
-            $lastSlice,
-            $identifierFieldNames
-        );
     }
 }

@@ -194,7 +194,7 @@ class FazlandElasticaExtension extends Extension
         $container->setDefinition($type->service, $typeDef);
 
         if ($type->indexableCallback) {
-            $container->getDefinition('fazland_elastica.indexable')
+            $container->getDefinition('fazland_elastica.indexable.default')
                 ->addMethodCall('addCallback', [sprintf('%s/%s', $indexConfig->name, $type->name), $type->indexableCallback]);
         }
 
@@ -202,9 +202,12 @@ class FazlandElasticaExtension extends Extension
             $this->loadTypePersistenceIntegration($type, $container);
         }
 
-        if (isset($type->mapping['_parent'])) {
-            // _parent mapping cannot contain `property` and `identifier`, so removing them after building `persistence`
-            unset($type->mapping['_parent']['property'], $type->mapping['_parent']['identifier']);
+        if ($type->provider) {
+            $typeDef->addMethodCall('setProvider', [new Reference($type->provider)]);
+        }
+
+        if ($type->modelToElasticaTransformer) {
+            $typeDef->addMethodCall('setModelTransformer', [ new Reference($type->modelToElasticaTransformer) ]);
         }
 
         if ($container->hasDefinition('fazland_elastica.serializer_callback_prototype')) {
@@ -397,13 +400,11 @@ class FazlandElasticaExtension extends Extension
 
         $providerDef = new DefinitionDecorator('fazland_elastica.provider.prototype.'.$typeConfig->persistenceDriver);
         $providerDef->addTag('fazland_elastica.provider', ['index' => $typeConfig->index->name, 'type' => $typeConfig->name]);
-        $providerDef->replaceArgument(0, new Reference($typeConfig->persister));
+        $providerDef->replaceArgument(0, $typeConfig->index->name);
+        $providerDef->replaceArgument(1, $typeConfig->name);
         $providerDef->replaceArgument(2, $typeConfig->model);
         // Propel provider can simply ignore Doctrine-specific options
-        $providerDef->replaceArgument(3, array_merge($typeConfig->providerOptions, [
-            'indexName' => $typeConfig->index->name,
-            'typeName' => $typeConfig->name,
-        ]));
+        $providerDef->replaceArgument(4, $typeConfig->providerOptions);
 
         $container->setDefinition($providerId, $providerDef);
         $typeConfig->provider = $providerId;
@@ -628,7 +629,7 @@ class FazlandElasticaExtension extends Extension
             $expressionLanguageDef->addMethodCall('registerProvider', [new Definition(ExpressionLanguageProvider::class)]);
             $expressionLanguageDef->addArgument(new Reference($cache['indexable_expression']));
 
-            $container->getDefinition('fazland_elastica.indexable')
+            $container->getDefinition('fazland_elastica.indexable.default')
                 ->addMethodCall('setExpressionLanguage', $expressionLanguageDef);
         }
     }

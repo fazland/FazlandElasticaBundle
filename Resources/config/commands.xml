@@ -9,5 +9,11 @@
             <argument type="service" id="fazland_elastica.index_manager" />
             <tag name="console.command" />
         </service>
+
+        <service id="fazland_elastica.command.populate" class="Fazland\ElasticaBundle\Command\PopulateCommand">
+            <argument type="service" id="fazland_elastica.index_manager" />
+            <argument type="service" id="event_dispatcher" />
+            <tag name="console.command" />
+        </service>
     </services>
 </container>

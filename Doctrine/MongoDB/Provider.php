@@ -8,70 +8,38 @@ use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 
 class Provider extends AbstractProvider
 {
-    /**
-     * Disables logging and returns the logger that was previously set.
-     *
-     * @return mixed
-     */
-    protected function disableLogging()
+    public function count(int $offset = null, int $size = null)
     {
-        $configuration = $this->managerRegistry
-            ->getManagerForClass($this->objectClass)
-            ->getConnection()
-            ->getConfiguration();
+        /** @var Builder $qb */
+        $qb = $this->createQueryBuilder($this->options['query_builder_method']);
 
-        $logger = $configuration->getLoggerCallable();
-        $configuration->setLoggerCallable(null);
-
-        return $logger;
-    }
-
-    /**
-     * Reenables the logger with the previously returned logger from disableLogging();.
-     *
-     * @param mixed $logger
-     *
-     * @return mixed
-     */
-    protected function enableLogging($logger)
-    {
-        $configuration = $this->managerRegistry
-            ->getManagerForClass($this->objectClass)
-            ->getConnection()
-            ->getConfiguration();
-
-        $configuration->setLoggerCallable($logger);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function countObjects($queryBuilder)
-    {
-        if (! $queryBuilder instanceof Builder) {
-            throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ODM\MongoDB\Query\Builder');
+        if (null !== $offset) {
+            $qb->skip($offset);
         }
 
-        return $queryBuilder
+        if (null !== $size) {
+            $qb->limit($size);
+        }
+
+        return $qb
             ->getQuery()
             ->count();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function fetchSlice($queryBuilder, $limit, $offset)
+    public function provide(int $offset = null, int $size = null)
     {
-        if (! $queryBuilder instanceof Builder) {
-            throw new InvalidArgumentTypeException($queryBuilder, 'Doctrine\ODM\MongoDB\Query\Builder');
+        /** @var Builder $qb */
+        $qb = $this->createQueryBuilder($this->options['query_builder_method']);
+
+        if (null !== $offset) {
+            $qb->skip($offset);
         }
 
-        return $queryBuilder
-            ->skip($offset)
-            ->limit($limit)
-            ->getQuery()
-            ->execute()
-            ->toArray();
+        if (null !== $size) {
+            $qb->limit($size);
+        }
+
+        return $qb->getQuery();
     }
 
     /**
@@ -80,9 +48,8 @@ class Provider extends AbstractProvider
     protected function createQueryBuilder($method, array $arguments = [])
     {
         $repository = $this->managerRegistry
-            ->getManagerForClass($this->objectClass)
-            ->getRepository($this->objectClass);
+            ->getRepository($this->modelClass);
 
-        return call_user_func_array([$repository, $method], $arguments);
+        return $repository->{$method}(...$arguments);
     }
 }
