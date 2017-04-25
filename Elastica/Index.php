@@ -13,20 +13,31 @@ use Fazland\ElasticaBundle\Exception\UnknownTypeException;
 use Fazland\ElasticaBundle\Index\AliasStrategy\AliasStrategyInterface;
 use Fazland\ElasticaBundle\Index\AliasStrategy\NullAliasStrategy;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Overridden Elastica Index class that provides dynamic index name changes.
  */
-class Index extends Elastica\Index
+class Index extends Elastica\Index implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Store the original name
      *
      * @var string
      */
     private $originalName;
+
+    /**
+     * Type to service id map.
+     *
+     * @var array
+     */
+    private $typeServices = [];
 
     /**
      * Stores created types to avoid recreation.
@@ -160,11 +171,11 @@ class Index extends Elastica\Index
             return $this->types[$name];
         }
 
-        if (! $this->indexConfig->hasType($name)) {
+        if (! isset($this->typeServices[$name])) {
             throw new UnknownTypeException(sprintf('Unknown type "%s" for index "%s" requested.', $name, $this->indexConfig->getName()));
         }
 
-        return $this->types[$name] = $this->createType($this->indexConfig->getType($name));
+        return $this->types[$name] = $this->container->get($this->typeServices[$name]);
     }
 
     public function getAlias(): string
@@ -206,6 +217,17 @@ class Index extends Elastica\Index
     }
 
     /**
+     * Adds a Type object.
+     *
+     * @param string $name
+     * @param string $serviceId
+     */
+    public function registerType(string $name, string $serviceId)
+    {
+        $this->typeServices[$name] = $serviceId;
+    }
+
+    /**
      * Create a new instance of MappingBuilder
      *
      * @return MappingBuilder
@@ -213,20 +235,5 @@ class Index extends Elastica\Index
     protected function getMappingBuilder(): MappingBuilder
     {
         return new MappingBuilder();
-    }
-
-    /**
-     * Creates a Type object.
-     *
-     * @param TypeConfig $typeConfig
-     *
-     * @return Elastica\Type
-     */
-    protected function createType(TypeConfig $typeConfig): Elastica\Type
-    {
-        $type = new Type($this, $typeConfig);
-        $type->setEventDispatcher($this->eventDispatcher);
-
-        return $type;
     }
 }

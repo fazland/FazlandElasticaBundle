@@ -2,14 +2,14 @@
 
 namespace Fazland\ElasticaBundle\Elastica;
 
-use Elastica\Client as BaseClient;
-use Elastica\Request;
-use Fazland\ElasticaBundle\Configuration\IndexConfig;
+use Elastica;
 use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\RequestEvent;
 use Fazland\ElasticaBundle\Event\ResponseEvent;
 use Fazland\ElasticaBundle\Exception\UnknownIndexException;
 use Fazland\ElasticaBundle\Index\AliasStrategy\FactoryInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -18,14 +18,16 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  *
  * @author Gordon Franke <info@nevalon.de>
  */
-class Client extends BaseClient
+class Client extends Elastica\Client implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
-     * Indexes configurations for this client.
+     * Index to service id map.
      *
-     * @var IndexConfig[]
+     * @var string[]
      */
-    private $indexConfigs = [];
+    private $indexServices = [];
 
     /**
      * Stores created indexes to avoid recreation.
@@ -40,11 +42,6 @@ class Client extends BaseClient
     private $eventDispatcher;
 
     /**
-     * @var FactoryInterface
-     */
-    private $aliasStrategyFactory;
-
-    /**
      * @param string $path
      * @param string $method
      * @param array  $data
@@ -52,7 +49,7 @@ class Client extends BaseClient
      *
      * @return \Elastica\Response
      */
-    public function request($path, $method = Request::GET, $data = [], array $query = [])
+    public function request($path, $method = Elastica\Request::GET, $data = [], array $query = [])
     {
         $event = new RequestEvent($path, $method, $data, $query);
         if (null !== $this->eventDispatcher) {
@@ -71,32 +68,30 @@ class Client extends BaseClient
     /**
      * @param string $name
      *
-     * @return Index|mixed
+     * @return Elastica\Index
      */
-    public function getIndex($name)
+    public function getIndex($name) : Elastica\Index
     {
         if (isset($this->indexes[$name])) {
             return $this->indexes[$name];
         }
 
-        if (! isset($this->indexConfigs[$name])) {
+        if (! isset($this->indexServices[$name])) {
             throw new UnknownIndexException(sprintf('Unknown index "%s" requested.', $name));
         }
 
-        $config = $this->indexConfigs[$name];
-        $index = $this->createIndex($config);
-
-        return $this->indexes[$name] = $index;
+        return $this->indexes[$name] = $this->container->get($this->indexServices[$name]);
     }
 
     /**
      * Register a new index configuration in this client.
      *
-     * @param IndexConfig $indexConfig
+     * @param string $name
+     * @param string $serviceId
      */
-    public function registerIndex(IndexConfig $indexConfig)
+    public function registerIndex(string $name, string $serviceId)
     {
-        $this->indexConfigs[$indexConfig->getName()] = $indexConfig;
+        $this->indexServices[$name] = $serviceId;
     }
 
     /**
@@ -105,33 +100,5 @@ class Client extends BaseClient
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null)
     {
         $this->eventDispatcher = $eventDispatcher;
-    }
-
-    /**
-     * Sets the alias strategy factory.
-     *
-     * @param FactoryInterface $factory
-     */
-    public function setAliasStrategyFactory(FactoryInterface $factory)
-    {
-        $this->aliasStrategyFactory = $factory;
-    }
-
-    /**
-     * Creates an Index object.
-     *
-     * @param IndexConfig $config
-     *
-     * @return Index
-     */
-    protected function createIndex(IndexConfig $config) : Index
-    {
-        $index = new Index($this, $config);
-        $index->setEventDispatcher($this->eventDispatcher);
-
-        if ($config->getAliasStrategy()) {
-            $index->setAliasStrategy($this->aliasStrategyFactory->factory($config->getAliasStrategy(), $index));
-        }
-        return $index;
     }
 }

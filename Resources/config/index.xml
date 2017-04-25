@@ -22,14 +22,21 @@
         <service id="fazland_elastica.index_prototype" class="Fazland\ElasticaBundle\Elastica\Index" abstract="true" lazy="true">
             <argument /> <!-- Client -->
             <argument /> <!-- Index config -->
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+            <call method="setEventDispatcher">
+                <argument type="service" id="event_dispatcher" />
+            </call>
         </service>
 
         <service id="fazland_elastica.type_prototype" class="Fazland\ElasticaBundle\Elastica\Type" abstract="true" lazy="true">
-            <argument /> <!-- type name -->
+            <argument /> <!-- Index -->
             <argument /> <!-- Type config -->
+            <call method="setEventDispatcher">
+                <argument type="service" id="event_dispatcher" />
+            </call>
         </service>
-
-        <service id="fazland_elastica.alias_strategy.factory" class="Fazland\ElasticaBundle\Index\AliasStrategy\Factory" public="false" />
 
         <service id="fazland_elastica.simple_alias_strategy_prototype" class="Fazland\ElasticaBundle\Index\AliasStrategy\SimpleAliasStrategy" abstract="true">
             <argument /> <!-- Index -->

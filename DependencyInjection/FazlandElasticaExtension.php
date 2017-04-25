@@ -135,10 +135,15 @@ class FazlandElasticaExtension extends Extension
             $this->indexConfigs[$name] = $indexConfig;
 
             $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
-            $indexDef->setFactory([$this->getClient($indexConfig->client), 'getIndex']);
-            $indexDef->replaceArgument(0, $indexConfig->name);
+            $indexDef->replaceArgument(0, $this->getClient($indexConfig->client));
+            $indexDef->replaceArgument(1, $indexConfig->configurationDefinition);
 
             $container->setDefinition($indexConfig->service, $indexDef);
+
+            if ($indexConfig->alias) {
+                $this->addIndexAliasStrategy($indexConfig, $container);
+            }
+
             $this->addIndexToClient($indexConfig, $container);
 
             if ($index['finder']) {
@@ -188,8 +193,11 @@ class FazlandElasticaExtension extends Extension
         $indexConfig = $type->index;
 
         $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
-        $typeDef->setFactory([$type->index->getReference(), 'getType']);
-        $typeDef->replaceArgument(0, $type->name);
+        $typeDef->replaceArgument(0, $type->index->getReference());
+        $typeDef->replaceArgument(1, $type->configurationDefinition);
+
+        $indexDef = $container->findDefinition($type->index->service);
+        $indexDef->addMethodCall('registerType', [ $type->name, $type->service ]);
 
         $container->setDefinition($type->service, $typeDef);
 
@@ -613,7 +621,7 @@ class FazlandElasticaExtension extends Extension
         $clientName = $indexConfig->client;
         $clientDef = $container->findDefinition(null === $clientName ? 'fazland_elastica.client' : $this->clients[$clientName]['id']);
 
-        $clientDef->addMethodCall('registerIndex', [$indexConfig->configurationDefinition]);
+        $clientDef->addMethodCall('registerIndex', [$indexConfig->name, $indexConfig->service]);
     }
 
     private function loadCaches(array $cache, ContainerBuilder $container)
@@ -625,6 +633,28 @@ class FazlandElasticaExtension extends Extension
 
             $container->getDefinition('fazland_elastica.indexable.default')
                 ->addMethodCall('setExpressionLanguage', $expressionLanguageDef);
+        }
+    }
+
+    private function addIndexAliasStrategy(IndexConfig $indexConfig, ContainerBuilder $container)
+    {
+        if (null === $indexConfig->alias || false === $indexConfig->alias) {
+            return;
+        }
+
+        $indexDef = $container->findDefinition($indexConfig->service);
+
+        switch ($indexConfig->alias) {
+            case 'simple':
+                $definition = new DefinitionDecorator('fazland_elastica.simple_alias_strategy_prototype');
+                $definition->replaceArgument(0, $indexConfig->getReference());
+
+                $indexDef->addMethodCall('setAliasStrategy', [ $definition ]);
+                break;
+
+            default:
+                $indexDef->addMethodCall('setAliasStrategy', [ new Reference($indexConfig->alias) ]);
+                break;
         }
     }
 }

@@ -18,11 +18,11 @@
             <argument type="collection" /> <!-- configuration -->
             <argument /> <!-- callback -->
 
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
             <call method="setEventDispatcher">
                 <argument type="service" id="event_dispatcher" on-invalid="null" />
-            </call>
-            <call method="setAliasStrategyFactory">
-                <argument type="service" id="fazland_elastica.alias_strategy.factory" />
             </call>
         </service>
 
