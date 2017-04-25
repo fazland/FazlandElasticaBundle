@@ -84,12 +84,7 @@ class Client extends BaseClient
         }
 
         $config = $this->indexConfigs[$name];
-        $index = new Index($this, $this->indexConfigs[$name]);
-        $index->setEventDispatcher($this->eventDispatcher);
-
-        if ($config->getAliasStrategy()) {
-            $index->setAliasStrategy($this->aliasStrategyFactory->factory($config->getAliasStrategy(), $index));
-        }
+        $index = $this->createIndex($config);
 
         return $this->indexes[$name] = $index;
     }
@@ -120,5 +115,23 @@ class Client extends BaseClient
     public function setAliasStrategyFactory(FactoryInterface $factory)
     {
         $this->aliasStrategyFactory = $factory;
+    }
+
+    /**
+     * Creates an Index object.
+     *
+     * @param IndexConfig $config
+     *
+     * @return Index
+     */
+    protected function createIndex(IndexConfig $config) : Index
+    {
+        $index = new Index($this, $config);
+        $index->setEventDispatcher($this->eventDispatcher);
+
+        if ($config->getAliasStrategy()) {
+            $index->setAliasStrategy($this->aliasStrategyFactory->factory($config->getAliasStrategy(), $index));
+        }
+        return $index;
     }
 }

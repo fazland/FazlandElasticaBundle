@@ -224,6 +224,9 @@ class Index extends Elastica\Index
      */
     protected function createType(TypeConfig $typeConfig): Elastica\Type
     {
-        return new Type($this, $typeConfig);
+        $type = new Type($this, $typeConfig);
+        $type->setEventDispatcher($this->eventDispatcher);
+
+        return $type;
     }
 }
