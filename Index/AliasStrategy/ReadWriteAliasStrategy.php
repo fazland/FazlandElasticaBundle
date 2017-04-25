@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Index\AliasStrategy;
 
+use Elastica\Request;
 use Elasticsearch\Endpoints\Indices\Alias\Get as GetAlias;
 use Elasticsearch\Endpoints\Indices\Aliases\Update as UpdateAlias;
 use Elasticsearch\Endpoints\Indices\Delete as DeleteIndex;
@@ -35,7 +36,7 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
 
     public function getName(string $method, string $path): string
     {
-        if ('GET' === $method && preg_match('#/_search$#i', $path)) {
+        if (Request::GET === $method && preg_match('#/_search(/scroll)?$#i', $path)) {
             return $this->index->getName().'_read';
         }
 

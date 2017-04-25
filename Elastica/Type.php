@@ -3,11 +3,14 @@
 namespace Fazland\ElasticaBundle\Elastica;
 
 use Elastica;
+use Elastica\ResultSet\BuilderInterface;
 use Fazland\ElasticaBundle\Configuration\TypeConfig;
+use Fazland\ElasticaBundle\Elastica\ResultSet\Builder;
 use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\TypePopulateEvent;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
 use Fazland\ElasticaBundle\Provider\ProviderInterface;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 use Fazland\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -34,11 +37,22 @@ class Type extends Elastica\Type
      */
     private $modelTransformer;
 
+    /**
+     * @var ElasticaToModelTransformerInterface
+     */
+    private $elasticaTransformer;
+
+    /**
+     * @var Builder
+     */
+    private $defaultBuilder;
+
     public function __construct(Elastica\Index $index, TypeConfig $typeConfig)
     {
         parent::__construct($index, $typeConfig->getName());
 
         $this->typeConfig = $typeConfig;
+        $this->createDefaultResultSetBuilder();
     }
 
     public function sendMapping()
@@ -127,6 +141,14 @@ class Type extends Elastica\Type
     }
 
     /**
+     * @param ElasticaToModelTransformerInterface $elasticaTransformer
+     */
+    public function setElasticaTransformer(ElasticaToModelTransformerInterface $elasticaTransformer)
+    {
+        $this->elasticaTransformer = $elasticaTransformer;
+    }
+
+    /**
      * Persist/update one or more objects to this type.
      *
      * @param array ...$objects
@@ -165,8 +187,26 @@ class Type extends Elastica\Type
         $this->deleteDocuments($docs);
     }
 
+    public function createSearch($query = '', $options = null, BuilderInterface $builder = null)
+    {
+        if (null === $builder) {
+            $builder = $this->defaultBuilder;
+        }
+
+        return parent::createSearch($query, $options, $builder);
+    }
+
     protected function getMappingBuilder()
     {
         return new MappingBuilder();
+    }
+
+    private function createDefaultResultSetBuilder()
+    {
+        $this->defaultBuilder = new Builder();
+
+        if (null !== $this->elasticaTransformer) {
+            $this->defaultBuilder->setTransformer($this->elasticaTransformer);
+        }
     }
 }

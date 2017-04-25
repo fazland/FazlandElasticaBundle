@@ -217,6 +217,10 @@ class FazlandElasticaExtension extends Extension
         if ($type->modelToElasticaTransformer) {
             $typeDef->addMethodCall('setModelTransformer', [ new Reference($type->modelToElasticaTransformer) ]);
         }
+
+        if ($type->elasticaToModelTransformer) {
+            $typeDef->addMethodCall('setElasticaTransformer', [ new Reference($type->elasticaToModelTransformer) ]);
+        }
     }
 
     /**
