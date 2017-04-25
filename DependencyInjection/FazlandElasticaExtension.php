@@ -55,7 +55,7 @@ class FazlandElasticaExtension extends Extension
             return;
         }
 
-        foreach (['config', 'index', 'persister', 'provider', 'transformer'] as $basename) {
+        foreach (['config', 'commands', 'index', 'persister', 'provider', 'transformer'] as $basename) {
             $loader->load(sprintf('%s.xml', $basename));
         }
 

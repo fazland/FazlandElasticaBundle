@@ -178,7 +178,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('index_name')
                                 ->info('Defaults to the name of the index, but can be modified if the index name is different in ElasticSearch')
                             ->end()
-                            ->booleanNode('use_alias')
+                            ->scalarNode('use_alias')
                                 ->defaultFalse()
                                 ->beforeNormalization()
                                     ->ifTrue()->then(function () {
