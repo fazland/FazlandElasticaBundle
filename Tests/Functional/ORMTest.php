@@ -33,8 +33,8 @@ class ORMTest extends WebTestCase
         $em = $container->get('doctrine')->getManager();
 
         $sm = $em->getConnection()->getSchemaManager();
-        $sm->dropDatabase($container->getParameter('kernel.cache_dir') . '/db.sqlite');
-        $sm->createDatabase($container->getParameter('kernel.cache_dir') . '/db.sqlite');
+        $sm->dropDatabase($container->getParameter('kernel.cache_dir').'/db.sqlite');
+        $sm->createDatabase($container->getParameter('kernel.cache_dir').'/db.sqlite');
 
         $schemaTool = new SchemaTool($em);
         $schemaTool->createSchema($em->getMetadataFactory()->getAllMetadata());

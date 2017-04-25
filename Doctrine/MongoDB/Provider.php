@@ -4,7 +4,6 @@ namespace Fazland\ElasticaBundle\Doctrine\MongoDB;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Fazland\ElasticaBundle\Doctrine\AbstractProvider;
-use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 
 class Provider extends AbstractProvider
 {

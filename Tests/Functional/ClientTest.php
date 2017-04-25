@@ -10,6 +10,7 @@
  */
 
 namespace Fazland\ElasticaBundle\Tests\Functional;
+
 use Elastica\Connection\Strategy\RoundRobin;
 use Elastica\Connection\Strategy\Simple;
 

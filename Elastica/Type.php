@@ -7,7 +7,6 @@ use Fazland\ElasticaBundle\Configuration\TypeConfig;
 use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\TypePopulateEvent;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
-use Fazland\ElasticaBundle\Provider\IndexableInterface;
 use Fazland\ElasticaBundle\Provider\ProviderInterface;
 use Fazland\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -123,12 +122,33 @@ class Type extends Elastica\Type
         $this->modelTransformer = $modelTransformer;
     }
 
-    public function persistObject($object)
+    /**
+     * Persist/update one or more objects to this type.
+     *
+     * @param array ...$objects
+     */
+    public function persist(...$objects)
     {
-        $this->persistObjects([$object]);
+        $docs = array_map(function ($doc) {
+            if ($doc instanceof Elastica\Document) {
+                return $doc;
+            }
+
+            $doc = $this->modelTransformer->transform($doc, $this->typeConfig->getMapping());
+            $doc->setDocAsUpsert(true);
+
+            return $doc;
+        }, $objects);
+
+        $this->addDocuments($docs);
     }
 
-    public function persistObjects(array $objects)
+    /**
+     * Remove one or more objects from this type.
+     *
+     * @param array ...$objects
+     */
+    public function unpersist(...$objects)
     {
         $docs = array_map(function ($doc) {
             if ($doc instanceof Elastica\Document) {
@@ -138,7 +158,7 @@ class Type extends Elastica\Type
             return $this->modelTransformer->transform($doc, $this->typeConfig->getMapping());
         }, $objects);
 
-        $this->addDocuments($docs);
+        $this->deleteDocuments($docs);
     }
 
     protected function getMappingBuilder()

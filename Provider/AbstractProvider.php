@@ -2,7 +2,6 @@
 
 namespace Fazland\ElasticaBundle\Provider;
 
-use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**

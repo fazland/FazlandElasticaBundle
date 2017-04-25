@@ -37,10 +37,10 @@ final class ReadWriteAliasStrategy implements AliasStrategyInterface
     public function getName(string $method, string $path): string
     {
         if ('GET' === $method && preg_match('#/_search$#i', $path)) {
-            return $this->index->getName() . '_read';
+            return $this->index->getName().'_read';
         }
 
-        return $this->index->getName() . '_write';
+        return $this->index->getName().'_write';
     }
 
     public function prePopulate()

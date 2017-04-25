@@ -46,7 +46,7 @@ class WebTestCase extends BaseWebTestCase
             return parent::deleteTmpDir();
         }
 
-        if (!file_exists($dir = sys_get_temp_dir().'/'.Kernel::VERSION.'/'.$testCase)) {
+        if (! file_exists($dir = sys_get_temp_dir().'/'.Kernel::VERSION.'/'.$testCase)) {
             return;
         }
 

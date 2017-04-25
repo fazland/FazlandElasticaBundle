@@ -3,12 +3,8 @@
 namespace Fazland\ElasticaBundle\Doctrine;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\Common\Persistence\ObjectManager;
-use Elastica\Exception\Bulk\ResponseException as BulkResponseException;
-use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Fazland\ElasticaBundle\Provider\AbstractProvider as BaseAbstractProvider;
 use Fazland\ElasticaBundle\Provider\CountAwareProviderInterface;
-use Fazland\ElasticaBundle\Provider\IndexableInterface;
 
 abstract class AbstractProvider extends BaseAbstractProvider implements CountAwareProviderInterface
 {

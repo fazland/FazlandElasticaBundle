@@ -45,14 +45,12 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
      * Instanciates a new Mapper.
      *
      * @param array $options
-     * @param Type $type
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(Type $type, array $options = [], EventDispatcherInterface $dispatcher = null)
+    public function __construct(array $options = [], EventDispatcherInterface $dispatcher = null)
     {
         $this->options = array_merge($this->options, $options);
         $this->dispatcher = $dispatcher;
-        $this->type = $type;
     }
 
     /**
@@ -66,15 +64,23 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
     }
 
     /**
-     * Transforms an object into an elastica object having the required keys.
-     *
-     * @param object $object the object to convert
-     * @param array  $fields the keys we want to have in the returned array
-     *
-     * @return Document
-     **/
-    public function transform($object, array $fields)
+     * @param Type $type
+     */
+    public function setType(Type $type)
     {
+        $this->type = $type;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function transform($object, array $mapping)
+    {
+        $fields = $mapping['properties'] ?? [];
+        if (isset($mapping['_parent'])) {
+            $fields['_parent'] = $mapping['_parent'];
+        }
+
         $document = $this->transformObjectToDocument($object, $fields, $this->getIdentifier($object));
 
         return $document;
@@ -93,7 +99,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
     {
         if (isset($this->options['identifier'])) {
             $fields = (array)$this->options['identifier'];
-            $identifier = array_map(function(string $field) use ($object) {
+            $identifier = array_map(function (string $field) use ($object) {
                 return $this->propertyAccessor->getValue($object, $field);
             }, $fields);
 
@@ -181,7 +187,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
                 $property = (null !== $mapping['property']) ? $mapping['property'] : $mapping['type'];
                 $value = $this->propertyAccessor->getValue($object, $property);
 
-                $parentIdentifier = implode(' ', array_map(function($field) use ($value) {
+                $parentIdentifier = implode(' ', array_map(function ($field) use ($value) {
                     return $this->propertyAccessor->getValue($value, $field);
                 }, (array)$mapping['identifier']));
                 $document->setParent($parentIdentifier);

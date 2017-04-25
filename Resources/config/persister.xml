@@ -3,25 +3,10 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
-    <parameters>
-        <parameter key="fazland_elastica.object_persister.class">Fazland\ElasticaBundle\Persister\ObjectPersister</parameter>
-        <parameter key="fazland_elastica.object_serializer_persister.class">Fazland\ElasticaBundle\Persister\ObjectSerializerPersister</parameter>
-    </parameters>
-
     <services>
-        <service id="fazland_elastica.object_persister" class="%fazland_elastica.object_persister.class%" abstract="true">
+        <service id="fazland_elastica.object_persister" class="Fazland\ElasticaBundle\Persister\ObjectPersister" abstract="true">
             <argument /> <!-- type -->
-            <argument /> <!-- model to elastica transformer -->
             <argument /> <!-- model -->
-            <argument /> <!-- properties mapping -->
-        </service>
-
-        <service id="fazland_elastica.object_serializer_persister" class="%fazland_elastica.object_serializer_persister.class%" abstract="true">
-            <argument /> <!-- type -->
-            <argument /> <!-- model to elastica transformer -->
-            <argument /> <!-- model -->
-            <argument /> <!-- serializer -->
         </service>
     </services>
 </container>

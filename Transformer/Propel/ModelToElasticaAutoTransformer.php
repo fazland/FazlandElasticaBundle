@@ -2,8 +2,6 @@
 
 namespace Fazland\ElasticaBundle\Transformer\Propel;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\Common\Util\ClassUtils;
 use Fazland\ElasticaBundle\Exception\IdentifierNotFoundException;
 use Fazland\ElasticaBundle\Transformer\ModelToElasticaAutoTransformer as BaseTransformer;
 

@@ -5,7 +5,6 @@ namespace Fazland\ElasticaBundle\Doctrine\PHPCR;
 use Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder;
 use Doctrine\ODM\PHPCR\Query\Query;
 use Fazland\ElasticaBundle\Doctrine\AbstractProvider;
-use Fazland\ElasticaBundle\Exception\InvalidArgumentTypeException;
 
 class Provider extends AbstractProvider
 {

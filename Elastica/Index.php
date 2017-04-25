@@ -9,12 +9,10 @@ use Fazland\ElasticaBundle\Configuration\TypeConfig;
 use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
 use Fazland\ElasticaBundle\Event\IndexResetEvent;
-use Fazland\ElasticaBundle\Exception\InvalidProviderException;
 use Fazland\ElasticaBundle\Exception\UnknownTypeException;
 use Fazland\ElasticaBundle\Index\AliasStrategy\AliasStrategyInterface;
 use Fazland\ElasticaBundle\Index\AliasStrategy\NullAliasStrategy;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
-use Fazland\ElasticaBundle\Provider\ProviderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 

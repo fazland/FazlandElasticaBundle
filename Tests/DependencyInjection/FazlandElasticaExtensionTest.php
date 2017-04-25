@@ -8,28 +8,6 @@ use Symfony\Component\Yaml\Yaml;
 
 class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
 {
-    public function testShouldAddParentParamToObjectPersisterCall()
-    {
-        $config = Yaml::parse(file_get_contents(__DIR__.'/fixtures/config.yml'));
-
-        $containerBuilder = new ContainerBuilder();
-        $containerBuilder->setParameter('kernel.debug', true);
-
-        $extension = new FazlandElasticaExtension();
-
-        $extension->load($config, $containerBuilder);
-
-        $this->assertTrue($containerBuilder->hasDefinition('fazland_elastica.object_persister.test_index.child_field'));
-
-        $persisterCallDefinition = $containerBuilder->getDefinition('fazland_elastica.object_persister.test_index.child_field');
-
-        $arguments = $persisterCallDefinition->getArguments();
-        $arguments = $arguments['index_3'];
-
-        $this->assertArrayHasKey('_parent', $arguments);
-        $this->assertEquals('parent_field', $arguments['_parent']['type']);
-    }
-
     public function testExtensionSupportsDriverlessTypePersistence()
     {
         $config = Yaml::parse(file_get_contents(__DIR__.'/fixtures/driverless_type.yml'));

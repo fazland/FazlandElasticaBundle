@@ -7,6 +7,8 @@ namespace Fazland\ElasticaBundle\Persister;
  * Accepts domain model objects and converts them to elastica documents.
  *
  * @author Thibault Duplessis <thibault.duplessis@gmail.com>
+ *
+ * @deprecated Object persisters are deprecated. Please use Type methods directly.
  */
 interface ObjectPersisterInterface
 {
@@ -24,6 +26,7 @@ interface ObjectPersisterInterface
      * The object will be transformed to an elastica document.
      *
      * @param object $object
+     * @deprecated This method is deprecated. Use $this->persist instead.
      */
     public function insertOne($object);
 
@@ -31,6 +34,7 @@ interface ObjectPersisterInterface
      * Replaces one object in the type.
      *
      * @param object $object
+     * @deprecated This method is deprecated. Use $this->persist instead.
      **/
     public function replaceOne($object);
 
@@ -38,20 +42,15 @@ interface ObjectPersisterInterface
      * Deletes one object in the type.
      *
      * @param object $object
+     * @deprecated This method is deprecated. Use $this->unpersist instead.
      **/
     public function deleteOne($object);
-
-    /**
-     * Deletes one object in the type by id.
-     *
-     * @param mixed $id
-     */
-    public function deleteById($id);
 
     /**
      * Bulk inserts an array of objects in the type.
      *
      * @param array $objects array of domain model objects
+     * @deprecated This method is deprecated. Use $this->persist instead.
      */
     public function insertMany(array $objects);
 
@@ -59,6 +58,7 @@ interface ObjectPersisterInterface
      * Bulk updates an array of objects in the type.
      *
      * @param array $objects array of domain model objects
+     * @deprecated This method is deprecated. Use $this->persist instead.
      */
     public function replaceMany(array $objects);
 
@@ -66,6 +66,7 @@ interface ObjectPersisterInterface
      * Bulk deletes an array of objects in the type.
      *
      * @param array $objects array of domain model objects
+     * @deprecated This method is deprecated. Use $this->unpersist instead.
      */
     public function deleteMany(array $objects);
 
@@ -73,6 +74,28 @@ interface ObjectPersisterInterface
      * Bulk deletes records from an array of identifiers.
      *
      * @param array $identifiers array of domain model object identifiers
+     * @deprecated This method is deprecated. Use $this->deleteById instead.
      */
     public function deleteManyByIdentifiers(array $identifiers);
+
+    /**
+     * Bulk persists objects in the type.
+     *
+     * @param array ...$objects
+     */
+    public function persist(...$objects);
+
+    /**
+     * Bulk deletes objects in the type.
+     *
+     * @param array ...$objects
+     */
+    public function unpersist(...$objects);
+
+    /**
+     * Deletes one object in the type by id.
+     *
+     * @param array $identifiers
+     */
+    public function deleteById(...$identifiers);
 }
