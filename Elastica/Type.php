@@ -74,14 +74,14 @@ class Type extends Elastica\Type
             $i++;
             $objects[] = $object;
 
-            if (count($objects) >= $options['batch-size']) {
-                $this->persistObjects($objects);
+            if (count($objects) >= $options['batch_size']) {
+                $this->persist($objects);
                 $this->provider->clear();
             }
         }
 
         if (count($objects) > 0) {
-            $this->persistObjects($objects);
+            $this->persist($objects);
             $this->provider->clear();
         }
 
