@@ -14,8 +14,8 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
     /**
      * Fetch objects for theses identifier values.
      *
-     * @param array   $identifierValues ids values
-     * @param Boolean $hydrate          whether or not to hydrate the objects, false returns arrays
+     * @param array $identifierValues ids values
+     * @param bool  $hydrate          whether or not to hydrate the objects, false returns arrays
      *
      * @return array of objects or arrays
      */

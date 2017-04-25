@@ -13,7 +13,7 @@ class TransformedPartialResults extends RawPartialResults
     protected $transformer;
 
     /**
-     * @param ResultSet                                                           $resultSet
+     * @param ResultSet                                                               $resultSet
      * @param \Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface $transformer
      */
     public function __construct(ResultSet $resultSet, ElasticaToModelTransformerInterface $transformer)
@@ -24,7 +24,7 @@ class TransformedPartialResults extends RawPartialResults
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function toArray()
     {

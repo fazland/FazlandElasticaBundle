@@ -36,7 +36,7 @@ class SerializerTest extends WebTestCase
     }
 
     /**
-     * Tests that the serialize_null configuration attribute works
+     * Tests that the serialize_null configuration attribute works.
      */
     public function testWithNullValues()
     {
@@ -65,7 +65,7 @@ class SerializerTest extends WebTestCase
     }
 
     /**
-     * Tests that the serialize_null configuration attribute works
+     * Tests that the serialize_null configuration attribute works.
      */
     public function testWithDefaultConfiguration()
     {

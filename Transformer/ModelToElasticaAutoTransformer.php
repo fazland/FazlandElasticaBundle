@@ -44,7 +44,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
     /**
      * Instanciates a new Mapper.
      *
-     * @param array $options
+     * @param array                    $options
      * @param EventDispatcherInterface $dispatcher
      */
     public function __construct(array $options = [], EventDispatcherInterface $dispatcher = null)
@@ -72,7 +72,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function transform($object, array $mapping)
     {
@@ -87,7 +87,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
     }
 
     /**
-     * Gets an identifier string for the given object
+     * Gets an identifier string for the given object.
      *
      * @param object $object
      *
@@ -98,7 +98,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
     protected function getIdentifier($object)
     {
         if (isset($this->options['identifier'])) {
-            $fields = (array)$this->options['identifier'];
+            $fields = (array) $this->options['identifier'];
             $identifier = array_map(function (string $field) use ($object) {
                 return $this->propertyAccessor->getValue($object, $field);
             }, $fields);
@@ -164,11 +164,12 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
     }
 
     /**
-     * Transforms the given object to an elastica document
+     * Transforms the given object to an elastica document.
      *
-     * @param object $object the object to convert
-     * @param array  $fields the keys we want to have in the returned array
+     * @param object $object     the object to convert
+     * @param array  $fields     the keys we want to have in the returned array
      * @param string $identifier the identifier for the new document
+     *
      * @return Document
      */
     protected function transformObjectToDocument($object, array $fields, $identifier = '')
@@ -189,7 +190,7 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
 
                 $parentIdentifier = implode(' ', array_map(function ($field) use ($value) {
                     return $this->propertyAccessor->getValue($value, $field);
-                }, (array)$mapping['identifier']));
+                }, (array) $mapping['identifier']));
                 $document->setParent($parentIdentifier);
 
                 continue;

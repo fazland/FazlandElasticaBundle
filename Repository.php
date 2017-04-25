@@ -24,7 +24,7 @@ class Repository
     protected $finder;
 
     /**
-     * @param RepositoryManager $repositoryManager
+     * @param RepositoryManager        $repositoryManager
      * @param PaginatedFinderInterface $finder
      */
     public function __construct(RepositoryManager $repositoryManager, PaginatedFinderInterface $finder)
@@ -34,9 +34,9 @@ class Repository
     }
 
     /**
-     * @param mixed   $query
-     * @param integer $limit
-     * @param array   $options
+     * @param mixed $query
+     * @param int   $limit
+     * @param array $options
      *
      * @return array
      */
@@ -46,9 +46,9 @@ class Repository
     }
 
     /**
-     * @param mixed   $query
-     * @param integer $limit
-     * @param array   $options
+     * @param mixed $query
+     * @param int   $limit
+     * @param array $options
      *
      * @return mixed
      */

@@ -24,9 +24,6 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
      */
     protected $objectClass = 'stdClass';
 
-    /**
-     *
-     */
     public function testTransformUsesFindByIdentifier()
     {
         // Seems like we are testing a protected method...

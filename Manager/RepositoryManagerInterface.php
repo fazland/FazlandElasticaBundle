@@ -17,7 +17,7 @@ interface RepositoryManagerInterface
      * Adds type name and its finder.
      * Custom repository class name can also be added.
      *
-     * @param string $indexTypeName The type name in "index/type" format
+     * @param string $indexTypeName  The type name in "index/type" format
      * @param        $finder
      * @param string $repositoryName
      */

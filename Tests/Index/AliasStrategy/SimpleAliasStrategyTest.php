@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\Index\AliasStrategy;
 
@@ -11,7 +13,7 @@ use Prophecy\Argument;
 class SimpleAliasStrategyTest extends TestCase
 {
     /**
-     * @var SimpleAliasStrategy $simpleAliasStrategy
+     * @var SimpleAliasStrategy
      */
     private $simpleAliasStrategy;
 

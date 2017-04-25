@@ -27,7 +27,7 @@ class TransformedPaginatorAdapter extends RawPaginatorAdapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getResults($offset, $length)
     {

@@ -29,7 +29,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
      * @var array
      */
     protected $options = [
-        'hydrate'    => true,
+        'hydrate' => true,
         'identifier' => 'id',
     ];
 
@@ -87,7 +87,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
         $objects = $this->transform($elasticaObjects);
 
         $result = [];
-        for ($i = 0, $j = count($elasticaObjects); $i < $j; $i++) {
+        for ($i = 0, $j = count($elasticaObjects); $i < $j; ++$i) {
             $result[] = new HybridResult($elasticaObjects[$i], $objects[$i]);
         }
 
@@ -116,8 +116,8 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
      * If $hydrate is false, the returned array elements will be arrays.
      * Otherwise, the results will be hydrated to instances of the model class.
      *
-     * @param array   $identifierValues Identifier values
-     * @param boolean $hydrate          Whether or not to hydrate the results
+     * @param array $identifierValues Identifier values
+     * @param bool  $hydrate          Whether or not to hydrate the results
      *
      * @return array
      */
@@ -147,7 +147,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
      */
     protected function createQuery($class, $identifierField, array $identifierValues)
     {
-        $queryClass   = $class.'Query';
+        $queryClass = $class.'Query';
         $filterMethod = 'filterBy'.$this->camelize($identifierField);
 
         return $queryClass::create()->$filterMethod($identifierValues);
@@ -162,6 +162,6 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
      */
     private function camelize($str)
     {
-        return ucfirst(str_replace(" ", "", ucwords(strtr($str, "_-", "  "))));
+        return ucfirst(str_replace(' ', '', ucwords(strtr($str, '_-', '  '))));
     }
 }

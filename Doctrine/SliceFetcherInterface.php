@@ -12,11 +12,11 @@ interface SliceFetcherInterface
     /**
      * Fetches a slice of objects using the query builder.
      *
-     * @param object  $queryBuilder
-     * @param integer $limit
-     * @param integer $offset
-     * @param array   $previousSlice
-     * @param array   $identifierFieldNames
+     * @param object $queryBuilder
+     * @param int    $limit
+     * @param int    $offset
+     * @param array  $previousSlice
+     * @param array  $identifierFieldNames
      *
      * @return array
      */

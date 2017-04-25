@@ -5,7 +5,6 @@ namespace Fazland\ElasticaBundle\Elastica;
 use Elastica;
 use Elasticsearch\Endpoints\AbstractEndpoint;
 use Fazland\ElasticaBundle\Configuration\IndexConfig;
-use Fazland\ElasticaBundle\Configuration\TypeConfig;
 use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
 use Fazland\ElasticaBundle\Event\IndexResetEvent;
@@ -27,7 +26,7 @@ class Index extends Elastica\Index implements ContainerAwareInterface
     use ContainerAwareTrait;
 
     /**
-     * Store the original name
+     * Store the original name.
      *
      * @var string
      */
@@ -72,9 +71,7 @@ class Index extends Elastica\Index implements ContainerAwareInterface
     /**
      * Resets the current index and push its mapping.
      *
-     * @param bool $populate Flag to indicate whether the reset is part of the populate process.
-     *
-     * @return void
+     * @param bool $populate flag to indicate whether the reset is part of the populate process
      */
     public function reset($populate = false)
     {
@@ -153,8 +150,6 @@ class Index extends Elastica\Index implements ContainerAwareInterface
      *
      * While it's technically a regular setter for name property, it's specifically named overrideName, but not setName
      * since it's used for a very specific case and normally should not be used
-     *
-     * @return void
      */
     public function overrideName()
     {
@@ -197,7 +192,7 @@ class Index extends Elastica\Index implements ContainerAwareInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function request($path, $method, $data = [], array $query = [])
     {
@@ -208,7 +203,7 @@ class Index extends Elastica\Index implements ContainerAwareInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function requestEndpoint(AbstractEndpoint $endpoint)
     {
@@ -233,7 +228,7 @@ class Index extends Elastica\Index implements ContainerAwareInterface
     }
 
     /**
-     * Create a new instance of MappingBuilder
+     * Create a new instance of MappingBuilder.
      *
      * @return MappingBuilder
      */

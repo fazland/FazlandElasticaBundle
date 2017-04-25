@@ -43,7 +43,7 @@ class IndexManager
      * Adds an index to the manager.
      *
      * @param string $name
-     * @param Index $index
+     * @param Index  $index
      */
     public function addIndex(string $name, Index $index)
     {

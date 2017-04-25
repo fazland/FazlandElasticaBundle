@@ -32,7 +32,7 @@ class RepositoryManager implements RepositoryManagerInterface
     {
         $this->types[$indexTypeName] = [
             'finder' => $finder,
-            'repositoryName' => $repositoryName
+            'repositoryName' => $repositoryName,
         ];
     }
 
@@ -66,8 +66,6 @@ class RepositoryManager implements RepositoryManagerInterface
      * @param $typeName
      *
      * @return string
-     * @internal param string $entityName
-     *
      */
     protected function getRepositoryName($typeName)
     {

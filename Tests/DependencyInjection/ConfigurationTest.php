@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\Resetter\DependencyInjection;
 
@@ -292,12 +294,12 @@ class ConfigurationTest extends TestCase
     {
         $configuration = $this->getConfigs([
             'clients' => [
-                'simple_timeout'       => [
-                    'url'    => 'http://localhost:9200',
+                'simple_timeout' => [
+                    'url' => 'http://localhost:9200',
                     'timeout' => 123,
                 ],
-                'connect_timeout'      => [
-                    'url'    => 'http://localhost:9200',
+                'connect_timeout' => [
+                    'url' => 'http://localhost:9200',
                     'connectTimeout' => 234,
                 ],
             ],
@@ -312,10 +314,10 @@ class ConfigurationTest extends TestCase
         $configuration = $this->getConfigs([
             'clients' => [
                 'default' => [
-                    'aws_access_key_id'     => 'AWS_KEY',
+                    'aws_access_key_id' => 'AWS_KEY',
                     'aws_secret_access_key' => 'AWS_SECRET',
-                    'aws_region'            => 'AWS_REGION',
-                    'aws_session_token'     => 'AWS_SESSION_TOKEN',
+                    'aws_region' => 'AWS_REGION',
+                    'aws_session_token' => 'AWS_SESSION_TOKEN',
                 ],
             ],
         ]);
@@ -333,11 +335,11 @@ class ConfigurationTest extends TestCase
             'clients' => [
                 'default' => [
                     'connections' => [
-                        []
+                        [],
                     ],
-                    'connectionStrategy' => 'Simple'
+                    'connectionStrategy' => 'Simple',
                 ],
-            ]
+            ],
         ]);
 
         $this->assertEquals('Simple', $configuration['clients']['default']['connectionStrategy']);
@@ -346,11 +348,11 @@ class ConfigurationTest extends TestCase
             'clients' => [
                 'default' => [
                     'connections' => [
-                        []
+                        [],
                     ],
-                    'connectionStrategy' => 'RoundRobin'
+                    'connectionStrategy' => 'RoundRobin',
                 ],
-            ]
+            ],
         ]);
 
         $this->assertEquals('RoundRobin', $configuration['clients']['default']['connectionStrategy']);
@@ -359,11 +361,11 @@ class ConfigurationTest extends TestCase
             'clients' => [
                 'default' => [
                     'connections' => [
-                        []
+                        [],
                     ],
-                    'connectionStrategy' => 'rand'
+                    'connectionStrategy' => 'rand',
                 ],
-            ]
+            ],
         ]);
 
         $this->assertEquals('rand', $configuration['clients']['default']['connectionStrategy']);
@@ -373,11 +375,11 @@ class ConfigurationTest extends TestCase
                 'clients' => [
                     'default' => [
                         'connections' => [
-                            []
+                            [],
                         ],
-                        'connectionStrategy' => 'undefined_function'
+                        'connectionStrategy' => 'undefined_function',
                     ],
-                ]
+                ],
             ]);
 
             $this->fail('Expected '.InvalidConfigurationException::class.' to be thrown');

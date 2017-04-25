@@ -14,7 +14,7 @@ interface PartialResultsInterface
     /**
      * Returns the number of results.
      *
-     * @return integer The number of results.
+     * @return int the number of results
      */
     public function getTotalHits();
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\DataCollector;
 
@@ -61,7 +63,7 @@ class RequestListener implements EventSubscriberInterface, LoggerAwareInterface
     /**
      * Log the query if we have an instance of ElasticaLogger.
      *
-     * @param Request $request
+     * @param Request  $request
      * @param Response $response
      */
     private function logQuery(Request $request, Response $response)

@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\Reference;
 class TransformerPass implements CompilerPassInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {

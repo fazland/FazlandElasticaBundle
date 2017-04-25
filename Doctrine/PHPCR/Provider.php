@@ -9,6 +9,7 @@ use Fazland\ElasticaBundle\Doctrine\AbstractProvider;
 class Provider extends AbstractProvider
 {
     const ENTITY_ALIAS = 'a';
+
     public function count(int $offset = null, int $size = null)
     {
         /** @var QueryBuilder $qb */
@@ -46,7 +47,7 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function createQueryBuilder($method, array $arguments = [])
     {

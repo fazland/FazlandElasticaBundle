@@ -81,7 +81,7 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Checks that the 'hints' parameter is used on the created query
+     * Checks that the 'hints' parameter is used on the created query.
      */
     public function testUsesHintsConfigurationIfGiven()
     {
@@ -109,8 +109,8 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 
         $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass, [
             'hints' => [
-                ['name' => 'customHintName', 'value' => 'Custom\Hint\Class']
-            ]
+                ['name' => 'customHintName', 'value' => 'Custom\Hint\Class'],
+            ],
         ]);
 
         $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');

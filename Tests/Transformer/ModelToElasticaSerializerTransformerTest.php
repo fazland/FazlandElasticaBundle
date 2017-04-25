@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\Transformer\ModelToElasticaIdentifierTransformer;
 
@@ -53,8 +55,8 @@ class ModelToElasticaSerializerTransformerTest extends TestCase
 
     public function testGetDocumentWithIdentifierOnly()
     {
-        $document    = $this->transformer->transform(new POPO(), []);
-        $data        = $document->getData();
+        $document = $this->transformer->transform(new POPO(), []);
+        $data = $document->getData();
 
         $this->assertInstanceOf(Document::class, $document);
         $this->assertEquals(123, $document->getId());
@@ -63,8 +65,8 @@ class ModelToElasticaSerializerTransformerTest extends TestCase
 
     public function testGetDocumentWithIdentifierOnlyWithFields()
     {
-        $document    = $this->transformer->transform(new POPO(), ['name' => []]);
-        $data        = $document->getData();
+        $document = $this->transformer->transform(new POPO(), ['name' => []]);
+        $data = $document->getData();
 
         $this->assertInstanceOf(Document::class, $document);
         $this->assertEquals(123, $document->getId());

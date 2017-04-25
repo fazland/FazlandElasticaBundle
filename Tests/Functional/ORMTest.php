@@ -64,7 +64,6 @@ class ORMTest extends WebTestCase
         $document = $type->getDocument(4747);
         $this->assertEquals('foobar', $document->getData()['field1']);
 
-
         $em->remove($obj);
         $em->flush();
 

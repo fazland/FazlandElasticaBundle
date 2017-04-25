@@ -20,12 +20,12 @@ class TransformedFinder implements PaginatedFinderInterface
     protected $transformer;
 
     /**
-     * @param SearchableInterface $searchable
+     * @param SearchableInterface                 $searchable
      * @param ElasticaToModelTransformerInterface $transformer
      */
     public function __construct(SearchableInterface $searchable, ElasticaToModelTransformerInterface $transformer)
     {
-        $this->searchable  = $searchable;
+        $this->searchable = $searchable;
         $this->transformer = $transformer;
     }
 
@@ -49,9 +49,9 @@ class TransformedFinder implements PaginatedFinderInterface
     /**
      * Find documents similar to one with passed id.
      *
-     * @param integer $id
-     * @param array   $params
-     * @param array   $query
+     * @param int   $id
+     * @param array $params
+     * @param array $query
      *
      * @return array of model objects
      **/

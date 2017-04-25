@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\Doctrine;
 
@@ -165,17 +167,17 @@ abstract class ListenerTest extends TestCase
         return new $class(...$args);
     }
 
-    private function getMockClassMetadata() : ObjectProphecy
+    private function getMockClassMetadata(): ObjectProphecy
     {
         return $this->prophesize($this->getClassMetadataClass());
     }
 
-    private function getMockObjectManager() : ObjectProphecy
+    private function getMockObjectManager(): ObjectProphecy
     {
         return $this->prophesize($this->getObjectManagerClass());
     }
 
-    private function getMockPersister($object) : ObjectProphecy
+    private function getMockPersister($object): ObjectProphecy
     {
         $persister = $this->prophesize(ObjectPersister::class);
         $persister->handlesObject($object)->willReturn(true);
@@ -183,7 +185,7 @@ abstract class ListenerTest extends TestCase
         return $persister;
     }
 
-    private function getMockIndexable(string $indexName, string $typeName, $object, bool $return = null) : ObjectProphecy
+    private function getMockIndexable(string $indexName, string $typeName, $object, bool $return = null): ObjectProphecy
     {
         $indexable = $this->prophesize(IndexableInterface::class);
         $method = $indexable->isObjectIndexable($indexName, $typeName, $object);
@@ -206,7 +208,7 @@ class Entity
     public $identifier;
 
     /**
-     * @param integer $id
+     * @param int $id
      */
     public function __construct($id)
     {

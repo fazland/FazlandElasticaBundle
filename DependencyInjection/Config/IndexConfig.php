@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\DependencyInjection\Config;
 
@@ -83,7 +85,7 @@ class IndexConfig
             $typeDef->setArguments([
                 $typeConfig->name,
                 $typeConfig->mapping,
-                $typeConfig->config
+                $typeConfig->config,
             ]);
 
             $types[$typeConfig->name] = $typeDef;
@@ -98,7 +100,7 @@ class IndexConfig
                 'elasticSearchName' => $this->indexName,
                 'settings' => $this->settings,
                 'aliasStrategy' => $this->alias,
-            ]
+            ],
         ]);
 
         $this->configurationDefinition = $indexConfigDef;

@@ -84,10 +84,10 @@ class ElasticaDataCollectorTest extends \PHPUnit_Framework_TestCase
 
         $queries = [[
             'engineMS' => 15,
-            'executionMS' => 10
+            'executionMS' => 10,
         ], [
             'engineMS' => 25,
-            'executionMS' => 20
+            'executionMS' => 20,
         ]];
 
         $loggerMock->expects($this->once())

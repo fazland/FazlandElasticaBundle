@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Elastica\ResultSet;
 
@@ -17,7 +19,7 @@ class Builder implements BuilderInterface
     private $transformer;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function buildResultSet(Response $response, Query $query)
     {
@@ -40,14 +42,14 @@ class Builder implements BuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     private function buildResults(Response $response)
     {
         $data = $response->getData();
         $results = [];
 
-        if (!isset($data['hits']['hits'])) {
+        if (! isset($data['hits']['hits'])) {
             return $results;
         }
 

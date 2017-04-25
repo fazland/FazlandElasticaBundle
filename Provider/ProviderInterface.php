@@ -21,8 +21,6 @@ interface ProviderInterface
 
     /**
      * Clean up resources/free used memory between two batch operations.
-     *
-     * @return void
      */
     public function clear();
 }

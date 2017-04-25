@@ -121,7 +121,7 @@ class IndexConfig
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isUseAlias(): bool
     {

@@ -56,6 +56,7 @@ final class SimpleAliasStrategy implements IndexAwareAliasStrategyInterface
 
     /**
      * @param $aliasName
+     *
      * @return array
      */
     private function getAliasedIndex(string $aliasName): array

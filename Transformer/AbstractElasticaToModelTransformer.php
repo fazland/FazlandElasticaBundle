@@ -36,8 +36,9 @@ abstract class AbstractElasticaToModelTransformer implements ElasticaToModelTran
      * Returns a sorting closure to be used with usort() to put retrieved objects
      * back in the order that they were returned by ElasticSearch.
      *
-     * @param array $idPos
+     * @param array  $idPos
      * @param string $identifierPath
+     *
      * @return callable
      */
     protected function getSortingClosure(array $idPos, $identifierPath)

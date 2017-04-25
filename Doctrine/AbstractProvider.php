@@ -36,7 +36,7 @@ abstract class AbstractProvider extends BaseAbstractProvider implements CountAwa
      * Creates the query builder, which will be used to fetch objects to index.
      *
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
      *
      * @return object
      */
@@ -50,7 +50,7 @@ abstract class AbstractProvider extends BaseAbstractProvider implements CountAwa
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configureOptions()
     {

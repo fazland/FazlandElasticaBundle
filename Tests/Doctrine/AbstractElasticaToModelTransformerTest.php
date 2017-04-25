@@ -68,13 +68,13 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
     public function resultsWithMatchingObjects()
     {
         $elasticaResults = $doctrineObjects = [];
-        for ($i=1; $i<4; $i++) {
+        for ($i = 1; $i < 4; ++$i) {
             $elasticaResults[] = new Result(['_id' => $i, 'highlight' => ['foo']]);
             $doctrineObjects[] = new Foo($i);
         }
 
         return [
-            [$elasticaResults, $doctrineObjects]
+            [$elasticaResults, $doctrineObjects],
         ];
     }
 

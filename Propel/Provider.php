@@ -12,7 +12,7 @@ use Fazland\ElasticaBundle\Provider\AbstractProvider;
 class Provider extends AbstractProvider
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function doPopulate($options, \Closure $loggerClosure = null)
     {
@@ -42,21 +42,21 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function disableLogging()
     {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function enableLogging($logger)
     {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configureOptions()
     {
@@ -64,11 +64,11 @@ class Provider extends AbstractProvider
 
         $this->resolver->setDefaults([
             'clear_object_manager' => true,
-            'debug_logging'        => false,
-            'ignore_errors'        => false,
-            'offset'               => 0,
+            'debug_logging' => false,
+            'ignore_errors' => false,
+            'offset' => 0,
             'query_builder_method' => 'createQueryBuilder',
-            'sleep'                => 0
+            'sleep' => 0,
         ]);
     }
 }

@@ -6,7 +6,7 @@ use Elastica\ResultSet;
 use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 
 /**
- * Partial transformed result set
+ * Partial transformed result set.
  */
 class HybridPartialResults extends RawPartialResults
 {
@@ -27,7 +27,7 @@ class HybridPartialResults extends RawPartialResults
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function toArray()
     {

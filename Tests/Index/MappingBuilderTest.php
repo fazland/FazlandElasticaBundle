@@ -22,22 +22,22 @@ class MappingBuilderTest extends \PHPUnit_Framework_TestCase
         $typeConfig = new TypeConfig('typename', [
             'properties' => [
                 'storeless' => [
-                    'type' => 'string'
+                    'type' => 'string',
                 ],
                 'stored' => [
                     'type' => 'string',
-                    'store' => true
+                    'store' => true,
                 ],
                 'unstored' => [
                     'type' => 'string',
-                    'store' => false
+                    'store' => false,
                 ],
             ],
             '_parent' => [
                 'type' => 'parent_type',
                 'identifier' => 'name',
-                'property' => 'parent_property'
-            ]
+                'property' => 'parent_property',
+            ],
         ]);
 
         $mapping = $this->builder->buildTypeMapping($typeConfig);

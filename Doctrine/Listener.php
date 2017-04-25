@@ -142,7 +142,7 @@ class Listener implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            'postFlush'
+            'postFlush',
         ];
     }
 
@@ -171,7 +171,7 @@ class Listener implements EventSubscriber
     /**
      * Record the specified identifier to delete. Do not need to entire object.
      *
-     * @param object $object
+     * @param object        $object
      * @param ObjectManager $om
      */
     private function scheduleForDeletion($object, ObjectManager $om)
@@ -180,7 +180,7 @@ class Listener implements EventSubscriber
             $metadata = $om->getClassMetadata(ClassUtils::getClass($object));
             $identifier = $metadata->getIdentifierValues($object);
         } else {
-            $identifierFields = (array)$this->config['identifier'];
+            $identifierFields = (array) $this->config['identifier'];
             $identifier = [];
 
             foreach ($identifierFields as $field) {

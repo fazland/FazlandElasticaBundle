@@ -17,7 +17,7 @@ interface ObjectPersisterInterface
      *
      * @param mixed $object
      *
-     * @return boolean
+     * @return bool
      */
     public function handlesObject($object);
 
@@ -26,6 +26,7 @@ interface ObjectPersisterInterface
      * The object will be transformed to an elastica document.
      *
      * @param object $object
+     *
      * @deprecated This method is deprecated. Use $this->persist instead.
      */
     public function insertOne($object);
@@ -34,6 +35,7 @@ interface ObjectPersisterInterface
      * Replaces one object in the type.
      *
      * @param object $object
+     *
      * @deprecated This method is deprecated. Use $this->persist instead.
      **/
     public function replaceOne($object);
@@ -42,6 +44,7 @@ interface ObjectPersisterInterface
      * Deletes one object in the type.
      *
      * @param object $object
+     *
      * @deprecated This method is deprecated. Use $this->unpersist instead.
      **/
     public function deleteOne($object);
@@ -50,6 +53,7 @@ interface ObjectPersisterInterface
      * Bulk inserts an array of objects in the type.
      *
      * @param array $objects array of domain model objects
+     *
      * @deprecated This method is deprecated. Use $this->persist instead.
      */
     public function insertMany(array $objects);
@@ -58,6 +62,7 @@ interface ObjectPersisterInterface
      * Bulk updates an array of objects in the type.
      *
      * @param array $objects array of domain model objects
+     *
      * @deprecated This method is deprecated. Use $this->persist instead.
      */
     public function replaceMany(array $objects);
@@ -66,6 +71,7 @@ interface ObjectPersisterInterface
      * Bulk deletes an array of objects in the type.
      *
      * @param array $objects array of domain model objects
+     *
      * @deprecated This method is deprecated. Use $this->unpersist instead.
      */
     public function deleteMany(array $objects);
@@ -74,6 +80,7 @@ interface ObjectPersisterInterface
      * Bulk deletes records from an array of identifiers.
      *
      * @param array $identifiers array of domain model object identifiers
+     *
      * @deprecated This method is deprecated. Use $this->deleteById instead.
      */
     public function deleteManyByIdentifiers(array $identifiers);

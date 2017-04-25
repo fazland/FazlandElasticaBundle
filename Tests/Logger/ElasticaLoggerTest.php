@@ -56,7 +56,7 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
         $elasticaLogger = new ElasticaLogger(null, true);
 
         $total = rand(1, 15);
-        for ($i = 0; $i < $total; $i++) {
+        for ($i = 0; $i < $total; ++$i) {
             $elasticaLogger->logQuery('testPath', 'testMethod', ['data'], 12);
         }
 
@@ -67,22 +67,22 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
     {
         $elasticaLogger = new ElasticaLogger(null, true);
 
-        $path   = 'testPath';
+        $path = 'testPath';
         $method = 'testMethod';
-        $data   = ['data'];
-        $time   = 12;
+        $data = ['data'];
+        $time = 12;
         $connection = ['host' => 'localhost', 'port' => '8999', 'transport' => 'https'];
         $query = ['search_type' => 'dfs_query_then_fetch'];
 
         $expected = [
-            'path'        => $path,
-            'method'      => $method,
-            'data'        => $data,
+            'path' => $path,
+            'method' => $method,
+            'data' => $data,
             'executionMS' => $time * 1000,
-            'connection'  => $connection,
+            'connection' => $connection,
             'queryString' => $query,
             'engineMS' => 0,
-            'itemCount' => 0
+            'itemCount' => 0,
         ];
 
         $elasticaLogger->logQuery($path, $method, $data, $time, $connection, $query);
@@ -98,7 +98,7 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
         $elasticaLogger = new ElasticaLogger(null, false);
 
         $total = rand(1, 15);
-        for ($i = 0; $i < $total; $i++) {
+        for ($i = 0; $i < $total; ++$i) {
             $elasticaLogger->logQuery('testPath', 'testMethod', ['data'], 12);
         }
 
@@ -111,10 +111,10 @@ class ElasticaLoggerTest extends \PHPUnit_Framework_TestCase
 
         $elasticaLogger = new ElasticaLogger($loggerMock);
 
-        $path   = 'testPath';
+        $path = 'testPath';
         $method = 'testMethod';
-        $data   = ['data'];
-        $time   = 12;
+        $data = ['data'];
+        $time = 12;
 
         $expectedMessage = 'testPath (testMethod) 12000.00 ms';
 

@@ -42,7 +42,7 @@ class SearchCommand extends ContainerAwareCommand
         $indexName = $input->getOption('index');
         /** @var $index \Elastica\Index */
         $index = $this->getContainer()->get('fazland_elastica.index_manager')->getIndex($indexName ? $indexName : null);
-        $type  = $index->getType($input->getArgument('type'));
+        $type = $index->getType($input->getArgument('type'));
         $query = Query::create($input->getArgument('query'));
         $query->setSize($input->getOption('limit'));
         if ($input->getOption('explain')) {

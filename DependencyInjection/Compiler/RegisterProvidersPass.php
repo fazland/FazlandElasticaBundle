@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Reference;
 class RegisterProvidersPass implements CompilerPassInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {

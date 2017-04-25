@@ -65,7 +65,7 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function createQueryBuilder($method, array $arguments = [])
     {

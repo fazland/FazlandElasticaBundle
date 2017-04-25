@@ -59,7 +59,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $testQuery
-     * @param mixed $testLimit
+     * @param mixed  $testLimit
      * @param string $method
      *
      * @return \Fazland\ElasticaBundle\Finder\TransformedFinder

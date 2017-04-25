@@ -23,7 +23,7 @@ class ModelToElasticaAutoTransformer extends BaseTransformer
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function getIdentifier($object)
     {

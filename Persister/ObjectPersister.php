@@ -19,13 +19,13 @@ class ObjectPersister implements ObjectPersisterInterface
     protected $logger;
 
     /**
-     * @param Type                                $type
-     * @param string                              $objectClass
+     * @param Type   $type
+     * @param string $objectClass
      */
     public function __construct(Type $type, $objectClass)
     {
-        $this->type            = $type;
-        $this->objectClass     = $objectClass;
+        $this->type = $type;
+        $this->objectClass = $objectClass;
     }
 
     /**
@@ -85,7 +85,7 @@ class ObjectPersister implements ObjectPersisterInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function deleteManyByIdentifiers(array $identifiers)
     {
@@ -93,7 +93,7 @@ class ObjectPersister implements ObjectPersisterInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function persist(...$objects)
     {
@@ -101,7 +101,7 @@ class ObjectPersister implements ObjectPersisterInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function unpersist(...$objects)
     {
@@ -109,7 +109,7 @@ class ObjectPersister implements ObjectPersisterInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function deleteById(...$identifiers)
     {

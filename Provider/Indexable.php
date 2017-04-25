@@ -46,7 +46,7 @@ class Indexable implements IndexableInterface, DI\ContainerAwareInterface
      *
      * @param string $indexName
      * @param string $typeName
-     * @param mixed $object
+     * @param mixed  $object
      *
      * @return bool
      */

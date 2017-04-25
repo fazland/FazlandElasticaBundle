@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\ObjectPersister;
 
@@ -9,7 +11,7 @@ use Prophecy\Argument;
 
 class POPO
 {
-    public $id   = 123;
+    public $id = 123;
 
     public function getId()
     {

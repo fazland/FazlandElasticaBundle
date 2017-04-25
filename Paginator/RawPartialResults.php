@@ -21,7 +21,7 @@ class RawPartialResults implements PartialResultsInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function toArray()
     {
@@ -31,7 +31,7 @@ class RawPartialResults implements PartialResultsInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getTotalHits()
     {
@@ -39,7 +39,7 @@ class RawPartialResults implements PartialResultsInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getAggregations()
     {

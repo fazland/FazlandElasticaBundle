@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Elastica;
 
@@ -85,7 +87,7 @@ class Type extends Elastica\Type
         $i = 0;
         $objects = [];
         foreach ($this->provider->provide($options['offset'], $options['size']) as $object) {
-            $i++;
+            ++$i;
             $objects[] = $object;
 
             $this->eventDispatcher->dispatch(Events::TYPE_POPULATE, new TypePopulateEvent($this));

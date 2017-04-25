@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\DependencyInjection;
 
@@ -159,7 +161,7 @@ class FazlandElasticaExtension extends Extension
     /**
      * Loads the configured index finders.
      *
-     * @param IndexConfig $indexConfig
+     * @param IndexConfig      $indexConfig
      * @param ContainerBuilder $container
      */
     private function loadIndexFinder(IndexConfig $indexConfig, ContainerBuilder $container)
@@ -185,7 +187,7 @@ class FazlandElasticaExtension extends Extension
     /**
      * Loads the configured type.
      *
-     * @param TypeConfig $type
+     * @param TypeConfig       $type
      * @param ContainerBuilder $container
      */
     private function loadType(TypeConfig $type, ContainerBuilder $container)
@@ -197,7 +199,7 @@ class FazlandElasticaExtension extends Extension
         $typeDef->replaceArgument(1, $type->configurationDefinition);
 
         $indexDef = $container->findDefinition($type->index->service);
-        $indexDef->addMethodCall('registerType', [ $type->name, $type->service ]);
+        $indexDef->addMethodCall('registerType', [$type->name, $type->service]);
 
         $container->setDefinition($type->service, $typeDef);
 
@@ -215,18 +217,18 @@ class FazlandElasticaExtension extends Extension
         }
 
         if ($type->modelToElasticaTransformer) {
-            $typeDef->addMethodCall('setModelTransformer', [ new Reference($type->modelToElasticaTransformer) ]);
+            $typeDef->addMethodCall('setModelTransformer', [new Reference($type->modelToElasticaTransformer)]);
         }
 
         if ($type->elasticaToModelTransformer) {
-            $typeDef->addMethodCall('setElasticaTransformer', [ new Reference($type->elasticaToModelTransformer) ]);
+            $typeDef->addMethodCall('setElasticaTransformer', [new Reference($type->elasticaToModelTransformer)]);
         }
     }
 
     /**
      * Loads the optional provider and finder for a type.
      *
-     * @param TypeConfig $typeConfig
+     * @param TypeConfig       $typeConfig
      * @param ContainerBuilder $container
      */
     private function loadTypePersistenceIntegration(TypeConfig $typeConfig, ContainerBuilder $container)
@@ -253,7 +255,7 @@ class FazlandElasticaExtension extends Extension
     /**
      * Creates and loads an ElasticaToModelTransformer.
      *
-     * @param TypeConfig $typeConfig
+     * @param TypeConfig       $typeConfig
      * @param ContainerBuilder $container
      */
     private function loadElasticaToModelTransformer(TypeConfig $typeConfig, ContainerBuilder $container)
@@ -286,7 +288,7 @@ class FazlandElasticaExtension extends Extension
     /**
      * Creates and loads a ModelToElasticaTransformer for an index/type.
      *
-     * @param TypeConfig $typeConfig
+     * @param TypeConfig       $typeConfig
      * @param ContainerBuilder $container
      */
     private function loadModelToElasticaTransformer(TypeConfig $typeConfig, ContainerBuilder $container)
@@ -306,17 +308,17 @@ class FazlandElasticaExtension extends Extension
 
         $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $typeConfig->index->name, $typeConfig->name);
         $serviceDef = new DefinitionDecorator($abstractId);
-        $serviceDef->addMethodCall('setType', [ $typeConfig->getReference() ]);
+        $serviceDef->addMethodCall('setType', [$typeConfig->getReference()]);
         $serviceDef->replaceArgument(0, [
             'identifier' => $typeConfig->modelIdentifier,
         ]);
 
         if ($typeConfig->persistenceDriver === 'orm') {
-            $serviceDef->addMethodCall('setDoctrine', [ new Reference('doctrine') ]);
+            $serviceDef->addMethodCall('setDoctrine', [new Reference('doctrine')]);
         } elseif ($typeConfig->persistenceDriver === 'mongodb') {
-            $serviceDef->addMethodCall('setDoctrine', [ new Reference('doctrine_mongodb') ]);
+            $serviceDef->addMethodCall('setDoctrine', [new Reference('doctrine_mongodb')]);
         } elseif ($typeConfig->persistenceDriver === 'phpcr') {
-            $serviceDef->addMethodCall('setDoctrine', [ new Reference('doctrine_phpcr') ]);
+            $serviceDef->addMethodCall('setDoctrine', [new Reference('doctrine_phpcr')]);
         }
 
         if ($container->hasDefinition('fazland_elastica.serializer_callback_prototype')) {
@@ -346,7 +348,7 @@ class FazlandElasticaExtension extends Extension
     /**
      * Creates and loads an object persister for a type.
      *
-     * @param TypeConfig $typeConfig
+     * @param TypeConfig       $typeConfig
      * @param ContainerBuilder $container
      */
     private function loadObjectPersister(TypeConfig $typeConfig, ContainerBuilder $container)
@@ -357,6 +359,7 @@ class FazlandElasticaExtension extends Extension
 
         if (! $typeConfig->model) {
             $typeConfig->persister = null;
+
             return;
         }
 
@@ -378,7 +381,7 @@ class FazlandElasticaExtension extends Extension
     /**
      * Loads a provider for a type.
      *
-     * @param TypeConfig $typeConfig
+     * @param TypeConfig       $typeConfig
      * @param ContainerBuilder $container
      */
     private function loadTypeProvider(TypeConfig $typeConfig, ContainerBuilder $container)
@@ -411,7 +414,7 @@ class FazlandElasticaExtension extends Extension
     /**
      * Loads doctrine listeners to handle indexing of new or updated objects.
      *
-     * @param TypeConfig $typeConfig
+     * @param TypeConfig       $typeConfig
      * @param ContainerBuilder $container
      */
     private function loadTypeListener(TypeConfig $typeConfig, ContainerBuilder $container)
@@ -507,7 +510,7 @@ class FazlandElasticaExtension extends Extension
     /**
      * Loads a Type specific Finder.
      *
-     * @param TypeConfig $typeConfig
+     * @param TypeConfig       $typeConfig
      * @param ContainerBuilder $container
      */
     private function loadTypeFinder(TypeConfig $typeConfig, ContainerBuilder $container)
@@ -555,7 +558,7 @@ class FazlandElasticaExtension extends Extension
      * Makes sure a specific driver has been loaded.
      *
      * @param ContainerBuilder $container
-     * @param string $driver
+     * @param string           $driver
      */
     private function loadDriver(ContainerBuilder $container, string $driver)
     {
@@ -654,11 +657,11 @@ class FazlandElasticaExtension extends Extension
                 $definition = new DefinitionDecorator('fazland_elastica.simple_alias_strategy_prototype');
                 $container->setDefinition($serviceId, $definition);
 
-                $indexDef->addMethodCall('setAliasStrategy', [ new Reference($serviceId) ]);
+                $indexDef->addMethodCall('setAliasStrategy', [new Reference($serviceId)]);
                 break;
 
             default:
-                $indexDef->addMethodCall('setAliasStrategy', [ new Reference($indexConfig->alias) ]);
+                $indexDef->addMethodCall('setAliasStrategy', [new Reference($indexConfig->alias)]);
                 break;
         }
     }

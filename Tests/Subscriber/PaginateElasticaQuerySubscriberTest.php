@@ -52,24 +52,24 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
         $expected = [
             'createdAt' => [
                 'order' => 'asc',
-                'ignore_unmapped' => true
-            ]
+                'ignore_unmapped' => true,
+            ],
         ];
         $tests[] = [$expected, new Request()];
 
         $expected = [
             'name' => [
                 'order' => 'desc',
-                'ignore_unmapped' => true
-            ]
+                'ignore_unmapped' => true,
+            ],
         ];
         $tests[] = [$expected, new Request(['ord' => 'name', 'az' => 'desc'])];
 
         $expected = [
             'updatedAt' => [
                 'order' => 'asc',
-                'ignore_unmapped' => true
-            ]
+                'ignore_unmapped' => true,
+            ],
         ];
         $tests[] = [$expected, new Request(['ord' => 'updatedAt', 'az' => 'invalid'])];
 
@@ -167,7 +167,7 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
                 'order' => 'asc',
                 'ignore_unmapped' => true,
                 'nested_path' => 'owner',
-            ]
+            ],
         ], $query->getParam('sort'));
     }
 
@@ -194,6 +194,7 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
             'sortDirectionParameterName' => 'az',
             'sortNestedPath' => function ($sortField) {
                 $this->assertEquals('owner.name', $sortField);
+
                 return 'owner';
             },
         ];
@@ -204,7 +205,7 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
                 'order' => 'asc',
                 'ignore_unmapped' => true,
                 'nested_path' => 'owner',
-            ]
+            ],
         ], $query->getParam('sort'));
     }
 
@@ -242,14 +243,14 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
                     'nested_path' => 'owner',
                     'nested_filter' => [
                         'term' => [
-                            'enabled' => ['value' => true]
-                        ]
-                    ]
-                ]
+                            'enabled' => ['value' => true],
+                        ],
+                    ],
+                ],
             ],
             'query' => [
-                'match_all' => new \stdClass()
-            ]
+                'match_all' => new \stdClass(),
+            ],
         ], $query->toArray());
     }
 
@@ -277,6 +278,7 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
             'sortNestedPath' => 'owner',
             'sortNestedFilter' => function ($sortField) {
                 $this->assertEquals('owner.name', $sortField);
+
                 return new Query\Term(['enabled' => ['value' => true]]);
             },
         ];
@@ -290,14 +292,14 @@ class PaginateElasticaQuerySubscriberTest extends \PHPUnit_Framework_TestCase
                     'nested_path' => 'owner',
                     'nested_filter' => [
                         'term' => [
-                            'enabled' => ['value' => true]
-                        ]
-                    ]
-                ]
+                            'enabled' => ['value' => true],
+                        ],
+                    ],
+                ],
             ],
             'query' => [
-                'match_all' => new \stdClass()
-            ]
+                'match_all' => new \stdClass(),
+            ],
         ], $query->toArray());
     }
 }

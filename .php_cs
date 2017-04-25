@@ -9,6 +9,7 @@ return PhpCsFixer\Config::create()
     ->setFinder($finder)
     ->setRules([
         '@PSR2' => true,
+        '@Symfony' => true,
         'psr0' => false,
         'array_syntax' => ['syntax' => 'short'],
         'concat_space' => ['spacing' => 'none'],

@@ -8,7 +8,7 @@ use Fazland\ElasticaBundle\Transformer\ModelToElasticaAutoTransformer as BaseTra
 class ModelToElasticaAutoTransformer extends BaseTransformer
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function getIdentifier($object)
     {

@@ -7,7 +7,6 @@ use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\RequestEvent;
 use Fazland\ElasticaBundle\Event\ResponseEvent;
 use Fazland\ElasticaBundle\Exception\UnknownIndexException;
-use Fazland\ElasticaBundle\Index\AliasStrategy\FactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -70,7 +69,7 @@ class Client extends Elastica\Client implements ContainerAwareInterface
      *
      * @return Elastica\Index
      */
-    public function getIndex($name) : Elastica\Index
+    public function getIndex($name): Elastica\Index
     {
         if (isset($this->indexes[$name])) {
             return $this->indexes[$name];

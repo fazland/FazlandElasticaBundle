@@ -10,7 +10,7 @@ interface ModelToElasticaTransformerInterface
     /**
      * Transforms an object into an elastica object having the required keys.
      *
-     * @param object $object the object to convert
+     * @param object $object  the object to convert
      * @param array  $mapping the mapping for this type
      *
      * @return \Elastica\Document
