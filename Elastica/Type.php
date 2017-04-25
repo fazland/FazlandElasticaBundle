@@ -193,7 +193,13 @@ class Type extends Elastica\Type
             $builder = $this->defaultBuilder;
         }
 
-        return parent::createSearch($query, $options, $builder);
+        $search = parent::createSearch($query, $options, $builder);
+        if (! $search->getQuery()->hasParam('stored_fields') &&
+            null !== ($fields = $this->typeConfig->getStoredFields())) {
+            $search->getQuery()->setStoredFields($fields);
+        }
+
+        return $search;
     }
 
     protected function getMappingBuilder()

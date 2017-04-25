@@ -175,6 +175,7 @@ class TypeConfig
             'date_detection',
             'dynamic_date_formats',
             'numeric_detection',
+            'stored_fields',
         ];
 
         foreach ($fields as $field) {

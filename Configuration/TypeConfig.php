@@ -107,6 +107,14 @@ class TypeConfig
     }
 
     /**
+     * @return mixed
+     */
+    public function getStoredFields()
+    {
+        return $this->getConfig('stored_fields');
+    }
+
+    /**
      * @param string $key
      *
      * @return null|string

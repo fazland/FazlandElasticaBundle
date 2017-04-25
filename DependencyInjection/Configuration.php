@@ -250,6 +250,7 @@ class Configuration implements ConfigurationInterface
                     ->booleanNode('numeric_detection')->end()
                     ->scalarNode('dynamic')->end()
                     ->variableNode('indexable_callback')->end()
+                    ->variableNode('stored_fields')->defaultNull()->end()
                     ->append($this->getPersistenceNode())
                     ->append($this->getSerializerNode())
                 ->end()

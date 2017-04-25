@@ -21,6 +21,8 @@ interface ElasticaToModelTransformerInterface
      * @param array $elasticaObjects
      *
      * @return mixed
+     *
+     * @deprecated Hybrid results are deprecated. Please use the new ResultSet with injected transformer instead.
      */
     public function hybridTransform(array $elasticaObjects);
 
