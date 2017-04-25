@@ -10,13 +10,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * Stores supported database drivers.
-     *
-     * @var array
-     */
-    private $supportedDrivers = ['orm', 'mongodb', 'propel', 'phpcr'];
-
-    /**
      * If the kernel is running in debug mode.
      *
      * @var bool
@@ -443,12 +436,9 @@ class Configuration implements ConfigurationInterface
                     ->thenInvalid('Hints are only supported by the "orm" driver')
             ->end()
             ->children()
-                ->scalarNode('driver')
-                    ->defaultValue('orm')
-                    ->validate()
-                    ->ifNotInArray($this->supportedDrivers)
-                        ->thenInvalid('The driver %s is not supported. Please choose one of '.json_encode($this->supportedDrivers))
-                    ->end()
+                ->enumNode('driver')
+                    ->defaultNull()
+                    ->values(['orm', 'mongodb', 'propel', 'phpcr'])
                 ->end()
                 ->scalarNode('model')->defaultValue(null)->end()
                 ->scalarNode('repository')->end()

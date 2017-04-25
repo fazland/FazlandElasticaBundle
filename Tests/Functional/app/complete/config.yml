@@ -1,0 +1,79 @@
+imports:
+    - { resource: ./../config/config.yml }
+
+framework:
+    templating:
+        engines: ['twig']
+
+twig:
+    debug: '%kernel.debug%'
+
+services:
+    finder_for_type_with_finder:
+        class: Fazland\ElasticaBundle\Tests\Functional\app\complete\Finder
+        arguments:
+            - '@fazland_elastica.index.index.type_with_finder'
+
+    etm_transformer:
+        class: Fazland\ElasticaBundle\Tests\Functional\app\complete\ETMTransformer
+
+    provider1:
+        class: Fazland\ElasticaBundle\Tests\Functional\app\complete\Provider
+        arguments:
+            - 'provider1'
+
+    provider2:
+        class: Fazland\ElasticaBundle\Tests\Functional\app\complete\Provider
+        arguments:
+            - 'provider2'
+        tags:
+            - { name: fazland_elastica.provider, index: index, type: type_with_external_provider }
+
+fazland_elastica:
+    clients:
+        default:
+            connections:
+                - url: 'http://%fazland_elastica.host%:%fazland_elastica.port%'
+                - host: '%fazland_elastica.host%'
+                  port: '%fazland_elastica.port%'
+            connectionStrategy: RoundRobin
+        second_server:
+            connections:
+                - url: http://%fazland_elastica.host%:%fazland_elastica.port%
+            connection_strategy: RoundRobin
+        third:
+            url: http://%fazland_elastica.host%:%fazland_elastica.port%
+    indexes:
+        index:
+            index_name: fazlandelastica_complete_test_%kernel.environment%
+            types:
+                type1:
+                    properties:
+                        field1: ~
+                        field2: ~
+                    persistence: ~
+                type_with_finder:
+                    properties:
+                        field3: ~
+                        field4: ~
+                    persistence:
+                        finder:
+                            service: finder_for_type_with_finder
+                type_with_transformer:
+                    properties:
+                        field5: ~
+                        field6: ~
+                    persistence:
+                        elastica_to_model_transformer:
+                            service: etm_transformer
+                type_with_provider:
+                    properties:
+                        field7: ~
+                    persistence:
+                        provider:
+                            service: provider1
+                type_with_external_provider:
+                    properties:
+                        field7: ~
+                    persistence: ~
+        empty_index: ~

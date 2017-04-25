@@ -389,6 +389,10 @@ class FazlandElasticaExtension extends Extension
     private function loadTypeProvider(TypeConfig $typeConfig, ContainerBuilder $container)
     {
         if (null === $typeConfig->persister || (null !== $typeConfig->provider && true !== $typeConfig->provider)) {
+            if (true === $typeConfig->provider) {
+                $typeConfig->provider = null;
+            }
+
             return;
         }
 
@@ -399,7 +403,6 @@ class FazlandElasticaExtension extends Extension
         $providerId = sprintf('fazland_elastica.provider.%s.%s', $typeConfig->index->name, $typeConfig->name);
 
         $providerDef = new DefinitionDecorator('fazland_elastica.provider.prototype.'.$typeConfig->persistenceDriver);
-        $providerDef->addTag('fazland_elastica.provider', ['index' => $typeConfig->index->name, 'type' => $typeConfig->name]);
         $providerDef->replaceArgument(0, $typeConfig->index->name);
         $providerDef->replaceArgument(1, $typeConfig->name);
         $providerDef->replaceArgument(2, $typeConfig->model);
@@ -510,6 +513,10 @@ class FazlandElasticaExtension extends Extension
      */
     private function loadTypeFinder(TypeConfig $typeConfig, ContainerBuilder $container)
     {
+        if (null === $typeConfig->finder && null === $typeConfig->elasticaToModelTransformer) {
+            return;
+        }
+
         $indexName = $typeConfig->index->name;
         $typeName = $typeConfig->name;
 
