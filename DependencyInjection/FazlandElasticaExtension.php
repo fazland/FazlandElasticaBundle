@@ -643,13 +643,14 @@ class FazlandElasticaExtension extends Extension
         }
 
         $indexDef = $container->findDefinition($indexConfig->service);
+        $serviceId = sprintf('fazland_elastica.alias_strategy.index.%s', $indexConfig->indexName);
 
         switch ($indexConfig->alias) {
             case 'simple':
                 $definition = new DefinitionDecorator('fazland_elastica.simple_alias_strategy_prototype');
-                $definition->replaceArgument(0, $indexConfig->getReference());
+                $container->setDefinition($serviceId, $definition);
 
-                $indexDef->addMethodCall('setAliasStrategy', [ $definition ]);
+                $indexDef->addMethodCall('setAliasStrategy', [ new Reference($serviceId) ]);
                 break;
 
             default:

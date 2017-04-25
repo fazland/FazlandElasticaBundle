@@ -11,6 +11,7 @@ use Fazland\ElasticaBundle\Event\IndexPopulateEvent;
 use Fazland\ElasticaBundle\Event\IndexResetEvent;
 use Fazland\ElasticaBundle\Exception\UnknownTypeException;
 use Fazland\ElasticaBundle\Index\AliasStrategy\AliasStrategyInterface;
+use Fazland\ElasticaBundle\Index\AliasStrategy\IndexAwareAliasStrategyInterface;
 use Fazland\ElasticaBundle\Index\AliasStrategy\NullAliasStrategy;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -132,6 +133,10 @@ class Index extends Elastica\Index implements ContainerAwareInterface
     public function setAliasStrategy(AliasStrategyInterface $aliasStrategy = null)
     {
         $this->aliasStrategy = $aliasStrategy;
+
+        if ($aliasStrategy instanceof IndexAwareAliasStrategyInterface) {
+            $aliasStrategy->setIndex($this);
+        }
     }
 
     public function getAliasStrategy(): AliasStrategyInterface

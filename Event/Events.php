@@ -18,4 +18,5 @@ final class Events
 
     const PRE_TYPE_POPULATE = 'elastica.index.type_pre_populate';
     const POST_TYPE_POPULATE = 'elastica.index.type_post_populate';
+    const TYPE_POPULATE = 'elastica.index.type_populate';
 }

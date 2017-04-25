@@ -7,7 +7,7 @@ use Elasticsearch\Endpoints\Indices\Aliases\Update as UpdateAlias;
 use Elasticsearch\Endpoints\Indices\Delete as DeleteIndex;
 use Fazland\ElasticaBundle\Elastica\Index;
 
-final class ReadWriteAliasStrategy implements AliasStrategyInterface
+final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
 {
     /**
      * @var Index
@@ -20,10 +20,9 @@ final class ReadWriteAliasStrategy implements AliasStrategyInterface
     private $client;
 
     /**
-     * SimpleAliasStrategy constructor.
      * @param Index $index
      */
-    public function __construct(Index $index)
+    public function setIndex(Index $index)
     {
         $this->index = $index;
         $this->client = $index->getClient();

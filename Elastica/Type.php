@@ -74,14 +74,18 @@ class Type extends Elastica\Type
             $i++;
             $objects[] = $object;
 
+            $this->eventDispatcher->dispatch(Events::TYPE_POPULATE, new TypePopulateEvent($this));
+
             if (count($objects) >= $options['batch_size']) {
-                $this->persist($objects);
+                $this->persist(...$objects);
+                $objects = [];
+
                 $this->provider->clear();
             }
         }
 
         if (count($objects) > 0) {
-            $this->persist($objects);
+            $this->persist(...$objects);
             $this->provider->clear();
         }
 

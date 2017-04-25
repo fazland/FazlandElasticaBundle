@@ -98,6 +98,10 @@ class PopulateCommand extends ContainerAwareCommand
                 $io->progressFinish();
                 $io->note('Refreshing index');
             });
+        $this->eventDispatcher
+            ->addListener(Events::TYPE_POPULATE, function () use ($io) {
+                $io->progressAdvance();
+            });
 
         if (null !== $index) {
             $index = $this->indexManager->getIndex($index);
