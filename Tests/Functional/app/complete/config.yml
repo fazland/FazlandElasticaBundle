@@ -76,4 +76,8 @@ fazland_elastica:
                     properties:
                         field7: ~
                     persistence: ~
+        second_index:
+            types:
+                type1_copy:
+                    properties: '@index/type1'
         empty_index: ~

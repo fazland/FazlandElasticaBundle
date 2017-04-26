@@ -693,12 +693,12 @@ class FazlandElasticaExtension extends Extension
 
         $ref = explode('/', substr($reference, 1), 2);
 
-        if (!isset($this->indexConfigs[$ref[0]])) {
+        if (! isset($this->indexConfigs[$ref[0]])) {
             throw new InvalidConfigurationException(sprintf('Cannot find referenced mapping %s', $reference));
         }
 
         $referenced = $this->indexConfigs[$ref[0]];
-        if (!isset($referenced->types[$ref[1]])) {
+        if (! isset($referenced->types[$ref[1]])) {
             throw new InvalidConfigurationException(sprintf('Cannot find referenced mapping %s', $reference));
         }
 

@@ -58,7 +58,7 @@ class Type extends Elastica\Type
         $this->createDefaultResultSetBuilder();
     }
 
-    public function sendMapping()
+    public function buildMapping(): Elastica\Type\Mapping
     {
         $builder = $this->getMappingBuilder();
         $mapping = new Elastica\Type\Mapping();
@@ -67,7 +67,12 @@ class Type extends Elastica\Type
             $mapping->setParam($name, $field);
         }
 
-        $this->setMapping($mapping);
+        return $mapping;
+    }
+
+    public function sendMapping()
+    {
+        $this->setMapping($this->buildMapping());
     }
 
     public function populate(array $options = [])

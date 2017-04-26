@@ -112,6 +112,10 @@ class MappingBuilder
      */
     private function fixProperties(&$properties)
     {
+        if (null === $properties) {
+            $properties = [];
+        }
+
         foreach ($properties as $name => &$property) {
             unset($property['property_path']);
 

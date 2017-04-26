@@ -53,7 +53,12 @@ class TypeConfig
      */
     public function getDynamicDateFormats()
     {
-        return $this->getConfig('dynamic_date_formats');
+        $formats = $this->getConfig('dynamic_date_formats');
+        if (empty($formats)) {
+            $formats = null;
+        }
+
+        return $formats;
     }
 
     /**
@@ -77,9 +82,7 @@ class TypeConfig
      */
     public function getModel()
     {
-        return isset($this->config['persistence']['model']) ?
-            $this->config['persistence']['model'] :
-            null;
+        return $this->config['persistence']['model'] ?? null;
     }
 
     /**
@@ -117,12 +120,10 @@ class TypeConfig
     /**
      * @param string $key
      *
-     * @return null|string
+     * @return mixed
      */
     private function getConfig($key)
     {
-        return isset($this->config[$key]) ?
-            $this->config[$key] :
-            null;
+        return $this->config[$key] ?? null;
     }
 }

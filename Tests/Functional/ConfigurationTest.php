@@ -11,6 +11,7 @@
 
 namespace Fazland\ElasticaBundle\Tests\Functional;
 
+use Elastica\Type\Mapping;
 use Fazland\ElasticaBundle\Elastica\Type;
 use Fazland\ElasticaBundle\Finder\TransformedFinder;
 use Fazland\ElasticaBundle\Tests\Functional\app\complete\ETMTransformer;
@@ -59,5 +60,21 @@ class ConfigurationTest extends WebTestCase
         $type = $container->get('fazland_elastica.index.index.type_with_external_provider');
         $this->assertInstanceOf(Provider::class, $type->getProvider());
         $this->assertEquals($container->get('provider2'), $type->getProvider());
+    }
+
+    public function testPropertiesReference()
+    {
+        $client = $this->createClient(['test_case' => 'complete']);
+        $container = $client->getContainer();
+
+        $mapping = new Mapping();
+        $mapping->setProperties([
+            'field1' => ['type' => 'text'],
+            'field2' => ['type' => 'text'],
+        ]);
+
+        /** @var Type $type_copy */
+        $type_copy = $container->get('fazland_elastica.index.second_index.type1_copy');
+        $this->assertEquals($mapping, $type_copy->buildMapping());
     }
 }
