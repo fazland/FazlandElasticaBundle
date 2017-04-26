@@ -228,4 +228,9 @@ class TypeConfig
             $this->listenerOptions = $config['listener'];
         }
     }
+
+    public function updateMappingProperties(array $properties)
+    {
+        $this->mapping['properties'] = $properties;
+    }
 }

@@ -11,6 +11,7 @@ use Fazland\ElasticaBundle\Elastica\ResultSet\Builder;
 use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\TypePopulateEvent;
 use Fazland\ElasticaBundle\Index\MappingBuilder;
+use Fazland\ElasticaBundle\Provider\NullProvider;
 use Fazland\ElasticaBundle\Provider\ProviderInterface;
 use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 use Fazland\ElasticaBundle\Transformer\ModelToElasticaTransformerInterface;
@@ -81,12 +82,13 @@ class Type extends Elastica\Type
         ]);
 
         $options = $resolver->resolve($options);
+        $provider = $this->getProvider();
 
         $this->eventDispatcher->dispatch(Events::PRE_TYPE_POPULATE, new TypePopulateEvent($this));
 
         $i = 0;
         $objects = [];
-        foreach ($this->provider->provide($options['offset'], $options['size']) as $object) {
+        foreach ($provider->provide($options['offset'], $options['size']) as $object) {
             ++$i;
             $objects[] = $object;
 
@@ -96,7 +98,7 @@ class Type extends Elastica\Type
                 $this->persist(...$objects);
                 $objects = [];
 
-                $this->provider->clear();
+                $provider->clear();
             }
         }
 
@@ -131,6 +133,10 @@ class Type extends Elastica\Type
      */
     public function getProvider(): ProviderInterface
     {
+        if (null === $this->provider) {
+            return new NullProvider();
+        }
+
         return $this->provider;
     }
 

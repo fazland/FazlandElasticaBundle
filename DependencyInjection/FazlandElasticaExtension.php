@@ -10,6 +10,7 @@ use Doctrine\ORM\Events as ORMEvents;
 use Fazland\ElasticaBundle\DependencyInjection\Config\IndexConfig;
 use Fazland\ElasticaBundle\DependencyInjection\Config\TypeConfig;
 use InvalidArgumentException;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -135,7 +136,12 @@ class FazlandElasticaExtension extends Extension
         foreach ($indexes as $name => $index) {
             $indexConfig = new IndexConfig($name, $index);
             $this->indexConfigs[$name] = $indexConfig;
+        }
 
+        $this->resolveMappingReferences();
+
+        foreach ($this->indexConfigs as $name => $indexConfig) {
+            $indexConfig->buildConfigDefinition();
             $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
             $indexDef->replaceArgument(0, $this->getClient($indexConfig->client));
             $indexDef->replaceArgument(1, $indexConfig->configurationDefinition);
@@ -148,7 +154,7 @@ class FazlandElasticaExtension extends Extension
 
             $this->addIndexToClient($indexConfig, $container);
 
-            if ($index['finder']) {
+            if ($indexConfig->finder) {
                 $this->loadIndexFinder($indexConfig, $container);
             }
 
@@ -664,5 +670,38 @@ class FazlandElasticaExtension extends Extension
                 $indexDef->addMethodCall('setAliasStrategy', [new Reference($indexConfig->alias)]);
                 break;
         }
+    }
+
+    private function resolveMappingReferences()
+    {
+        foreach ($this->indexConfigs as $indexConfig) {
+            foreach ($indexConfig->types as $typeConfig) {
+                $mapping = $typeConfig->mapping;
+
+                if (isset($mapping['properties']) && ! is_array($mapping['properties'])) {
+                    $typeConfig->updateMappingProperties($this->getMappingReference($mapping['properties']));
+                }
+            }
+        }
+    }
+
+    private function getMappingReference($reference)
+    {
+        if (! is_string($reference) || $reference[0] !== '@') {
+            return $reference;
+        }
+
+        $ref = explode('/', substr($reference, 1), 2);
+
+        if (!isset($this->indexConfigs[$ref[0]])) {
+            throw new InvalidConfigurationException(sprintf('Cannot find referenced mapping %s', $reference));
+        }
+
+        $referenced = $this->indexConfigs[$ref[0]];
+        if (!isset($referenced->types[$ref[1]])) {
+            throw new InvalidConfigurationException(sprintf('Cannot find referenced mapping %s', $reference));
+        }
+
+        return $this->getMappingReference($referenced->types[$ref[1]]->mapping['properties']);
     }
 }

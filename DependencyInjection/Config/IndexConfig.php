@@ -45,6 +45,11 @@ class IndexConfig
     public $service;
 
     /**
+     * @var string
+     */
+    public $finder;
+
+    /**
      * @var TypeConfig[]
      */
     public $types;
@@ -62,14 +67,13 @@ class IndexConfig
         $this->settings = $config['settings'] ?? [];
         $this->typePrototype = $config['type_prototype'] ?? [];
         $this->alias = $config['use_alias'];
+        $this->finder = $config['finder'] ?? null;
         $this->service = sprintf('fazland_elastica.index.%s', $name);
         $this->types = [];
 
         foreach ($config['types'] as $typeName => $typeConfig) {
             $this->types[$typeName] = new TypeConfig($typeName, $this, $typeConfig);
         }
-
-        $this->buildConfigDefinition();
     }
 
     public function getReference(): Reference
@@ -77,7 +81,7 @@ class IndexConfig
         return new Reference($this->service);
     }
 
-    private function buildConfigDefinition()
+    public function buildConfigDefinition()
     {
         $types = [];
         foreach ($this->types as $typeConfig) {

@@ -51,7 +51,7 @@ class Provider extends AbstractProvider
                     continue;
                 }
 
-                yield $result;
+                yield $object;
             }
         } else {
             if ($this->options['skip_indexable_check']) {

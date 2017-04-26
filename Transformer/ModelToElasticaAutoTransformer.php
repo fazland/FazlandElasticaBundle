@@ -3,6 +3,7 @@
 namespace Fazland\ElasticaBundle\Transformer;
 
 use Elastica\Document;
+use Elastica\Query;
 use Elastica\Type;
 use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\TransformEvent;
@@ -192,31 +193,26 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
                     return $this->propertyAccessor->getValue($value, $field);
                 }, (array) $mapping['identifier']));
                 $document->setParent($parentIdentifier);
-
                 continue;
             }
 
-            $path = isset($mapping['property_path']) ?
-                $mapping['property_path'] :
-                $key;
+            $path = $mapping['property_path'] ?? $key;
             if (false === $path) {
                 continue;
             }
-            $value = $this->propertyAccessor->getValue($object, $path);
 
-            if (isset($mapping['type']) && in_array(
-                    $mapping['type'], ['nested', 'object']
-                ) && isset($mapping['properties']) && ! empty($mapping['properties'])
-            ) {
+            $value = $this->propertyAccessor->getValue($object, $path);
+            $type = $mapping['type'] ?? 'string';
+
+            if (('nested' === $type || 'object' === $type) && ! empty($mapping['properties'])) {
                 /* $value is a nested document or object. Transform $value into
                  * an array of documents, respective the mapped properties.
                  */
                 $document->set($key, $this->transformNested($value, $mapping['properties']));
-
                 continue;
             }
 
-            if (isset($mapping['type']) && $mapping['type'] == 'attachment') {
+            if ('attachment' === $type) {
                 // $value is an attachment. Add it to the document.
                 if ($value instanceof \SplFileInfo) {
                     $document->addFile($key, $value->getPathName());
@@ -224,6 +220,11 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
                     $document->addFileContent($key, $value);
                 }
 
+                continue;
+            }
+
+            if ('percolator' === $type) {
+                $document->set($key, Query::create($value)->getQuery()->toArray());
                 continue;
             }
 
