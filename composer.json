@@ -44,7 +44,10 @@
         "symfony/serializer": "~2.7|~3.0"
     },
     "autoload": {
-        "psr-4": { "Fazland\\ElasticaBundle\\": "" }
+        "psr-4": { "Fazland\\ElasticaBundle\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Fazland\\ElasticaBundle\\Tests\\": "tests/" }
     },
     "extra": {
         "branch-alias": {
