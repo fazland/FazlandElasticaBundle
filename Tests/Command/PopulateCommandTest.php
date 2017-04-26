@@ -65,8 +65,8 @@ class PopulateCommandTest extends TestCase
         $index1 = $this->prophesize(Index::class);
         $index2 = $this->prophesize(Index::class);
 
-        $index1->populate(["no-reset" => false, "ignore_errors" => false, "offset" => null, "size" => null, "sleep" => 0])->shouldBeCalled();
-        $index2->populate(["no-reset" => false, "ignore_errors" => false, "offset" => null, "size" => null, "sleep" => 0])->shouldBeCalled();
+        $index1->populate(["no-reset" => false, "ignore_errors" => false, "offset" => null, "size" => null])->shouldBeCalled();
+        $index2->populate(["no-reset" => false, "ignore_errors" => false, "offset" => null, "size" => null])->shouldBeCalled();
 
         $this->indexManager->getAllIndexes()->willReturn([
             $index1->reveal(),

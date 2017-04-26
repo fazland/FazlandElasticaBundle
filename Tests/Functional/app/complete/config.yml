@@ -1,13 +1,6 @@
 imports:
     - { resource: ./../config/config.yml }
 
-framework:
-    templating:
-        engines: ['twig']
-
-twig:
-    debug: '%kernel.debug%'
-
 services:
     finder_for_type_with_finder:
         class: Fazland\ElasticaBundle\Tests\Functional\app\complete\Finder

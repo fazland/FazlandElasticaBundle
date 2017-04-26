@@ -1,13 +1,6 @@
 imports:
     - { resource: ./../config/config.yml }
 
-framework:
-    templating:
-        engines: ['twig']
-
-twig:
-    debug: %kernel.debug%
-
 fazland_elastica:
     clients:
         default:

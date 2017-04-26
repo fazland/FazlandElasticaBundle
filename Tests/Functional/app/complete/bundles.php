@@ -9,5 +9,4 @@ return [
     new FrameworkBundle(),
     new FazlandElasticaBundle(),
     new KnpPaginatorBundle(),
-    new TwigBundle(),
 ];
