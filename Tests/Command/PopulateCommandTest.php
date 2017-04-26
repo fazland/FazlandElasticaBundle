@@ -9,8 +9,11 @@ use Fazland\ElasticaBundle\Index\IndexManager;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\StreamOutput;
+use Symfony\Component\Console\Tester\ApplicationTester;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class PopulateCommandTest extends TestCase
@@ -49,10 +52,12 @@ class PopulateCommandTest extends TestCase
         $this->populateCommand->run(new ArrayInput(['--no-reset' => true, '--index' => 'index']), new NullOutput());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testRunThrowExceptionIfTypeIsPassedWithoutAnIndex()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->populateCommand->run(new ArrayInput(['type' => 'type1']), new NullOutput());
+        $this->populateCommand->run(new ArrayInput(['--type' => 'type1']), new NullOutput());
     }
 
     public function testRunPopulateAllIndexesWithoutAnyIndexAndTypeDefined()
@@ -91,5 +96,24 @@ class PopulateCommandTest extends TestCase
         $this->indexManager->getIndex('index1')->willReturn($index1->reveal());
 
         $this->populateCommand->run(new ArrayInput(['--index' => 'index1', '--type' => 'type1']), new NullOutput());
+    }
+
+    public function testRunDoNothingIfUserDontWantResetIndex()
+    {
+        $this->indexManager->getAllIndexes()->shouldNotBeCalled();
+
+        $arrayInput = new ArrayInput(['--no-reset' => false, '--offset' => 100]);
+
+        $in = fopen('php://memory', 'w');
+        fwrite($in, "n\n");
+        rewind($in);
+        $arrayInput->setStream($in);
+
+        $out = fopen('php://memory', 'w');
+
+        $this->populateCommand->run($arrayInput, new StreamOutput($out));
+        rewind($out);
+
+        $this->assertEquals(file_get_contents(__DIR__.'/../fixtures/populate_output1.txt'), stream_get_contents($out));
     }
 }

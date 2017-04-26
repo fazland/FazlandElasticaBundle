@@ -1,0 +1,6 @@
+
+ES Populate
+===========
+
+ You chose to reset the index and start indexing with an offset. Do you really want to do that? (yes/no) [yes]:
+ > 
