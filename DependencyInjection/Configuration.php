@@ -252,7 +252,7 @@ class Configuration implements ConfigurationInterface
                     ->booleanNode('numeric_detection')->end()
                     ->scalarNode('dynamic')->end()
                     ->variableNode('indexable_callback')->end()
-                    ->variableNode('stored_fields')->defaultNull()->end()
+                    ->variableNode('fetch_fields')->defaultNull()->end()
                     ->variableNode('properties')
                         ->defaultNull()
                         ->treatNullLike([])

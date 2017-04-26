@@ -207,9 +207,9 @@ class Type extends Elastica\Type
         }
 
         $search = parent::createSearch($query, $options, $builder);
-        if (! $search->getQuery()->hasParam('stored_fields') &&
-            null !== ($fields = $this->typeConfig->getStoredFields())) {
-            $search->getQuery()->setStoredFields($fields);
+        if (! $search->getQuery()->hasParam('_source') &&
+            null !== ($fields = $this->typeConfig->getFetchFields())) {
+            $search->getQuery()->setSource($fields);
         }
 
         return $search;

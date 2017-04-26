@@ -112,9 +112,9 @@ class TypeConfig
     /**
      * @return mixed
      */
-    public function getStoredFields()
+    public function getFetchFields()
     {
-        return $this->getConfig('stored_fields');
+        return $this->getConfig('fetch_fields');
     }
 
     /**
