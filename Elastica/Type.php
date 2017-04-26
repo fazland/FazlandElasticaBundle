@@ -55,7 +55,6 @@ class Type extends Elastica\Type
         parent::__construct($index, $typeConfig->getName());
 
         $this->typeConfig = $typeConfig;
-        $this->createDefaultResultSetBuilder();
     }
 
     public function buildMapping(): Elastica\Type\Mapping
@@ -85,6 +84,10 @@ class Type extends Elastica\Type
             'batch_size' => 100,
             'ignore_errors' => false,
         ]);
+        $resolver->setAllowedTypes('offset', ['null', 'int']);
+        $resolver->setAllowedTypes('size', ['null', 'int']);
+        $resolver->setAllowedTypes('batch_size', ['null', 'int']);
+        $resolver->setAllowedTypes('sleep', ['null', 'int']);
 
         $options = $resolver->resolve($options);
         $provider = $this->getProvider();
@@ -203,7 +206,7 @@ class Type extends Elastica\Type
     public function createSearch($query = '', $options = null, BuilderInterface $builder = null)
     {
         if (null === $builder) {
-            $builder = $this->defaultBuilder;
+            $builder = $this->getDefaultResultSetBuilder();
         }
 
         $search = parent::createSearch($query, $options, $builder);
@@ -220,12 +223,18 @@ class Type extends Elastica\Type
         return new MappingBuilder();
     }
 
-    private function createDefaultResultSetBuilder()
+    protected function getDefaultResultSetBuilder()
     {
+        if (null !== $this->defaultBuilder) {
+            return $this->defaultBuilder;
+        }
+
         $this->defaultBuilder = new Builder();
 
         if (null !== $this->elasticaTransformer) {
             $this->defaultBuilder->setTransformer($this->elasticaTransformer);
         }
+
+        return $this->defaultBuilder;
     }
 }

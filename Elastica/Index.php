@@ -104,6 +104,10 @@ class Index extends Elastica\Index implements ContainerAwareInterface
             'batch_size' => 100,
             'ignore_errors' => false,
         ]);
+        $resolver->setAllowedTypes('offset', ['null', 'int']);
+        $resolver->setAllowedTypes('size', ['null', 'int']);
+        $resolver->setAllowedTypes('batch_size', ['null', 'int']);
+        $resolver->setAllowedTypes('sleep', ['null', 'int']);
 
         $options = $resolver->resolve($options);
         $reset = ! $options['no-reset'];

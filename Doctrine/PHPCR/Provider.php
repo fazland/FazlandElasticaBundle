@@ -54,6 +54,9 @@ class Provider extends AbstractProvider
         $repository = $this->managerRegistry
             ->getRepository($this->modelClass);
 
+        // PHPCR query builders require an alias argument
+        $arguments = [static::ENTITY_ALIAS] + $arguments;
+
         return $repository->{$method}(...$arguments);
     }
 }

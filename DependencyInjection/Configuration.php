@@ -450,6 +450,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('repository')->end()
                 ->scalarNode('identifier')->defaultValue('id')->end()
                 ->arrayNode('provider')
+                    ->treatNullLike(true)
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('query_builder_method')->defaultValue('createQueryBuilder')->end()

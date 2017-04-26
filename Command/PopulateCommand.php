@@ -67,12 +67,24 @@ class PopulateCommand extends ContainerAwareCommand
         $options = [
             'no-reset' => $noReset = $input->getOption('no-reset'),
             'ignore_errors' => $input->getOption('ignore-errors'),
-            'offset' => $input->getOption('offset'),
-            'size' => $input->getOption('size'),
-            'sleep' => $input->getOption('sleep'),
+            'offset' => null,
+            'size' => null,
         ];
-        if ($input->getOption('batch-size')) {
+
+        if ($batchSize = $input->getOption('batch-size')) {
             $options['batch_size'] = (int) $input->getOption('batch-size');
+        }
+
+        if ($offset = $input->getOption('offset')) {
+            $options['offset'] = (int) $input->getOption('offset');
+        }
+
+        if ($size = $input->getOption('size')) {
+            $options['size'] = (int) $input->getOption('size');
+        }
+
+        if ($sleep = $input->getOption('sleep')) {
+            $options['sleep'] = (int) $input->getOption('sleep');
         }
 
         if (null === $index && null !== $type) {

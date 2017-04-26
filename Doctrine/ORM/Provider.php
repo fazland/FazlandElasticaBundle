@@ -13,18 +13,19 @@ class Provider extends AbstractProvider
     {
         /** @var QueryBuilder $qb */
         $qb = $this->createQueryBuilder($this->options['query_builder_method']);
+        $qb->select('COUNT('.static::ENTITY_ALIAS.')');
+
+        $count = $qb->getQuery()->getSingleScalarResult();
 
         if (null !== $offset) {
-            $qb->setFirstResult($offset);
+            $count -= $offset;
         }
 
         if (null !== $size) {
-            $qb->setMaxResults($size);
+            $count = min($count, $size);
         }
 
-        $qb->select('COUNT('.static::ENTITY_ALIAS.')');
-
-        return $qb->getQuery()->getSingleScalarResult();
+        return $count;
     }
 
     public function provide(int $offset = null, int $size = null)
@@ -69,8 +70,7 @@ class Provider extends AbstractProvider
      */
     protected function createQueryBuilder($method, array $arguments = [])
     {
-        $repository = $this->managerRegistry
-            ->getRepository($this->modelClass);
+        $repository = $this->managerRegistry->getRepository($this->modelClass);
 
         // ORM query builders require an alias argument
         $arguments = [static::ENTITY_ALIAS] + $arguments;
