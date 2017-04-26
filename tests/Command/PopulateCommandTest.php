@@ -9,11 +9,9 @@ use Fazland\ElasticaBundle\Index\IndexManager;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\StreamOutput;
-use Symfony\Component\Console\Tester\ApplicationTester;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class PopulateCommandTest extends TestCase
@@ -98,6 +96,9 @@ class PopulateCommandTest extends TestCase
         $this->populateCommand->run(new ArrayInput(['--index' => 'index1', '--type' => 'type1']), new NullOutput());
     }
 
+    /**
+     * @requires function Symfony\Component\Console\Input\ArrayInput::setStream
+     */
     public function testRunDoNothingIfUserDontWantResetIndex()
     {
         $this->indexManager->getAllIndexes()->shouldNotBeCalled();
