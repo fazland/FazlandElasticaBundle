@@ -25,8 +25,7 @@ class SimpleAliasStrategyTest extends TestCase
 
     protected function setUp()
     {
-        $index = $this->prophesize(Index::class);
-        $this->simpleAliasStrategy = new SimpleAliasStrategy($index->reveal());
+        $this->simpleAliasStrategy = new SimpleAliasStrategy();
     }
 
     public function testBuildNameReturnAnExpectedName()
