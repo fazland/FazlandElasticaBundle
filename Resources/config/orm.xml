@@ -17,6 +17,10 @@
             <argument /> <!-- Model -->
             <argument type="service" id="doctrine" />
             <argument /> <!-- options -->
+
+            <call method="setIndexable">
+                <argument type="service" id="fazland_elastica.indexable" />
+            </call>
         </service>
 
         <service id="fazland_elastica.listener.prototype.orm" class="Fazland\ElasticaBundle\Doctrine\Listener" public="false" abstract="true">
