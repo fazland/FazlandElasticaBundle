@@ -11,11 +11,6 @@ class ETMTransformer implements ElasticaToModelTransformerInterface
         return [];
     }
 
-    public function hybridTransform(array $elasticaObjects)
-    {
-        return [];
-    }
-
     public function getObjectClass()
     {
         return \stdClass::class;

@@ -18,15 +18,6 @@ interface ElasticaToModelTransformerInterface
     public function transform(array $elasticaObjects);
 
     /**
-     * @param array $elasticaObjects
-     *
-     * @return mixed
-     *
-     * @deprecated Hybrid results are deprecated. Please use the new ResultSet with injected transformer instead.
-     */
-    public function hybridTransform(array $elasticaObjects);
-
-    /**
      * Returns the object class used by the transformer.
      *
      * @return string

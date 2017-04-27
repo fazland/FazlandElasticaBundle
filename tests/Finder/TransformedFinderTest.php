@@ -3,6 +3,7 @@
 namespace Fazland\ElasticaBundle\Tests\Finder;
 
 use Elastica\Query;
+use Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer;
 use Fazland\ElasticaBundle\Finder\TransformedFinder;
 
 class TransformedFinderTest extends \PHPUnit_Framework_TestCase
@@ -63,7 +64,15 @@ class TransformedFinderTest extends \PHPUnit_Framework_TestCase
 
     public function testFindHybridMethodTransformsSearchResults()
     {
-        $transformer = $this->createMockTransformer('hybridTransform');
+        $transformer = $this->getMockBuilder(ElasticaToModelTransformer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $transformer
+            ->expects($this->once())
+            ->method('hybridTransform')
+            ->with([]);
+
         $query = Query::create('');
         $limit = 10;
 

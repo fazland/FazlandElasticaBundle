@@ -112,8 +112,19 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer
         return $objects;
     }
 
+    /**
+     * Gets hybrid results.
+     *
+     * @param array $elasticaObjects
+     *
+     * @return HybridResult[]
+     *
+     * @deprecated Hybrid results have been deprecated. Use ResultSet instead.
+     */
     public function hybridTransform(array $elasticaObjects)
     {
+        @trigger_error('Hybrid results have been deprecated. Please use the bundle\'s ResultSet directly instead', E_USER_DEPRECATED);
+
         $indexedElasticaResults = [];
         foreach ($elasticaObjects as $elasticaObject) {
             $indexedElasticaResults[(string) $elasticaObject->getId()] = $elasticaObject;
