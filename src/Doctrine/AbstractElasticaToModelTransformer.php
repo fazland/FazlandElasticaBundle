@@ -36,7 +36,7 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer
     protected $options = [
         'hints' => [],
         'hydrate' => true,
-        'identifier' => 'id',
+        'identifier' => null,
         'ignore_missing' => false,
         'query_builder_method' => 'createQueryBuilder',
     ];
@@ -90,12 +90,10 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer
             throw new \RuntimeException(sprintf('Cannot find corresponding Doctrine objects (%d) for all Elastica results (%d). IDs: %s', $objectsCnt, $elasticaObjectsCnt, join(', ', $ids)));
         }
 
-        $propertyAccessor = $this->propertyAccessor;
-        $identifier = $this->options['identifier'];
         foreach ($objects as $object) {
             if ($object instanceof HighlightableModelInterface) {
-                $id = $propertyAccessor->getValue($object, $identifier);
-                $object->setElasticHighlights($highlights[(string) $id]);
+                $id = $this->getIdentifierForObject($object);
+                $object->setElasticHighlights($highlights[$id]);
             }
         }
 
@@ -103,15 +101,11 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer
         $idPos = array_flip($ids);
         usort(
             $objects,
-            function ($a, $b) use ($idPos, $identifier, $propertyAccessor) {
-                if ($this->options['hydrate']) {
-                    return $idPos[(string) $propertyAccessor->getValue(
-                        $a,
-                        $identifier
-                    )] > $idPos[(string) $propertyAccessor->getValue($b, $identifier)];
-                } else {
-                    return $idPos[$a[$identifier]] > $idPos[$b[$identifier]];
-                }
+            function ($a, $b) use ($idPos) {
+                $idA = $this->getIdentifierForObject($a);
+                $idB = $this->getIdentifierForObject($b);
+
+                return $idPos[$idA] > $idPos[$idB];
             }
         );
 
@@ -129,12 +123,8 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer
 
         $result = [];
         foreach ($objects as $object) {
-            if ($this->options['hydrate']) {
-                $id = $this->propertyAccessor->getValue($object, $this->options['identifier']);
-            } else {
-                $id = $object[$this->options['identifier']];
-            }
-            $result[] = new HybridResult($indexedElasticaResults[(string) $id], $object);
+            $id = $this->getIdentifierForObject($object);
+            $result[] = new HybridResult($indexedElasticaResults[$id], $object);
         }
 
         return $result;
@@ -145,7 +135,14 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer
      */
     public function getIdentifierField()
     {
-        return $this->options['identifier'];
+        if ($this->options['identifier']) {
+            return $this->options['identifier'];
+        }
+
+        return $this->registry
+            ->getManagerForClass($this->objectClass)
+            ->getClassMetadata($this->objectClass)
+            ->getIdentifier();
     }
 
     /**
@@ -157,4 +154,20 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer
      * @return array of objects or arrays
      */
     abstract protected function findByIdentifiers(array $identifierValues, $hydrate);
+
+    /**
+     * Gets the identifier values for the given object.
+     *
+     * @param $object
+     * @return string
+     */
+    protected function getIdentifierForObject($object): string
+    {
+        $id = array_map(function ($field) use ($object) {
+            $field = is_array($object) ? '['.$field.']' : $field;
+            return $this->propertyAccessor->getValue($object, $field);
+        }, (array) $this->getIdentifierField());
+
+        return implode(' ', $id);
+    }
 }

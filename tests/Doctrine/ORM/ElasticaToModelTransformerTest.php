@@ -2,22 +2,41 @@
 
 namespace Fazland\ElasticaBundle\Tests\Doctrine\ORM;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
+use Elastica\Result;
 use Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 
-class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
+class TestRepository extends EntityRepository
+{
+    public function customQueryBuilderCreator(string $alias)
+    {
+    }
+}
+
+class ElasticaToModelTransformerTest extends TestCase
 {
     /**
-     * @var \Doctrine\Common\Persistence\ManagerRegistry|\PHPUnit_Framework_MockObject_MockObject
+     * @var ManagerRegistry|ObjectProphecy
      */
     protected $registry;
 
     /**
-     * @var \Doctrine\ORM\EntityManager|\PHPUnit_Framework_MockObject_MockObject
+     * @var EntityManager|ObjectProphecy
      */
     protected $manager;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository|\PHPUnit_Framework_MockObject_MockObject
+     * @var TestRepository|ObjectProphecy
      */
     protected $repository;
 
@@ -26,32 +45,56 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
      */
     protected $objectClass = 'stdClass';
 
+    protected function setUp()
+    {
+        $this->registry = $this->prophesize(ManagerRegistry::class);
+        $this->registry
+            ->getManagerForClass($this->objectClass)
+            ->willReturn($this->manager = $this->prophesize(EntityManager::class));
+
+        $this->manager
+            ->getRepository($this->objectClass)
+            ->willReturn($this->repository = $this->prophesize(TestRepository::class));
+    }
+
     /**
      * Tests that the Transformer uses the query_builder_method configuration option
      * allowing configuration of createQueryBuilder call.
      */
     public function testTransformUsesQueryBuilderMethodConfiguration()
     {
-        $qb = $this->getMockBuilder('Doctrine\ORM\QueryBuilder')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->repository
+            ->customQueryBuilderCreator(ElasticaToModelTransformer::ENTITY_ALIAS)
+            ->shouldBeCalled()
+            ->willReturn($qb = $this->prophesize(QueryBuilder::class));
 
-        $this->repository->expects($this->once())
-            ->method('customQueryBuilderCreator')
-            ->with($this->equalTo(ElasticaToModelTransformer::ENTITY_ALIAS))
-            ->will($this->returnValue($qb));
-        $this->repository->expects($this->never())
-            ->method('createQueryBuilder');
+        $qb->expr()
+            ->willReturn(new ExpressionBuilder($this->prophesize(Connection::class)->reveal()));
+        $qb->andWhere(Argument::type('string'))->willReturn($qb);
+        $qb->setParameter(Argument::cetera())->willReturn($qb);
+        $qb->getQuery()->willReturn($query = $this->prophesize(AbstractQuery::class));
 
-        $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass, [
-            'query_builder_method' => 'customQueryBuilderCreator',
+        $query->setHydrationMode(Query::HYDRATE_OBJECT)->willReturn($query);
+        $query->execute()->willReturn([
+            new \stdClass()
         ]);
 
-        $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
-        $method = $class->getMethod('getEntityQueryBuilder');
-        $method->setAccessible(true);
+        $this->repository
+            ->createQueryBuilder(Argument::any())
+            ->shouldNotBeCalled();
 
-        $method->invokeArgs($transformer, []);
+        $transformer = new ElasticaToModelTransformer($this->registry->reveal(), $this->objectClass, [
+            'query_builder_method' => 'customQueryBuilderCreator',
+            'identifier' => 'id',
+        ]);
+
+        $doc = $this->prophesize(Result::class);
+        $doc->getId()->willReturn(1);
+        $doc->getHighlights()->willReturn([]);
+
+        $transformer->transform([
+            $doc->reveal()
+        ]);
     }
 
     /**
@@ -60,24 +103,33 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testTransformUsesDefaultQueryBuilderMethodConfiguration()
     {
-        $qb = $this->getMockBuilder('Doctrine\ORM\QueryBuilder')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->repository
+            ->createQueryBuilder(ElasticaToModelTransformer::ENTITY_ALIAS)
+            ->shouldBeCalled()
+            ->willReturn($qb = $this->prophesize(QueryBuilder::class));
 
-        $this->repository->expects($this->never())
-            ->method('customQueryBuilderCreator');
-        $this->repository->expects($this->once())
-            ->method('createQueryBuilder')
-            ->with($this->equalTo(ElasticaToModelTransformer::ENTITY_ALIAS))
-            ->will($this->returnValue($qb));
+        $qb->expr()
+            ->willReturn(new ExpressionBuilder($this->prophesize(Connection::class)->reveal()));
+        $qb->andWhere(Argument::type('string'))->willReturn($qb);
+        $qb->setParameter(Argument::cetera())->willReturn($qb);
+        $qb->getQuery()->willReturn($query = $this->prophesize(AbstractQuery::class));
 
-        $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass);
+        $query->setHydrationMode(Query::HYDRATE_OBJECT)->willReturn($query);
+        $query->execute()->willReturn([
+            new \stdClass()
+        ]);
 
-        $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
-        $method = $class->getMethod('getEntityQueryBuilder');
-        $method->setAccessible(true);
+        $transformer = new ElasticaToModelTransformer($this->registry->reveal(), $this->objectClass, [
+            'identifier' => 'id',
+        ]);
 
-        $method->invokeArgs($transformer, []);
+        $doc = $this->prophesize(Result::class);
+        $doc->getId()->willReturn(1);
+        $doc->getHighlights()->willReturn([]);
+
+        $transformer->transform([
+            $doc->reveal()
+        ]);
     }
 
     /**
@@ -85,71 +137,36 @@ class ElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testUsesHintsConfigurationIfGiven()
     {
-        $query = $this->getMockBuilder('Doctrine\ORM\AbstractQuery')
-            ->setMethods(['setHint', 'execute', 'setHydrationMode'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
-        $query->expects($this->any())->method('setHydrationMode')->willReturnSelf();
-        $query->expects($this->once())  //  check if the hint is set
-            ->method('setHint')
-            ->with('customHintName', 'Custom\Hint\Class')
-            ->willReturnSelf();
+        $this->repository
+            ->createQueryBuilder(ElasticaToModelTransformer::ENTITY_ALIAS)
+            ->shouldBeCalled()
+            ->willReturn($qb = $this->prophesize(QueryBuilder::class));
 
-        $qb = $this->getMockBuilder('Doctrine\ORM\QueryBuilder')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $qb->expects($this->any())->method('getQuery')->willReturn($query);
-        $qb->expects($this->any())->method('expr')->willReturn($this->getMockBuilder('Doctrine\ORM\Query\Expr')->getMock());
-        $qb->expects($this->any())->method('andWhere')->willReturnSelf();
+        $qb->expr()
+            ->willReturn(new ExpressionBuilder($this->prophesize(Connection::class)->reveal()));
+        $qb->andWhere(Argument::type('string'))->willReturn($qb);
+        $qb->setParameter(Argument::cetera())->willReturn($qb);
+        $qb->getQuery()->willReturn($query = $this->prophesize(AbstractQuery::class));
 
-        $this->repository->expects($this->once())
-            ->method('createQueryBuilder')
-            ->with($this->equalTo(ElasticaToModelTransformer::ENTITY_ALIAS))
-            ->will($this->returnValue($qb));
+        $query->setHint('customHintName', 'Custom\Hint\Class')->willReturn($query);
+        $query->setHydrationMode(Query::HYDRATE_OBJECT)->willReturn($query);
+        $query->execute()->willReturn([
+            new \stdClass()
+        ]);
 
-        $transformer = new ElasticaToModelTransformer($this->registry, $this->objectClass, [
+        $transformer = new ElasticaToModelTransformer($this->registry->reveal(), $this->objectClass, [
+            'identifier' => 'id',
             'hints' => [
                 ['name' => 'customHintName', 'value' => 'Custom\Hint\Class'],
             ],
         ]);
 
-        $class = new \ReflectionClass('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer');
-        $method = $class->getMethod('findByIdentifiers');
-        $method->setAccessible(true);
+        $doc = $this->prophesize(Result::class);
+        $doc->getId()->willReturn(1);
+        $doc->getHighlights()->willReturn([]);
 
-        $method->invokeArgs($transformer, [[1, 2, 3], /* $hydrate */true]);
-    }
-
-    protected function setUp()
-    {
-        $this->registry = $this->getMockBuilder('Doctrine\Common\Persistence\ManagerRegistry')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->manager = $this->getMockBuilder('Doctrine\ORM\EntityManager')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->registry->expects($this->any())
-            ->method('getManagerForClass')
-            ->with($this->objectClass)
-            ->will($this->returnValue($this->manager));
-
-        $this->repository = $this
-            ->getMockBuilder('Doctrine\Common\Persistence\ObjectRepository')
-            ->setMethods([
-                'customQueryBuilderCreator',
-                'createQueryBuilder',
-                'find',
-                'findAll',
-                'findBy',
-                'findOneBy',
-                'getClassName',
-            ])->getMock();
-
-        $this->manager->expects($this->any())
-            ->method('getRepository')
-            ->with($this->objectClass)
-            ->will($this->returnValue($this->repository));
+        $transformer->transform([
+            $doc->reveal()
+        ]);
     }
 }

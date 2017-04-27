@@ -27,11 +27,32 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
         if (empty($identifierValues)) {
             return [];
         }
+
         $hydrationMode = $hydrate ? Query::HYDRATE_OBJECT : Query::HYDRATE_ARRAY;
+        $identifierFields = $this->getIdentifierFields();
 
         $qb = $this->getEntityQueryBuilder();
-        $qb->andWhere($qb->expr()->in(static::ENTITY_ALIAS.'.'.$this->options['identifier'], ':values'))
-            ->setParameter('values', $identifierValues);
+        if (count($identifierFields) === 1) {
+            $qb->andWhere($qb->expr()->in(static::ENTITY_ALIAS.'.'.$identifierFields[0], ':values'))
+                ->setParameter('values', $identifierValues);
+        } else {
+            $conditions = [];
+            $counter = 0;
+
+            foreach ($identifierValues as $value) {
+                $keys = explode(' ', $value, count($identifierFields));
+                $idCondition = [];
+
+                foreach ($identifierFields as $i => $field) {
+                    $idCondition[] = $qb->expr()->eq(static::ENTITY_ALIAS.'.'.$field, ':param_'.++$counter);
+                    $qb->setParameter('param_'.$counter, $keys[$i]);
+                }
+
+                $conditions[] = $qb->expr()->andX(...$idCondition);
+            }
+
+            $qb->andWhere($qb->expr()->orX(...$conditions));
+        }
 
         $query = $qb->getQuery();
 
@@ -54,5 +75,22 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
             ->getRepository($this->objectClass);
 
         return $repository->{$this->options['query_builder_method']}(static::ENTITY_ALIAS);
+    }
+
+    protected function getIdentifierFields() : array
+    {
+        if (! isset($this->options['identifier'])) {
+            $manager = $this->registry->getManagerForClass($this->objectClass);
+            $metadata = $manager->getClassMetadata($this->objectClass);
+
+            $identifier = $metadata->getIdentifier();
+        } else {
+            $identifier = $this->options['identifier'];
+            if (!is_array($identifier)) {
+                $identifier = [$identifier];
+            }
+        }
+
+        return array_values($identifier);
     }
 }

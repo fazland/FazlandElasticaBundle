@@ -448,7 +448,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->scalarNode('model')->defaultValue(null)->end()
                 ->scalarNode('repository')->end()
-                ->scalarNode('identifier')->defaultValue('id')->end()
+                ->scalarNode('identifier')->defaultNull()->end()
                 ->arrayNode('provider')
                     ->treatNullLike(true)
                     ->addDefaultsIfNotSet()

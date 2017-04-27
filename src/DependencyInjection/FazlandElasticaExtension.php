@@ -309,8 +309,7 @@ class FazlandElasticaExtension extends Extension
             $prefix = 'fazland_elastica.propel.';
         }
 
-        $abstractId = $prefix.($container->hasDefinition('fazland_elastica.serializer_callback_prototype') ?
-            'model_to_elastica_identifier_transformer' : 'model_to_elastica_transformer');
+        $abstractId = $prefix.($container->hasDefinition('fazland_elastica.serializer_callback_prototype') ? 'model_to_elastica_serializer_transformer' : 'model_to_elastica_transformer');
 
         $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $typeConfig->index->name, $typeConfig->name);
         $serviceDef = new DefinitionDecorator($abstractId);

@@ -1,87 +1,55 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\DataCollector;
 
 use Fazland\ElasticaBundle\DataCollector\ElasticaDataCollector;
+use Fazland\ElasticaBundle\Logger\ElasticaLogger;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author Richard Miller <info@limethinking.co.uk>
  */
-class ElasticaDataCollectorTest extends \PHPUnit_Framework_TestCase
+class ElasticaDataCollectorTest extends TestCase
 {
+    /**
+     * @var ElasticaLogger|ObjectProphecy
+     */
+    private $logger;
+
+    /**
+     * @var ElasticaDataCollector
+     */
+    private $collector;
+
+    protected function setUp()
+    {
+        $this->logger = $this->prophesize(ElasticaLogger::class);
+        $this->collector = new ElasticaDataCollector($this->logger->reveal());
+    }
+
     public function testCorrectAmountOfQueries()
     {
-        /** @var $requestMock \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\HttpFoundation\Request */
-        $requestMock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->logger->getNbQueries()->willReturn($totalQueries = rand());
+        $this->logger->getQueries()->willReturn([]);
 
-        /** @var $responseMock \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\HttpFoundation\Response */
-        $responseMock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Response')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        /** @var $loggerMock \PHPUnit_Framework_MockObject_MockObject|\Fazland\ElasticaBundle\Logger\ElasticaLogger */
-        $loggerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Logger\ElasticaLogger')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $totalQueries = rand();
-
-        $loggerMock->expects($this->once())
-            ->method('getNbQueries')
-            ->will($this->returnValue($totalQueries));
-
-        $elasticaDataCollector = new ElasticaDataCollector($loggerMock);
-        $elasticaDataCollector->collect($requestMock, $responseMock);
-        $this->assertEquals($totalQueries, $elasticaDataCollector->getQueryCount());
+        $this->collector->collect($this->prophesize(Request::class)->reveal(), $this->prophesize(Response::class)->reveal());
+        $this->assertEquals($totalQueries, $this->collector->getQueryCount());
     }
 
     public function testCorrectQueriesReturned()
     {
-        /** @var $requestMock \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\HttpFoundation\Request */
-        $requestMock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->logger->getNbQueries()->willReturn(1);
+        $this->logger->getQueries()->willReturn($queries = ['testQueries']);
 
-        /** @var $responseMock \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\HttpFoundation\Response */
-        $responseMock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Response')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        /** @var $loggerMock \PHPUnit_Framework_MockObject_MockObject|\Fazland\ElasticaBundle\Logger\ElasticaLogger */
-        $loggerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Logger\ElasticaLogger')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $queries = ['testQueries'];
-
-        $loggerMock->expects($this->once())
-            ->method('getQueries')
-            ->will($this->returnValue($queries));
-
-        $elasticaDataCollector = new ElasticaDataCollector($loggerMock);
-        $elasticaDataCollector->collect($requestMock, $responseMock);
-        $this->assertEquals($queries, $elasticaDataCollector->getQueries());
+        $this->collector->collect($this->prophesize(Request::class)->reveal(), $this->prophesize(Response::class)->reveal());
+        $this->assertEquals($queries, $this->collector->getQueries());
     }
 
     public function testCorrectQueriesTime()
     {
-        /** @var $requestMock \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\HttpFoundation\Request */
-        $requestMock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        /** @var $responseMock \PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\HttpFoundation\Response */
-        $responseMock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Response')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        /** @var $loggerMock \PHPUnit_Framework_MockObject_MockObject|\Fazland\ElasticaBundle\Logger\ElasticaLogger */
-        $loggerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Logger\ElasticaLogger')
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $queries = [[
             'engineMS' => 15,
             'executionMS' => 10,
@@ -90,23 +58,16 @@ class ElasticaDataCollectorTest extends \PHPUnit_Framework_TestCase
             'executionMS' => 20,
         ]];
 
-        $loggerMock->expects($this->once())
-            ->method('getQueries')
-            ->will($this->returnValue($queries));
+        $this->logger->getNbQueries()->willReturn(2);
+        $this->logger->getQueries()->willReturn($queries);
 
-        $elasticaDataCollector = new ElasticaDataCollector($loggerMock);
-        $elasticaDataCollector->collect($requestMock, $responseMock);
-        $this->assertEquals(40, $elasticaDataCollector->getTime());
+        $this->collector->collect($this->prophesize(Request::class)->reveal(), $this->prophesize(Response::class)->reveal());
+        $this->assertEquals(40, $this->collector->getTime());
+        $this->assertEquals(30, $this->collector->getExecutionTime());
     }
 
     public function testName()
     {
-        $loggerMock = $this->getMockBuilder('Fazland\ElasticaBundle\Logger\ElasticaLogger')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $elasticaDataCollector = new ElasticaDataCollector($loggerMock);
-
-        $this->assertEquals('elastica', $elasticaDataCollector->getName());
+        $this->assertEquals('elastica', $this->collector->getName());
     }
 }

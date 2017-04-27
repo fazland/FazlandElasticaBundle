@@ -17,7 +17,7 @@
             </call>
         </service>
 
-        <service id="fazland_elastica.model_to_elastica_identifier_transformer" class="Fazland\ElasticaBundle\Transformer\ModelToElasticaSerializerTransformer" public="false" abstract="true">
+        <service id="fazland_elastica.model_to_elastica_serializer_transformer" class="Fazland\ElasticaBundle\Transformer\ModelToElasticaSerializerTransformer" public="false" abstract="true">
             <argument type="collection" /> <!-- options -->
             <argument type="service" id="event_dispatcher" />
             <call method="setPropertyAccessor">
@@ -28,7 +28,7 @@
         <service id="fazland_elastica.doctrine.model_to_elastica_transformer" parent="fazland_elastica.model_to_elastica_transformer"
                  class="Fazland\ElasticaBundle\Transformer\Doctrine\ModelToElasticaAutoTransformer" public="false" abstract="true">
         </service>
-        <service id="fazland_elastica.doctrine.model_to_elastica_identifier_transformer" parent="fazland_elastica.model_to_elastica_identifier_transformer"
+        <service id="fazland_elastica.doctrine.model_to_elastica_serializer_transformer" parent="fazland_elastica.model_to_elastica_serializer_transformer"
                  class="Fazland\ElasticaBundle\Transformer\Doctrine\ModelToElasticaSerializerTransformer" public="false" abstract="true">
         </service>
 

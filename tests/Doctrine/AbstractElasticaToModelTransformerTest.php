@@ -32,7 +32,10 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
     {
         $transformer = $this->getMockBuilder('Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer')
             ->setMethods(['findByIdentifiers'])
-            ->setConstructorArgs([$this->registry, $this->objectClass, ['ignore_missing' => true]])
+            ->setConstructorArgs([$this->registry, $this->objectClass, [
+                'ignore_missing' => true,
+                'identifier' => 'id',
+            ]])
             ->getMock();
 
         $transformer->setPropertyAccessor(PropertyAccess::createPropertyAccessor());
@@ -235,6 +238,7 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
      */
     private function createMockTransformer($options = [])
     {
+        $options['identifier'] = 'id';
         $objectClass = 'Fazland\ElasticaBundle\Tests\Doctrine\Foo';
         $propertyAccessor = $this->createMockPropertyAccessor();
 

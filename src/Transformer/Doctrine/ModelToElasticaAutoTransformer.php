@@ -34,7 +34,7 @@ class ModelToElasticaAutoTransformer extends BaseTransformer
             $manager = $this->doctrine->getManagerForClass($class = ClassUtils::getClass($object));
             $metadata = $manager->getClassMetadata($class);
 
-            return $metadata->getIdentifierValues($object);
+            return implode(' ', $metadata->getIdentifierValues($object));
         }
     }
 }

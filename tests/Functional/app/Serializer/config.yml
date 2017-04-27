@@ -38,6 +38,7 @@ fazland_elastica:
                         coll: ~
                         field1: ~
                     persistence:
+                        identifier: id
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                     serializer:
@@ -47,6 +48,7 @@ fazland_elastica:
                     properties:
                         field1: ~
                     persistence:
+                        identifier: id
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                     serializer:
@@ -55,12 +57,14 @@ fazland_elastica:
                     properties:
                         field1: ~
                     persistence:
+                        identifier: id
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                     serializer:
                         serialize_null: true
                 unmapped:
                     persistence:
+                        identifier: id
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
                     serializer:
@@ -71,5 +75,6 @@ fazland_elastica:
                         field2: ~
                         field3: ~
                     persistence:
+                        identifier: id
                         driver: orm
                         model: Fazland\ElasticaBundle\Tests\Functional\TypeObj
