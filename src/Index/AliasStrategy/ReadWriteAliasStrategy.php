@@ -48,7 +48,7 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
 
     public function prePopulate()
     {
-        // Do nothing
+        $this->prePopulateUpdateAliases();
     }
 
     public function finalize()
@@ -79,6 +79,8 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
     /**
      * @param $aliasName
      * @param $indexesAliased
+     *
+     * @return void
      */
     private function updateAlias(string $aliasName, array $indexesAliased)
     {
@@ -96,7 +98,7 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
         }
 
         $body['actions'][] = ['add' => [
-            'index' => $this->index->getName(),
+            'index' => $this->index->getName() . self::APPENDIX_READ,
             'alias' => $aliasName,
         ]];
 
@@ -108,6 +110,8 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
 
     /**
      * @param array $indexesAliased
+     *
+     * @return void
      */
     private function deleteOldIndex(array $indexesAliased)
     {
@@ -118,5 +122,23 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
         $delete = new DeleteIndex();
         $delete->setIndex(reset($indexesAliased));
         $this->client->requestEndpoint($delete);
+    }
+
+    /**
+     * @return void
+     */
+    private function prePopulateUpdateAliases()
+    {
+        $body = [];
+
+        $body['actions'][] = ['add' => [
+            'index' => $this->index->getName(),
+            'alias' => $this->index->getAlias() . self::APPENDIX_WRITE,
+        ]];
+
+        $update = new UpdateAlias();
+        $update->setBody($body);
+
+        $this->client->requestEndpoint($update);
     }
 }
