@@ -11,7 +11,6 @@ use Fazland\ElasticaBundle\Elastica\Index;
 final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
 {
     const APPENDIX_READ = '_read';
-    const APPENDIX_WRITE = '_write';
 
     /**
      * @var Index
@@ -39,11 +38,18 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
 
     public function getName(string $method, string $path): string
     {
-        if (Request::GET === $method && preg_match('#/_search(/scroll)?$#i', $path)) {
-            return $this->index->getName() . self::APPENDIX_READ;
+        if (null !== $name = $this->index->getName()) {
+            $quoted = preg_quote($name);
+            if ((Request::PUT === $method || Request::DELETE === $method) && preg_match('#^/' . $quoted . '$#', $path)) {
+                return $name;
+            }
         }
 
-        return $this->index->getName() . self::APPENDIX_WRITE;
+        if (Request::GET === $method && preg_match('#/_search(/scroll)?$#i', $path)) {
+            return $name . self::APPENDIX_READ;
+        }
+
+        return $name;
     }
 
     public function prePopulate()
@@ -93,7 +99,7 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
 
             $body['actions'][] = ['remove' => [
                 'index' => $index,
-                'alias' => $aliasName . self::APPENDIX_WRITE,
+                'alias' => $aliasName,
             ]];
         }
 
@@ -133,7 +139,7 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
 
         $body['actions'][] = ['add' => [
             'index' => $this->index->getName(),
-            'alias' => $this->index->getAlias() . self::APPENDIX_WRITE,
+            'alias' => $this->index->getAlias(),
         ]];
 
         $update = new UpdateAlias();

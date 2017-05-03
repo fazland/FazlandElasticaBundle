@@ -198,6 +198,18 @@ class Index extends Elastica\Index implements ContainerAwareInterface
     /**
      * {@inheritdoc}
      */
+    public function createSearch($query = '', $options = null, Elastica\ResultSet\BuilderInterface $builder = null)
+    {
+        $search = new Elastica\Search($this->getClient(), $builder);
+        $search->addIndex($this->getAliasStrategy()->getName('GET', '/_search'));
+        $search->setOptionsAndQuery($options, $query);
+
+        return $search;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function request($path, $method, $data = [], array $query = [])
     {
         $name = $this->getAliasStrategy()->getName($method, $path);
@@ -229,6 +241,14 @@ class Index extends Elastica\Index implements ContainerAwareInterface
     public function registerType(string $name, string $serviceId)
     {
         $this->typeServices[$name] = $serviceId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOriginalName()
+    {
+        return $this->originalName;
     }
 
     /**
