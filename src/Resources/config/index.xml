@@ -19,7 +19,7 @@
         </service>
         <service id="fazland_elastica.indexable" alias="fazland_elastica.indexable.default" />
 
-        <service id="fazland_elastica.index_prototype" class="Fazland\ElasticaBundle\Elastica\Index" abstract="true" lazy="true">
+        <service id="fazland_elastica.index_prototype" class="Fazland\ElasticaBundle\Elastica\Index" abstract="true">
             <argument /> <!-- Client -->
             <argument /> <!-- Index config -->
             <call method="setContainer">
@@ -30,7 +30,7 @@
             </call>
         </service>
 
-        <service id="fazland_elastica.type_prototype" class="Fazland\ElasticaBundle\Elastica\Type" abstract="true" lazy="true">
+        <service id="fazland_elastica.type_prototype" class="Fazland\ElasticaBundle\Elastica\Type" abstract="true">
             <argument /> <!-- Index -->
             <argument /> <!-- Type config -->
             <call method="setEventDispatcher">

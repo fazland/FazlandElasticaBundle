@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Index\AliasStrategy;
 
+use Elastica\Exception\ResponseException;
 use Elastica\Request;
 use Elasticsearch\Endpoints\Indices\Alias\Get as GetAlias;
 use Elasticsearch\Endpoints\Indices\Aliases\Update as UpdateAlias;
@@ -61,7 +62,7 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
     {
         $aliasName = $this->index->getAlias();
 
-        $indexesAliased = $this->getAliasedIndex($aliasName);
+        $indexesAliased = $this->getAliasedIndex($aliasName . self::APPENDIX_READ);
         $this->updateAlias($aliasName, $indexesAliased);
         $this->deleteOldIndex($indexesAliased);
     }
@@ -76,7 +77,16 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
         $get = new GetAlias();
         $get->setName($aliasName);
 
-        $data = $this->client->requestEndpoint($get);
+        try {
+            $data = $this->client->requestEndpoint($get);
+        } catch (ResponseException $e) {
+            if (! preg_match('/^alias.+missing$/i', $e->getMessage())) {
+                throw $e;
+            }
+
+            return [];
+        }
+
         $indexes = array_keys($data->getData());
 
         return $indexes;
@@ -104,8 +114,8 @@ final class ReadWriteAliasStrategy implements IndexAwareAliasStrategyInterface
         }
 
         $body['actions'][] = ['add' => [
-            'index' => $this->index->getName() . self::APPENDIX_READ,
-            'alias' => $aliasName,
+            'index' => $this->index->getName(),
+            'alias' => $aliasName . self::APPENDIX_READ,
         ]];
 
         $update = new UpdateAlias();

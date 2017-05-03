@@ -63,6 +63,6 @@ class ReadWriteAliasStrategyTest extends TestCase
         $this->readWriteAliasStrategy->setIndex($index->reveal());
         $name = $this->readWriteAliasStrategy->getName(Request::POST, '/index1/type1/');
 
-        $this->assertEquals('index1_write', $name);
+        $this->assertEquals('index1', $name);
     }
 }
