@@ -9,6 +9,7 @@ use Doctrine\ODM\PHPCR\Event as PHPCREvents;
 use Doctrine\ORM\Events as ORMEvents;
 use Fazland\ElasticaBundle\DependencyInjection\Config\IndexConfig;
 use Fazland\ElasticaBundle\DependencyInjection\Config\TypeConfig;
+use Fazland\ElasticaBundle\Doctrine\ObjectFetcher;
 use InvalidArgumentException;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
@@ -285,6 +286,7 @@ class FazlandElasticaExtension extends Extension
             $fetcher = new Reference($fetcher);
         } elseif (in_array($typeConfig->persistenceDriver, ['orm', 'mongodb', 'phpcr'])) {
             $fetcher = new DefinitionDecorator('fazland_elastica.object_fetcher.prototype.doctrine');
+            $fetcher->setClass(ObjectFetcher::class);
             $fetcher->replaceArgument(0, new Reference('orm' === $typeConfig->persistenceDriver ? 'doctrine' : 'doctrine_'.$typeConfig->persistenceDriver));
             $fetcher->replaceArgument(1, $typeConfig->model);
         } elseif ('propel' === $typeConfig->persistenceDriver) {
