@@ -9,8 +9,6 @@ use Fazland\ElasticaBundle\Elastica\Type;
  * Accepts domain model objects and converts them to elastica documents.
  *
  * @author Thibault Duplessis <thibault.duplessis@gmail.com>
- *
- * @deprecated Object persisters are deprecated. Please use Type methods directly.
  */
 class ObjectPersister implements ObjectPersisterInterface
 {
@@ -41,6 +39,8 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function insertOne($object)
     {
+        @trigger_error(sprintf('Use of %s is deprecated. Use persist method instead.', __METHOD__), E_USER_DEPRECATED);
+
         $this->persist($object);
     }
 
@@ -49,6 +49,8 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function replaceOne($object)
     {
+        @trigger_error(sprintf('Use of %s is deprecated. Use persist method instead.', __METHOD__), E_USER_DEPRECATED);
+
         $this->persist($object);
     }
 
@@ -57,6 +59,8 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function deleteOne($object)
     {
+        @trigger_error(sprintf('Use of %s is deprecated. Use unpersist method instead.', __METHOD__), E_USER_DEPRECATED);
+
         $this->unpersist($object);
     }
 
@@ -65,6 +69,8 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function insertMany(array $objects)
     {
+        @trigger_error(sprintf('Use of %s is deprecated. Use persist method instead.', __METHOD__), E_USER_DEPRECATED);
+
         $this->persist(...$objects);
     }
 
@@ -73,6 +79,8 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function replaceMany(array $objects)
     {
+        @trigger_error(sprintf('Use of %s is deprecated. Use persist method instead.', __METHOD__), E_USER_DEPRECATED);
+
         $this->persist(...$objects);
     }
 
@@ -81,6 +89,8 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function deleteMany(array $objects)
     {
+        @trigger_error(sprintf('Use of %s is deprecated. Use unpersist method instead.', __METHOD__), E_USER_DEPRECATED);
+
         $this->unpersist(...$objects);
     }
 
@@ -89,6 +99,8 @@ class ObjectPersister implements ObjectPersisterInterface
      */
     public function deleteManyByIdentifiers(array $identifiers)
     {
+        @trigger_error(sprintf('Use of %s is deprecated. Use deleteById method instead.', __METHOD__), E_USER_DEPRECATED);
+
         $this->deleteById(...$identifiers);
     }
 

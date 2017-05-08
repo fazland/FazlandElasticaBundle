@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Transformer;
 
+use Elastica\ResultSet;
 use Fazland\ElasticaBundle\HybridResult;
 
 /**
@@ -25,30 +26,65 @@ class ElasticaToModelTransformerCollection implements ElasticaToModelTransformer
     }
 
     /**
-     * {@inheritdoc}
+     * @deprecated Will be removed in 6.0
      */
     public function getObjectClass()
     {
+        @trigger_error(__METHOD__.' is deprecated and will be removed in a future version.', E_USER_DEPRECATED);
+
         return array_map(function (ElasticaToModelTransformerInterface $transformer) {
-            return $transformer->getObjectClass();
+            if (method_exists($transformer, 'getObjectClass')) {
+                return $transformer->getObjectClass();
+            }
         }, $this->transformers);
     }
 
     /**
-     * {@inheritdoc}
+     * @deprecated Will be removed in 6.0
      */
     public function getIdentifierField()
     {
+        @trigger_error(__METHOD__.' is deprecated and will be removed in a future version.', E_USER_DEPRECATED);
+
         return array_map(function (ElasticaToModelTransformerInterface $transformer) {
-            return $transformer->getIdentifierField();
+            if (method_exists($transformer, 'getIdentifierField')) {
+                return $transformer->getIdentifierField();
+            }
         }, $this->transformers);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function transform(array $elasticaObjects)
+    public function transform($elasticaObjects)
     {
+        $sorted = [];
+        foreach ($elasticaObjects as $object) {
+            $sorted[$object->getType()][] = $object;
+        }
+
+        $func = function () use ($sorted) {
+            foreach ($sorted as $type => $objects) {
+                yield from $this->transformers[$type]->transform($objects);
+            }
+        };
+
+        return iterator_to_array($func(), false);
+    }
+
+    /**
+     * Gets hybrid results.
+     *
+     * @param array|ResultSet $elasticaObjects
+     *
+     * @return HybridResult[]
+     *
+     * @deprecated Hybrid results have been deprecated. Use ResultSet instead.
+     */
+    public function hybridTransform($elasticaObjects)
+    {
+        @trigger_error('Hybrid results have been deprecated. Please use the bundle\'s ResultSet directly instead', E_USER_DEPRECATED);
+
         $sorted = [];
         foreach ($elasticaObjects as $object) {
             $sorted[$object->getType()][] = $object;
@@ -56,52 +92,17 @@ class ElasticaToModelTransformerCollection implements ElasticaToModelTransformer
 
         $transformed = [];
         foreach ($sorted as $type => $objects) {
-            $transformedObjects = $this->transformers[$type]->transform($objects);
-            $identifierGetter = 'get'.ucfirst($this->transformers[$type]->getIdentifierField());
-            $transformed[$type] = array_combine(
-                array_map(
-                    function ($o) use ($identifierGetter) {
-                        return $o->$identifierGetter();
-                    },
-                    $transformedObjects
-                ),
-                $transformedObjects
-            );
+            $transformed[$type] = $this->transformers[$type]->transform($objects);
         }
 
-        $result = [];
-        foreach ($elasticaObjects as $object) {
-            if (array_key_exists((string) $object->getId(), $transformed[$object->getType()])) {
-                $result[] = $transformed[$object->getType()][(string) $object->getId()];
+        $func = function () use ($sorted, $transformed) {
+            foreach ($sorted as $type => $objects) {
+                foreach ($objects as $id => $object) {
+                    yield new HybridResult($object, $transformed[$object->getType()][$object->getId()] ?? null);
+                }
             }
-        }
+        };
 
-        return $result;
-    }
-
-    /**
-     * Gets hybrid results.
-     *
-     * @param array $elasticaObjects
-     *
-     * @return HybridResult[]
-     *
-     * @deprecated Hybrid results have been deprecated. Use ResultSet instead.
-     */
-    public function hybridTransform(array $elasticaObjects)
-    {
-        @trigger_error('Hybrid results have been deprecated. Please use the bundle\'s ResultSet directly instead', E_USER_DEPRECATED);
-
-        $objects = $this->transform($elasticaObjects);
-
-        $result = [];
-        for ($i = 0, $j = count($elasticaObjects); $i < $j; ++$i) {
-            if (! isset($objects[$i])) {
-                continue;
-            }
-            $result[] = new HybridResult($elasticaObjects[$i], $objects[$i]);
-        }
-
-        return $result;
+        return iterator_to_array($func(), false);
     }
 }

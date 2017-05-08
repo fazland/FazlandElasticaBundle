@@ -29,7 +29,7 @@ abstract class ListenerTest extends TestCase
 
         $this->assertEquals($entity, current($listener->scheduledForInsertion));
 
-        $persister->insertMany($listener->scheduledForInsertion)->shouldBeCalled();
+        $persister->persist(...$listener->scheduledForInsertion)->shouldBeCalled();
         $listener->postFlush($eventArgs);
     }
 
@@ -45,8 +45,8 @@ abstract class ListenerTest extends TestCase
 
         $this->assertEmpty($listener->scheduledForInsertion);
 
-        $persister->insertOne(Argument::cetera())->shouldNotBeCalled();
-        $persister->insertMany(Argument::cetera())->shouldNotBeCalled();
+        $persister->persist(Argument::cetera())->shouldNotBeCalled();
+        $persister->persist(Argument::cetera())->shouldNotBeCalled();
 
         $listener->postFlush($eventArgs);
     }
@@ -63,7 +63,7 @@ abstract class ListenerTest extends TestCase
 
         $this->assertEquals($entity, current($listener->scheduledForUpdate));
 
-        $persister->replaceMany($listener->scheduledForUpdate)->shouldBeCalled();
+        $persister->persist(...$listener->scheduledForUpdate)->shouldBeCalled();
         $persister->deleteById(Argument::cetera())->shouldNotBeCalled();
 
         $listener->postFlush($eventArgs);
@@ -88,8 +88,8 @@ abstract class ListenerTest extends TestCase
         $this->assertEmpty($listener->scheduledForUpdate);
         $this->assertEquals($entity->getId(), current($listener->scheduledForDeletion));
 
-        $persister->replaceOne(Argument::cetera())->shouldNotBeCalled();
-        $persister->deleteManyByIdentifiers([1])->shouldBeCalledTimes(1);
+        $persister->persist(Argument::cetera())->shouldNotBeCalled();
+        $persister->deleteById(1)->shouldBeCalledTimes(1);
 
         $listener->postFlush($eventArgs);
     }
@@ -112,7 +112,7 @@ abstract class ListenerTest extends TestCase
 
         $this->assertEquals($entity->getId(), current($listener->scheduledForDeletion));
 
-        $persister->deleteManyByIdentifiers([1])->shouldBeCalledTimes(1);
+        $persister->deleteById(1)->shouldBeCalledTimes(1);
         $listener->postFlush($eventArgs);
     }
 
@@ -135,7 +135,7 @@ abstract class ListenerTest extends TestCase
 
         $this->assertEquals($entity->identifier, current($listener->scheduledForDeletion));
 
-        $persister->deleteManyByIdentifiers(['foo'])->shouldBeCalledTimes(1);
+        $persister->deleteById('foo')->shouldBeCalledTimes(1);
         $listener->postFlush($eventArgs);
     }
 

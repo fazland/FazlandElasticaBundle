@@ -6,7 +6,7 @@ use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
 
 class ETMTransformer implements ElasticaToModelTransformerInterface
 {
-    public function transform(array $elasticaObjects)
+    public function transform($elasticaObjects)
     {
         return [];
     }

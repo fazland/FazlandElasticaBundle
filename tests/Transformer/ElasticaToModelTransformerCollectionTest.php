@@ -4,9 +4,16 @@ namespace Fazland\ElasticaBundle\Tests\Transformer;
 
 use Elastica\Document;
 use Elastica\Result;
+use Fazland\ElasticaBundle\HybridResult;
 use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerCollection;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 
-class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCase
+/**
+ * @group legacy
+ */
+class ElasticaToModelTransformerCollectionTest extends TestCase
 {
     /**
      * @var \Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerCollection
@@ -16,27 +23,22 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
 
     protected function collectionSetup()
     {
-        $transformer1 = $this->getMockBuilder('Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface')->getMock();
-        $transformer1->expects($this->any())
-            ->method('getObjectClass')
-            ->will($this->returnValue('Fazland\ElasticaBundle\Tests\Transformer\POPO'));
+        $transformer1 = $this->prophesize(ETMTransformer::class);
+        $transformer1->getObjectClass()->willReturn(POPO::class);
+        $transformer1->getIdentifierField()->willReturn('id');
 
-        $transformer1->expects($this->any())
-            ->method('getIdentifierField')
-            ->will($this->returnValue('id'));
+        $transformer2 = $this->prophesize(ETMTransformer::class);
+        $transformer2->getObjectClass()->willReturn(POPO2::class);
+        $transformer2->getIdentifierField()->willReturn('id');
 
-        $transformer2 = $this->getMockBuilder('Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface')->getMock();
-        $transformer2->expects($this->any())
-            ->method('getObjectClass')
-            ->will($this->returnValue('Fazland\ElasticaBundle\Tests\Transformer\POPO2'));
-
-        $transformer2->expects($this->any())
-            ->method('getIdentifierField')
-            ->will($this->returnValue('id'));
-
-        $this->collection = new ElasticaToModelTransformerCollection($this->transformers = [
+        $this->transformers = [
             'type1' => $transformer1,
             'type2' => $transformer2,
+        ];
+
+        $this->collection = new ElasticaToModelTransformerCollection([
+            'type1' => $transformer1->reveal(),
+            'type2' => $transformer2->reveal(),
         ]);
     }
 
@@ -46,8 +48,8 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
 
         $objectClasses = $this->collection->getObjectClass();
         $this->assertEquals([
-            'type1' => 'Fazland\ElasticaBundle\Tests\Transformer\POPO',
-            'type2' => 'Fazland\ElasticaBundle\Tests\Transformer\POPO2',
+            'type1' => POPO::class,
+            'type2' => POPO2::class,
         ], $objectClasses);
     }
 
@@ -60,15 +62,13 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
         $result1 = new POPO(123, 'lots of data');
         $result2 = new POPO2(124, 'not so much data');
 
-        $this->transformers['type1']->expects($this->once())
-            ->method('transform')
-            ->with([$document1])
-            ->will($this->returnValue([$result1]));
+        $this->transformers['type1']->transform([$document1])
+            ->shouldBeCalledTimes(1)
+            ->willReturn([123 => $result1]);
 
-        $this->transformers['type2']->expects($this->once())
-            ->method('transform')
-            ->with([$document2])
-            ->will($this->returnValue([$result2]));
+        $this->transformers['type2']->transform([$document2])
+            ->shouldBeCalledTimes(1)
+            ->willreturn([124 => $result2]);
 
         $results = $this->collection->transform([$document1, $document2]);
 
@@ -87,10 +87,9 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
         $result1 = new POPO(123, 'lots of data');
         $result2 = new POPO2(124, 'not so much data');
 
-        $this->transformers['type1']->expects($this->once())
-         ->method('transform')
-         ->with([$document1, $document2])
-         ->will($this->returnValue([$result1, $result2]));
+        $this->transformers['type1']->transform([$document1, $document2])
+            ->shouldBeCalledTimes(1)
+            ->willReturn([123 => $result1, 124 => $result2]);
 
         $results = $this->collection->transform([$document1, $document2]);
 
@@ -113,10 +112,9 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
         $result1 = new POPO($idObject1, 'lots of data');
         $result2 = new POPO2($idObject2, 'not so much data');
 
-        $this->transformers['type1']->expects($this->once())
-         ->method('transform')
-         ->with([$document1, $document2])
-         ->will($this->returnValue([$result1, $result2]));
+        $this->transformers['type1']->transform([$document1, $document2])
+            ->shouldBeCalledTimes(1)
+            ->willReturn(['yo' => $result1, 'lo' => $result2]);
 
         $results = $this->collection->transform([$document1, $document2]);
 
@@ -144,11 +142,7 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
         $result = new Result(['_id' => 123, '_type' => 'type1']);
         $transformedObject = new POPO(123, []);
 
-        return [
-            [
-                $result, $transformedObject,
-            ],
-        ];
+        yield [ $result, $transformedObject ];
     }
 
     /**
@@ -156,25 +150,37 @@ class ElasticaToModelTransformerCollectionTest extends \PHPUnit_Framework_TestCa
      */
     public function testHybridTransformDecoratesResultsWithHybridResultObjects($result, $transformedObject)
     {
-        $transformer = $this->getMockBuilder('Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerInterface')->getMock();
-        $transformer->expects($this->any())->method('getIdentifierField')->will($this->returnValue('id'));
+        $transformer = $this->prophesize(ElasticaToModelTransformerInterface::class);
 
-        $transformer
-            ->expects($this->any())
-            ->method('transform')
-            ->will($this->returnValue([$transformedObject]));
+        $transformer->transform(Argument::any())
+            ->willReturn([$result->getId() => $transformedObject]);
 
-        $collection = new ElasticaToModelTransformerCollection(['type1' => $transformer]);
+        $collection = new ElasticaToModelTransformerCollection(['type1' => $transformer->reveal()]);
 
         $hybridResults = $collection->hybridTransform([$result]);
 
         $this->assertInternalType('array', $hybridResults);
         $this->assertNotEmpty($hybridResults);
-        $this->assertContainsOnlyInstancesOf('Fazland\ElasticaBundle\HybridResult', $hybridResults);
+        $this->assertContainsOnlyInstancesOf(HybridResult::class, $hybridResults);
 
         $hybridResult = array_pop($hybridResults);
         $this->assertEquals($result, $hybridResult->getResult());
         $this->assertEquals($transformedObject, $hybridResult->getTransformed());
+    }
+}
+
+class ETMTransformer implements ElasticaToModelTransformerInterface
+{
+    public function transform($results)
+    {
+    }
+
+    public function getObjectClass()
+    {
+    }
+
+    public function getIdentifierField()
+    {
     }
 }
 

@@ -270,22 +270,31 @@ class FazlandElasticaExtension extends Extension
             return;
         }
 
+        $options = $typeConfig->elasticaToModelTransformerOptions;
+
         /*
          * Note: transformer services may conflict with "prototype.driver", if
          * the index and type names were "prototype" and a driver, respectively.
          */
-        $abstractId = sprintf('fazland_elastica.elastica_to_model_transformer.prototype.%s', $typeConfig->persistenceDriver);
         $serviceId = sprintf('fazland_elastica.elastica_to_model_transformer.%s.%s', $typeConfig->index->name, $typeConfig->name);
-        $serviceDef = new DefinitionDecorator($abstractId);
+        $serviceDef = new DefinitionDecorator('fazland_elastica.elastica_to_model_transformer.prototype');
         $serviceDef->addTag('fazland_elastica.elastica_to_model_transformer', ['type' => $typeConfig->name, 'index' => $typeConfig->index->name]);
 
-        // Doctrine has a mandatory service as first argument
-        $argPos = ('propel' === $typeConfig->persistenceDriver) ? 0 : 1;
+        $fetcher = $options['fetcher'] ?? null;
+        if (null !== $fetcher) {
+            $fetcher = new Reference($fetcher);
+        } elseif (in_array($typeConfig->persistenceDriver, ['orm', 'mongodb', 'phpcr'])) {
+            $fetcher = new DefinitionDecorator('fazland_elastica.object_fetcher.prototype.doctrine');
+            $fetcher->replaceArgument(0, new Reference('orm' === $typeConfig->persistenceDriver ? 'doctrine' : 'doctrine_'.$typeConfig->persistenceDriver));
+            $fetcher->replaceArgument(1, $typeConfig->model);
+        } elseif ('propel' === $typeConfig->persistenceDriver) {
+            throw new \Exception('Unimplemented');
+        }
 
-        $serviceDef->replaceArgument($argPos, $typeConfig->model);
-        $serviceDef->replaceArgument($argPos + 1, array_merge($typeConfig->elasticaToModelTransformerOptions, [
-            'identifier' => $typeConfig->modelIdentifier,
-        ]));
+        $serviceDef->addMethodCall('setObjectFetcher', [ $fetcher ]);
+
+        unset($options['service'], $options['fetcher']);
+        $serviceDef->replaceArgument(0, $options);
 
         $container->setDefinition($serviceId, $serviceDef);
         $typeConfig->elasticaToModelTransformer = $serviceId;

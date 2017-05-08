@@ -7,8 +7,6 @@ namespace Fazland\ElasticaBundle\Persister;
  * Accepts domain model objects and converts them to elastica documents.
  *
  * @author Thibault Duplessis <thibault.duplessis@gmail.com>
- *
- * @deprecated Object persisters are deprecated. Please use Type methods directly.
  */
 interface ObjectPersisterInterface
 {

@@ -4,12 +4,9 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <parameters>
-        <parameter key="fazland_elastica.elastica_to_model_transformer.collection.class">Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerCollection</parameter>
-    </parameters>
-
     <services>
-        <service id="fazland_elastica.model_to_elastica_transformer" class="Fazland\ElasticaBundle\Transformer\ModelToElasticaAutoTransformer" public="false" abstract="true">
+        <service id="fazland_elastica.model_to_elastica_transformer"
+                 class="Fazland\ElasticaBundle\Transformer\ModelToElasticaAutoTransformer" public="false" abstract="true">
             <argument type="collection" /> <!-- options -->
             <argument type="service" id="event_dispatcher" />
             <call method="setPropertyAccessor">
@@ -17,7 +14,8 @@
             </call>
         </service>
 
-        <service id="fazland_elastica.model_to_elastica_serializer_transformer" class="Fazland\ElasticaBundle\Transformer\ModelToElasticaSerializerTransformer" public="false" abstract="true">
+        <service id="fazland_elastica.model_to_elastica_serializer_transformer"
+                 class="Fazland\ElasticaBundle\Transformer\ModelToElasticaSerializerTransformer" public="false" abstract="true">
             <argument type="collection" /> <!-- options -->
             <argument type="service" id="event_dispatcher" />
             <call method="setPropertyAccessor">
@@ -26,13 +24,25 @@
         </service>
 
         <service id="fazland_elastica.doctrine.model_to_elastica_transformer" parent="fazland_elastica.model_to_elastica_transformer"
-                 class="Fazland\ElasticaBundle\Transformer\Doctrine\ModelToElasticaAutoTransformer" public="false" abstract="true">
-        </service>
+                 class="Fazland\ElasticaBundle\Transformer\Doctrine\ModelToElasticaAutoTransformer" public="false" abstract="true" />
         <service id="fazland_elastica.doctrine.model_to_elastica_serializer_transformer" parent="fazland_elastica.model_to_elastica_serializer_transformer"
-                 class="Fazland\ElasticaBundle\Transformer\Doctrine\ModelToElasticaSerializerTransformer" public="false" abstract="true">
+                 class="Fazland\ElasticaBundle\Transformer\Doctrine\ModelToElasticaSerializerTransformer" public="false" abstract="true" />
+
+        <service id="fazland_elastica.object_fetcher.prototype.doctrine"
+                 class="Fazland\ElasticaBundle\Doctrine\ObjectFetcher" public="false" abstract="true">
+            <argument /> <!-- Manager Registry -->
+            <argument /> <!-- Object class -->
         </service>
 
-        <service id="fazland_elastica.elastica_to_model_transformer.collection" class="%fazland_elastica.elastica_to_model_transformer.collection.class%" public="true" abstract="true">
+        <service id="fazland_elastica.highlighter" class="Fazland\ElasticaBundle\Highlights\Highlighter" />
+
+        <service id="fazland_elastica.elastica_to_model_transformer.prototype" class="Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformer" public="false" abstract="true">
+            <argument type="collection" /> <!-- options -->
+            <call method="setHighlighter">
+                <argument type="service" id="fazland_elastica.highlighter" />
+            </call>
+        </service>
+        <service id="fazland_elastica.elastica_to_model_transformer.collection" class="Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformerCollection" public="true" abstract="true">
             <argument type="collection" /> <!-- transformers -->
         </service>
     </services>

@@ -12,6 +12,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Elastica\Result;
 use Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer;
+use Fazland\ElasticaBundle\Tests\Functional\TypeObj;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -76,8 +77,10 @@ class ElasticaToModelTransformerTest extends TestCase
 
         $query->setHydrationMode(Query::HYDRATE_OBJECT)->willReturn($query);
         $query->execute()->willReturn([
-            new \stdClass()
+            $obj = new TypeObj(),
         ]);
+
+        $obj->id = 1;
 
         $this->repository
             ->createQueryBuilder(Argument::any())
@@ -116,8 +119,10 @@ class ElasticaToModelTransformerTest extends TestCase
 
         $query->setHydrationMode(Query::HYDRATE_OBJECT)->willReturn($query);
         $query->execute()->willReturn([
-            new \stdClass()
+            $obj = new TypeObj(),
         ]);
+
+        $obj->id = 1;
 
         $transformer = new ElasticaToModelTransformer($this->registry->reveal(), $this->objectClass, [
             'identifier' => 'id',
@@ -151,8 +156,9 @@ class ElasticaToModelTransformerTest extends TestCase
         $query->setHint('customHintName', 'Custom\Hint\Class')->willReturn($query);
         $query->setHydrationMode(Query::HYDRATE_OBJECT)->willReturn($query);
         $query->execute()->willReturn([
-            new \stdClass()
+            $obj = new TypeObj(),
         ]);
+        $obj->id = 1;
 
         $transformer = new ElasticaToModelTransformer($this->registry->reveal(), $this->objectClass, [
             'identifier' => 'id',

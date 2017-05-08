@@ -153,17 +153,17 @@ class Listener implements EventSubscriber
     private function persistScheduled()
     {
         if (count($this->scheduledForInsertion)) {
-            $this->objectPersister->insertMany($this->scheduledForInsertion);
+            $this->objectPersister->persist(...$this->scheduledForInsertion);
             $this->scheduledForInsertion = [];
         }
 
         if (count($this->scheduledForUpdate)) {
-            $this->objectPersister->replaceMany($this->scheduledForUpdate);
+            $this->objectPersister->persist(...$this->scheduledForUpdate);
             $this->scheduledForUpdate = [];
         }
 
         if (count($this->scheduledForDeletion)) {
-            $this->objectPersister->deleteManyByIdentifiers($this->scheduledForDeletion);
+            $this->objectPersister->deleteById(...$this->scheduledForDeletion);
             $this->scheduledForDeletion = [];
         }
     }

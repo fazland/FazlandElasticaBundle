@@ -4,12 +4,6 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <parameters>
-        <parameter key="fazland_elastica.slice_fetcher.orm.class">Fazland\ElasticaBundle\Doctrine\ORM\SliceFetcher</parameter>
-        <parameter key="fazland_elastica.provider.prototype.orm.class">Fazland\ElasticaBundle\Doctrine\ORM\Provider</parameter>
-        <parameter key="fazland_elastica.elastica_to_model_transformer.prototype.orm.class">Fazland\ElasticaBundle\Doctrine\ORM\ElasticaToModelTransformer</parameter>
-    </parameters>
-
     <services>
         <service id="fazland_elastica.provider.prototype.orm" class="Fazland\ElasticaBundle\Doctrine\ORM\Provider" public="true" abstract="true">
             <argument /> <!-- Index -->
@@ -27,15 +21,6 @@
             <argument /> <!-- object persister -->
             <argument type="service" id="fazland_elastica.indexable" />
             <argument type="collection" /> <!-- configuration -->
-        </service>
-
-        <service id="fazland_elastica.elastica_to_model_transformer.prototype.orm" class="%fazland_elastica.elastica_to_model_transformer.prototype.orm.class%" public="false" abstract="true">
-            <argument type="service" id="doctrine" />
-            <argument /> <!-- model -->
-            <argument type="collection" /> <!-- options -->
-            <call method="setPropertyAccessor">
-                <argument type="service" id="fazland_elastica.property_accessor" />
-            </call>
         </service>
     </services>
 </container>

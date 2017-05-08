@@ -3,7 +3,7 @@
 namespace Fazland\ElasticaBundle\Propel;
 
 use Fazland\ElasticaBundle\HybridResult;
-use Fazland\ElasticaBundle\Transformer\AbstractElasticaToModelTransformer;
+use Fazland\ElasticaBundle\Transformer\ElasticaToModelTransformer;
 use Fazland\ElasticaBundle\Transformer\HighlightableModelInterface;
 
 /**
@@ -14,7 +14,7 @@ use Fazland\ElasticaBundle\Transformer\HighlightableModelInterface;
  *
  * @author William Durand <william.durand1@gmail.com>
  */
-class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
+class ElasticaToModelTransformer extends ElasticaToModelTransformer
 {
     /**
      * Propel model class to map to Elastica documents.

@@ -2,22 +2,13 @@
 
 namespace Fazland\ElasticaBundle\Transformer;
 
-/**
- * Indicates that the model should have elastica highlights injected.
- */
-interface HighlightableModelInterface
-{
-    /**
-     * Returns a unique identifier for the model.
-     *
-     * @return mixed
-     */
-    public function getId();
+use Fazland\ElasticaBundle\Highlights\HighlightableInterface as BaseInterface;
 
-    /**
-     * Set ElasticSearch highlight data.
-     *
-     * @param array $highlights array of highlight strings
-     */
-    public function setElasticHighlights(array $highlights);
+@trigger_error(__NAMESPACE__.'\\HighlightableModelInterface is deprecated. Please use '.BaseInterface::class.' instead', E_USER_DEPRECATED);
+
+/**
+ * @deprecated This interface is deprecated. Please use Fazland\ElasticaBundle\Highlights\HighlightableModelInterface instead.
+ */
+interface HighlightableModelInterface extends BaseInterface
+{
 }

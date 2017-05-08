@@ -56,10 +56,10 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
         $hybridResults = $transformer->hybridTransform([$firstElasticaResult, $secondElasticaResult, $thirdElasticaResult]);
 
         $this->assertCount(2, $hybridResults);
-        $this->assertEquals($firstOrmResult, $hybridResults[0]->getTransformed());
-        $this->assertEquals($firstElasticaResult, $hybridResults[0]->getResult());
-        $this->assertEquals($secondOrmResult, $hybridResults[1]->getTransformed());
-        $this->assertEquals($thirdElasticaResult, $hybridResults[1]->getResult());
+        $this->assertEquals($firstOrmResult, $hybridResults[1]->getTransformed());
+        $this->assertEquals($firstElasticaResult, $hybridResults[1]->getResult());
+        $this->assertEquals($secondOrmResult, $hybridResults[3]->getTransformed());
+        $this->assertEquals($thirdElasticaResult, $hybridResults[3]->getResult());
     }
 
     public function testObjectClassCanBeSet()
@@ -72,13 +72,11 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
     {
         $elasticaResults = $doctrineObjects = [];
         for ($i = 1; $i < 4; ++$i) {
-            $elasticaResults[] = new Result(['_id' => $i, 'highlight' => ['foo']]);
-            $doctrineObjects[] = new Foo($i);
+            $elasticaResults[$i] = new Result(['_id' => $i, 'highlight' => ['foo']]);
+            $doctrineObjects[$i] = new Foo($i);
         }
 
-        return [
-            [$elasticaResults, $doctrineObjects],
-        ];
+        yield [$elasticaResults, $doctrineObjects];
     }
 
     /**
@@ -116,7 +114,7 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(
             '\RuntimeException',
-            'Cannot find corresponding Doctrine objects (0) for all Elastica results (3). IDs: 1, 2, 3'
+            'Cannot find corresponding objects (0) for all Elastica results (3). IDs: 1, 2, 3'
         );
 
         $transformer->transform($elasticaResults);
@@ -180,9 +178,9 @@ class AbstractElasticaToModelTransformerTest extends \PHPUnit_Framework_TestCase
 
         $results = $transformer->transform($elasticaResults);
 
-        $this->assertSame($doctrineObjects[2], $results[0]);
-        $this->assertSame($doctrineObjects[1], $results[1]);
-        $this->assertSame($doctrineObjects[0], $results[2]);
+        $this->assertSame($doctrineObjects[2], $results[1]);
+        $this->assertSame($doctrineObjects[1], $results[2]);
+        $this->assertSame($doctrineObjects[0], $results[3]);
     }
 
     /**
