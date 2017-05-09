@@ -81,7 +81,7 @@ class MappingBuilder
             $mapping['dynamic'] = $typeConfig->getDynamic();
         }
 
-        if (isset($mapping['dynamic_templates']) and empty($mapping['dynamic_templates'])) {
+        if (isset($mapping['dynamic_templates']) && empty($mapping['dynamic_templates'])) {
             unset($mapping['dynamic_templates']);
         }
 
@@ -90,7 +90,7 @@ class MappingBuilder
             unset($mapping['properties']);
         }
 
-        if ($typeConfig->getModel()) {
+        if (null !== $typeConfig->getModel()) {
             $mapping['_meta']['model'] = $typeConfig->getModel();
         }
 
