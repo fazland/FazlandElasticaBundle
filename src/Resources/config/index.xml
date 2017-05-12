@@ -39,7 +39,6 @@
         </service>
 
         <service id="fazland_elastica.simple_alias_strategy_prototype" class="Fazland\ElasticaBundle\Index\AliasStrategy\SimpleAliasStrategy" abstract="true" />
-        <service id="fazland_elastica.rw_alias_strategy_prototype" class="Fazland\ElasticaBundle\Index\AliasStrategy\ReadWriteAliasStrategy" abstract="true" />
 
         <service id="fazland_elastica.index_manager" class="Fazland\ElasticaBundle\Index\IndexManager">
             <argument /> <!-- indexes -->

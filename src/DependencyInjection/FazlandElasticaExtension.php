@@ -670,7 +670,6 @@ class FazlandElasticaExtension extends Extension
 
         switch ($indexConfig->alias) {
             case 'simple':
-            case 'rw':
                 $definition = new DefinitionDecorator(sprintf('fazland_elastica.%s_alias_strategy_prototype', $indexConfig->alias));
                 $container->setDefinition($serviceId, $definition);
 
