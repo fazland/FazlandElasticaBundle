@@ -50,13 +50,15 @@ class ConfigurationTest extends TestCase
                         [
                             'url' => 'http://es1:9200',
                             'headers' => [
-                                'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==',
+                                'Authorization' => 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==',
+                                'Content-Type' => 'application/json',
                             ],
                         ],
                         [
                             'url' => 'http://es2:9200',
                             'headers' => [
-                                'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==',
+                                'Authorization' => 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==',
+                                'Content-Type' => 'application/json',
                             ],
                         ],
                     ],
@@ -71,8 +73,10 @@ class ConfigurationTest extends TestCase
 
         $this->assertCount(2, $configuration['clients']['clustered']['connections']);
         $this->assertEquals('http://es2:9200/', $configuration['clients']['clustered']['connections'][1]['url']);
-        $this->assertCount(1, $configuration['clients']['clustered']['connections'][1]['headers']);
-        $this->assertEquals('Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==', $configuration['clients']['clustered']['connections'][0]['headers'][0]);
+        $this->assertCount(2, $configuration['clients']['clustered']['connections'][1]['headers']);
+        $this->assertArrayHasKey('Authorization', $configuration['clients']['clustered']['connections'][1]['headers']);
+        $this->assertArrayHasKey('Content-Type', $configuration['clients']['clustered']['connections'][1]['headers']);
+        $this->assertEquals('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==', $configuration['clients']['clustered']['connections'][0]['headers']['Authorization']);
     }
 
     public function testLogging()
