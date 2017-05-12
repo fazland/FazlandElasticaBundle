@@ -10,7 +10,7 @@ interface ObjectFetcherInterface
      *
      * @param array ...$identifiers
      *
-     * @return object[]
+     * @return iterable|object[]
      */
     public function find(...$identifiers);
 }

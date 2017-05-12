@@ -1,54 +1,26 @@
 FazlandElasticaBundle Usage
 =======================
 
-Basic Searching with a Finder
------------------------------
-
-The most useful searching method is to use a finder defined by the type configuration.
-A finder will return results that have been hydrated by the configured persistence backend,
-allowing you to use relationships of returned entities. For more information about
-configuration options for this kind of searching, please see the [types](types.md)
-documentation.
+Basic Searching
+---------------
 
 > This example assumes you have defined an index `app` and a type `user` in your `config.yml`.
 
 ```php
-$finder = $this->container->get('fazland_elastica.finder.app.user');
+$type = $this->container->get('fazland_elastica.index.app.user');
 
-// Option 1. Returns all users who have example.net in any of their mapped fields
-$results = $finder->find('example.net');
+// Returns all users who have example.net in any of their mapped fields
+$resultSet = $type->search('example.net');
 
-// Option 2. Returns a set of hybrid results that contain all Elasticsearch results
-// and their transformed counterparts. Each result is an instance of a HybridResult
-$results = $finder->findHybrid('example.net');
+// Get transformed results (aka doctrine entities)
+$results = $resultSet->getTransformed();
 
-// Option 3a. Pagerfanta'd resultset
-/** var Pagerfanta\Pagerfanta */
-$userPaginator = $finder->findPaginated('bob');
-$countOfResults = $userPaginator->getNbResults();
-
-// Option 3b. KnpPaginator resultset
-$paginator = $this->get('knp_paginator');
-$results = $finder->createPaginatorAdapter('bob');
-$pagination = $paginator->paginate($results, $page, 10);
-
-// You can specify additional options as the fourth parameter of Knp Paginator
-// paginate method to set ignore_unmapped, nested_filter and nested_sort
-
-$options = [
-    'sortIgnoreUnmapped' => true,
-    'sortNestedPath' => 'owner',
-    'sortNestedFilter' => new Query\Term(['enabled' => ['value' => true]]),
-];
-
-// sortNestedPath and sortNestedFilter also accepts a callable
-// which takes the current sort field to get the correct sort path/filter
-
-$pagination = $paginator->paginate($results, $page, 10, $options);
+// Get total hits
+$count = $resultSet->getTotalHits();
 ```
 
 Aggregations
------------------
+------------
 
 When searching with aggregations, they can be retrieved when using the paginated
 methods on the finder.
@@ -59,11 +31,8 @@ $agg = new \Elastica\Aggregation\Terms('tags');
 $agg->setField('companyGroup');
 $query->addAggregation($agg);
 
-$companies = $finder->findPaginated($query);
-$companies->setMaxPerPage($params['limit']);
-$companies->setCurrentPage($params['page']);
-
-$aggs = $companies->getAdapter()->getAggregations();
+$resultSet = $type->search($query);
+$aggs = $resultSet->getAggregations();
 ```
 
 Searching the entire index
@@ -112,40 +81,41 @@ $users = $repository->find('bob');
 For more information about customising repositories, see the cookbook entry
 [Custom Repositories](cookbook/custom-repositories.md).
 
-Using a custom query builder method for transforming results
+Using a custom fetcher for transforming results
 ------------------------------------------------------------
 
-When returning results from Elasticsearch to be transformed by the bundle, the default
-`createQueryBuilder` method on each objects Repository class will be called. In many
+When returning results from ElasticSearch to be transformed by the bundle, the default
+`ObjectFetcher` object will be called. This object will subsequently hydrate the object using
+the `ObjectManager::find` method, passing the identifier to it. In many
 circumstances this is not ideal and you'd prefer to use a different method to join in
 any entity relations that are required on the page that will be displaying the results.
 
 ```yaml
             user:
                 persistence:
-                    elastica_to_model_transformer:
-                        query_builder_method: createSearchQueryBuilder
+                    fetcher: app.my_fetcher
 ```
 
 An example for using a custom query builder method:
 
 ```php
-class UserRepository extends EntityRepository
+class MyFetcher implements ObjectFetcherInterface
 {
     /**
-     * Used by Elastica to transform results to model
-     * 
-     * @param string $entityAlias
-     * @return  Doctrine\ORM\QueryBuilder
+     * Returns a SORTED list of object given the identifiers.
+     * The keys MUST be the object identifier as stored in Elastic document.
+     *
+     * @param array ...$identifiers
+     *
+     * @return iterable|object[]
      */
-    public function createSearchQueryBuilder($entityAlias)
-    {
-        $qb = $this->createQueryBuilder($entityAlias);
-        
-        $qb->select($entityAlias, 'g')
-            ->innerJoin($entityAlias.'.groups', 'g');
-            
-        return $qb;
+    public function find(...$identifiers) {
+        $res = $this->createCustomQueryBuilder()
+            ->getQuery()->getResults();
+ 
+        foreach ($res as $object) {
+            yield $object->getId() => $object;
+        }
     }
 }
 ```
@@ -206,5 +176,5 @@ $categoryQuery = new \Elastica\Query\Terms();
 $categoryQuery->setTerms('categoryIds', array('1', '2', '3'));
 $boolQuery->addMust($categoryQuery);
 
-$data = $finder->find($boolQuery);
+$resultSet = $type->search($boolQuery);
 ```

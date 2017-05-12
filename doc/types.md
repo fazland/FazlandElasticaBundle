@@ -8,12 +8,12 @@ Since FazlandElasticaBundle 3.1.0, it is now possible to define custom property 
 to be used for data retrieval from the underlying model.
 
 ```yaml
-                user:
-                    mappings:
-                        username:
-                            property_path: indexableUsername
-                        firstName:
-                            property_path: names[first]
+    user:
+        mappings:
+            username:
+                property_path: indexableUsername
+            firstName:
+                property_path: names[first]
 ```
 
 This feature uses the Symfony PropertyAccessor component and supports all features
@@ -44,10 +44,10 @@ The error you're likely to see is something like:
 To solve this issue, each type can be configured to ignore the missing results:
 
 ```yaml
-                user:
-                    persistence:
-                        elastica_to_model_transformer:
-                            ignore_missing: true
+    user:
+        persistence:
+            elastica_to_model_transformer:
+                ignore_missing: true
 ```
 
 Dynamic templates
@@ -142,11 +142,11 @@ Date format example
 If you want to specify a [date format](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html):
 
 ```yaml
-                user:
-                    mappings:
-                        username: { type: string }
-                        lastlogin: { type: date, format: basic_date_time }
-                        birthday: { type: date, format: "yyyy-MM-dd" }
+    user:
+        mappings:
+            username: { type: string }
+            lastlogin: { type: date, format: basic_date_time }
+            birthday: { type: date, format: "yyyy-MM-dd" }
 ```
 
 
@@ -157,11 +157,11 @@ If you want to specify manually the dynamic capabilities of Elasticsearch mappin
 the [dynamic](https://www.elastic.co/guide/en/elasticsearch/reference/current/dynamic.html) option:
 
 ```yaml
-                user:
-                    dynamic: strict
-                    mappings:
-                        username: { type: string }
-                        addresses: { type: object, dynamic: true }
+    user:
+        dynamic: strict
+        mappings:
+            username: { type: string }
+            addresses: { type: object, dynamic: true }
 ```
 
 With this example, Elasticsearch is going to throw exceptions if you try to index a not mapped field, except in `addresses`.
@@ -221,19 +221,15 @@ The callback option supports multiple approaches:
   `Object->enabled()`. Note that this does not support chaining methods with dot notation
   like property paths. To achieve something similar use the ExpressionLanguage option
   below.
-* An array of a service id and a method which will be called with the object as the first
-  and only argument. `[ @my_custom_service, 'userIndexable' ]` will call the userIndexable
-  method on a service defined as my_custom_service.
 * An array of a class and a static method to call on that class which will be called with
   the object as the only argument. `[ 'Acme\DemoBundle\IndexableChecker', 'isIndexable' ]`
   will call Acme\DemoBundle\IndexableChecker::isIndexable($object)
-* A single element array with a service id can be used if the service has an __invoke
-  method. Such an invoke method must accept a single parameter for the object to be indexed.
-  `[ @my_custom_invokable_service ]`
 * If you have the ExpressionLanguage component installed, A valid ExpressionLanguage
   expression provided as a string. The object being indexed will be supplied as `object`
-  in the expression. `object.isEnabled() or object.shouldBeIndexedAnyway()`. For more
-  information on the ExpressionLanguage component and its capabilities see its
+  in the expression. `object.isEnabled() or object.shouldBeIndexedAnyway()`.
+  Services can be inkoved through the `service` expression function (ex: 
+  `service('app.checker').isIndexable(object)` will call `isIndexable` method on `app.checker` service).
+  For more information on the ExpressionLanguage component and its capabilities see its
   [documentation](http://symfony.com/doc/current/components/expression_language/index.html)
 
 In all cases, the callback should return a true or false, with true indicating it will be
@@ -249,34 +245,23 @@ When populating an index, it may be required to use a different query builder me
 to define which entities should be queried.
 
 ```yaml
-                user:
-                    persistence:
-                        provider:
-                            query_builder_method: createIsActiveQueryBuilder
-```
-
-### Populating batch size
-
-By default, ElasticaBundle will index documents by packets of 100.
-You can change this value in the provider configuration.
-
-```yaml
-                user:
-                    persistence:
-                        provider:
-                            batch_size: 10
+    user:
+        persistence:
+            provider:
+                query_builder_method: createIsActiveQueryBuilder
 ```
 
 ### Changing the document identifier
 
-By default, ElasticaBundle will use the `id` field of your entities as
-the Elasticsearch document identifier. You can change this value in the
-persistence configuration.
+By default, ElasticaBundle will automatically retrieve the identifier 
+fields of your entities and use those as the Elasticsearch document 
+identifier. Composite keys will be separated by a space. You can change
+this value in the persistence configuration.
 
 ```yaml
-                user:
-                    persistence:
-                        identifier: searchId
+    user:
+        persistence:
+            identifier: searchId
 ```
 
 Listener Configuration
@@ -289,11 +274,11 @@ when an object is added, updated or removed. It uses Doctrine lifecycle events.
 Declare that you want to update the index in real time:
 
 ```yaml
-                user:
-                    persistence:
-                        driver: orm #the driver can be orm, mongodb, phpcr or propel
-                        model: Application\UserBundle\Entity\User
-                        listener: ~ # by default, listens to "insert", "update" and "delete"
+    user:
+        persistence:
+            driver: orm #the driver can be orm, mongodb, phpcr or propel
+            model: Application\UserBundle\Entity\User
+            listener: ~ # by default, listens to "insert", "update" and "delete"
 ```
 
 Now the index is automatically updated each time the state of the bound Doctrine repository changes.
@@ -302,26 +287,11 @@ No need to repopulate the whole "user" index when a new `User` is created.
 You can also choose to only listen for some of the events:
 
 ```yaml
-                    persistence:
-                        listener:
-                            insert: true
-                            update: false
-                            delete: true
+    persistence:
+        listener:
+            insert: true
+            update: false
+            delete: true
 ```
 
 > **Propel** doesn't support this feature yet.
-
-Logging Errors
---------------
-
-By default FazlandElasticaBundle will not catch errors thrown by Elastica/ElasticSearch.
-Configure a logger per listener if you would rather catch and log these.
-
-```yaml
-                    persistence:
-                        listener:
-                            logger: true
-```
-
-Specifying `true` will use the default Elastica logger.  Alternatively define your own
-logger service id.

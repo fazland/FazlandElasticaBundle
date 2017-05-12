@@ -22,36 +22,27 @@ Its class must implement `Fazland\ElasticaBundle\Provider\ProviderInterface`.
 namespace Acme\UserBundle\Provider;
 
 use Fazland\ElasticaBundle\Provider\ProviderInterface;
-use Elastica\Type;
-use Elastica\Document;
 
 class UserProvider implements ProviderInterface
 {
-    protected $userType;
-
-    public function __construct(Type $userType)
-    {
-        $this->userType = $userType;
-    }
-
     /**
-     * Insert the repository objects in the type index
+     * Provides objects for index/type population.
      *
-     * @param \Closure $loggerClosure
-     * @param array    $options
+     * @param int $offset
+     * @param int $size
+     *
+     * @return iterable
      */
-    public function populate(\Closure $loggerClosure = null, array $options = array())
+    public function provide(int $offset = null, int $size = null);
     {
-        $batchSize = 1;
-        $totalObjects = 1;
-
-        if ($loggerClosure) {
-            $loggerClosure($batchSize, $totalObjects, 'Indexing users');
-        }
-
-        $document = new Document();
-        $document->setData(array('username' => 'Bob'));
-        $this->userType->addDocuments(array($document));
+        yield [
+            'username' => 'Bob',
+        ];
+    }
+    
+    public function clear()
+    {
+        // Do cleanup tasks
     }
 }
 ```

@@ -13,12 +13,12 @@ Symfony. Features include:
 Documentation
 -------------
 
-Documentation for FazlandElasticaBundle is in `Resources/doc/index.md`
+Documentation for FazlandElasticaBundle is in `doc/index.md`
 
 Installation
 ------------
 
-Installation instructions can be found in the [documentation](https://github.com/Fazland/FazlandElasticaBundle/blob/master/Resources/doc/setup.md)
+Installation instructions can be found in the [documentation](https://github.com/Fazland/FazlandElasticaBundle/blob/master/doc/setup.md)
 
 License
 -------

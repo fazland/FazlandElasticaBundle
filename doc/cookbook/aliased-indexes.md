@@ -4,9 +4,6 @@ Aliased Indexes
 You can set up FazlandElasticaBundle to use aliases for indexes which allows you to run an
 index population without resetting the index currently being used by the application.
 
-> *Note*: When you're using an alias, resetting an individual type will still cause a
-> reset for that type.
-
 To configure FazlandElasticaBundle to use aliases for an index, set the use_alias option to
 true.
 
@@ -14,7 +11,7 @@ true.
 fazland_elastica:
     indexes:
         app:
-            use_alias: true
+            use_alias: simple  # true is an alias for "simple"
 ```
 
 The process for setting up aliases on an existing application is slightly more complicated
@@ -46,4 +43,18 @@ $ curl -XPOST 'http://localhost:9200/_aliases' -d '
         { "add" : { "index" : "app", "alias" : "app_prod" } }
     ]
 }'
+```
+
+Implementing your own alias strategy
+------------------------------------
+
+You can implement your own alias strategy for indexes implementing
+`Fazland\ElasticaBundle\AliasStrategyInterface` and defining your class as a service.
+Then, in index configuration, set the service id in `use_alias` configuration.
+
+```yaml
+fazland_elastica:
+    indexes:
+        app_myindex:
+            use_alias: app.myindex_alias_strategy
 ```
