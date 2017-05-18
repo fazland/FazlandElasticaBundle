@@ -32,7 +32,12 @@ class ObjectFetcher implements ObjectFetcherInterface
         $manager = $this->doctrine->getManagerForClass($this->objectClass);
 
         foreach ($identifiers as $identifier) {
-            $results[$identifier] = $manager->find($this->objectClass, explode(' ', $identifier));
+            $identifier = explode(' ', $identifier);
+            if (1 === count($identifier)) {
+                $identifier = reset($identifier);
+            }
+
+            $results[$identifier] = $manager->find($this->objectClass, $identifier);
         }
 
         return $results;
