@@ -68,7 +68,7 @@ class ElasticaToModelTransformer implements ElasticaToModelTransformerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      **/
     public function transform($results)
     {

@@ -74,4 +74,52 @@ class ORMTest extends WebTestCase
             // OK
         }
     }
+
+    public function testORMIntegrationWithMoreThanOneDocument()
+    {
+        $client = $this->createClient(['test_case' => 'ORM']);
+        $container = $client->getContainer();
+        $em = $container->get('doctrine')->getManager();
+
+        $obj1 = new TypeObj();
+        $obj1->id = 4748;
+
+        $obj2 = new TypeObj();
+        $obj2->id = 4749;
+
+        $em->persist($obj1);
+        $em->persist($obj2);
+        $em->flush();
+
+        /** @var Type $type */
+        $type = $container->get('fazland_elastica.index.index.property_paths_type');
+        $document = $type->getDocument(4748);
+
+        $this->assertNotNull($document);
+
+        $obj1->field2 = 'foobar1';
+        $obj2->field2 = 'foobar2';
+        $em->flush();
+
+        $document = $type->getDocument(4749);
+        $this->assertEquals('foobar2', $document->getData()['field1']);
+
+        $em->remove($obj2);
+        $em->remove($obj1);
+        $em->flush();
+
+        try {
+            $type->getDocument(4748);
+            $this->fail('Expected NotFoundException to be thrown');
+        } catch (NotFoundException $exception) {
+            // OK
+        }
+
+        try {
+            $type->getDocument(4749);
+            $this->fail('Expected NotFoundException to be thrown');
+        } catch (NotFoundException $exception) {
+            // OK
+        }
+    }
 }

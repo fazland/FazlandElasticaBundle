@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Fazland\ElasticaBundle\Tests\Command;
 
@@ -63,8 +65,8 @@ class PopulateCommandTest extends TestCase
         $index1 = $this->prophesize(Index::class);
         $index2 = $this->prophesize(Index::class);
 
-        $index1->populate(["no-reset" => false, "ignore_errors" => false, "offset" => null, "size" => null])->shouldBeCalled();
-        $index2->populate(["no-reset" => false, "ignore_errors" => false, "offset" => null, "size" => null])->shouldBeCalled();
+        $index1->populate(['no-reset' => false, 'ignore_errors' => false, 'offset' => null, 'size' => null])->shouldBeCalled();
+        $index2->populate(['no-reset' => false, 'ignore_errors' => false, 'offset' => null, 'size' => null])->shouldBeCalled();
 
         $this->indexManager->getAllIndexes()->willReturn([
             $index1->reveal(),

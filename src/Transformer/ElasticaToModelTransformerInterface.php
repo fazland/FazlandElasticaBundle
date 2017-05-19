@@ -1,6 +1,7 @@
 <?php
 
 namespace Fazland\ElasticaBundle\Transformer;
+
 use Elastica\Result;
 use Fazland\ElasticaBundle\Elastica\ResultSet;
 

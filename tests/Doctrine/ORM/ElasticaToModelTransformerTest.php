@@ -96,7 +96,7 @@ class ElasticaToModelTransformerTest extends TestCase
         $doc->getHighlights()->willReturn([]);
 
         $transformer->transform([
-            $doc->reveal()
+            $doc->reveal(),
         ]);
     }
 
@@ -133,7 +133,7 @@ class ElasticaToModelTransformerTest extends TestCase
         $doc->getHighlights()->willReturn([]);
 
         $transformer->transform([
-            $doc->reveal()
+            $doc->reveal(),
         ]);
     }
 
@@ -172,7 +172,7 @@ class ElasticaToModelTransformerTest extends TestCase
         $doc->getHighlights()->willReturn([]);
 
         $transformer->transform([
-            $doc->reveal()
+            $doc->reveal(),
         ]);
     }
 }

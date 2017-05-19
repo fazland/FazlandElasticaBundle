@@ -60,7 +60,7 @@ class SimpleAliasStrategyTest extends TestCase
 
         $client->requestEndpoint(Argument::type(Get::class))->willReturn($response->reveal());
         $client->requestEndpoint(Argument::type(Update::class))->shouldBeCalledTimes(1);
-        $client->requestEndpoint(Argument::type(Delete::class ))->shouldBeCalledTimes(1);
+        $client->requestEndpoint(Argument::type(Delete::class))->shouldBeCalledTimes(1);
 
         $index->getClient()->willReturn($client->reveal());
         $this->simpleAliasStrategy->setIndex($index->reveal());
@@ -93,7 +93,7 @@ class SimpleAliasStrategyTest extends TestCase
 
         $client->requestEndpoint(Argument::type(Get::class))->willReturn($response->reveal());
         $client->requestEndpoint(Argument::type(Update::class))->shouldBeCalledTimes(1);
-        $client->requestEndpoint(Argument::type(Delete::class ))->shouldNotBeCalled();
+        $client->requestEndpoint(Argument::type(Delete::class))->shouldNotBeCalled();
 
         $index->getClient()->willReturn($client->reveal());
         $this->simpleAliasStrategy->setIndex($index->reveal());

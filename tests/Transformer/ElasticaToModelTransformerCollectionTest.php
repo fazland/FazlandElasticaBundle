@@ -142,7 +142,7 @@ class ElasticaToModelTransformerCollectionTest extends TestCase
         $result = new Result(['_id' => 123, '_type' => 'type1']);
         $transformedObject = new POPO(123, []);
 
-        yield [ $result, $transformedObject ];
+        yield [$result, $transformedObject];
     }
 
     /**

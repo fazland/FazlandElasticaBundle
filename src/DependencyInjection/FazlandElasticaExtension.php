@@ -293,7 +293,7 @@ class FazlandElasticaExtension extends Extension
             throw new \Exception('Unimplemented');
         }
 
-        $serviceDef->addMethodCall('setObjectFetcher', [ $fetcher ]);
+        $serviceDef->addMethodCall('setObjectFetcher', [$fetcher]);
 
         unset($options['service'], $options['fetcher']);
         $serviceDef->replaceArgument(0, $options);
@@ -655,7 +655,7 @@ class FazlandElasticaExtension extends Extension
             $expressionLanguageDef->addArgument(new Reference($cache['indexable_expression']));
 
             $container->getDefinition('fazland_elastica.indexable.default')
-                ->addMethodCall('setExpressionLanguage', [ $expressionLanguageDef ]);
+                ->addMethodCall('setExpressionLanguage', [$expressionLanguageDef]);
         }
     }
 

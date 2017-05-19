@@ -24,7 +24,7 @@ class ObjectFetcher implements ObjectFetcherInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function find(...$identifiers)
     {

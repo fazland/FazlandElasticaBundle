@@ -77,7 +77,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
         return $repository->{$this->options['query_builder_method']}(static::ENTITY_ALIAS);
     }
 
-    protected function getIdentifierFields() : array
+    protected function getIdentifierFields(): array
     {
         if (! isset($this->options['identifier'])) {
             $manager = $this->registry->getManagerForClass($this->objectClass);
@@ -86,7 +86,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
             $identifier = $metadata->getIdentifier();
         } else {
             $identifier = $this->options['identifier'];
-            if (!is_array($identifier)) {
+            if (! is_array($identifier)) {
                 $identifier = [$identifier];
             }
         }

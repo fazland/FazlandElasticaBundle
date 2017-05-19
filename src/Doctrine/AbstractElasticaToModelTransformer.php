@@ -126,7 +126,7 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer implem
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function setHighlights(array $objects, array $highlights)
     {
@@ -139,13 +139,13 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer implem
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function find(...$identifiers)
     {
         $results = $this->findByIdentifiers($identifiers, $this->options['hydrate']);
 
-        return iterator_to_array((function() use ($results) {
+        return iterator_to_array((function () use ($results) {
             foreach ($results as $object) {
                 yield $this->getIdentifierForObject($object) => $object;
             }
@@ -153,7 +153,7 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer implem
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function getSortingClosure(array $idPos, $identifierPath)
     {
@@ -187,12 +187,14 @@ abstract class AbstractElasticaToModelTransformer extends BaseTransformer implem
      * Gets the identifier values for the given object.
      *
      * @param $object
+     *
      * @return string
      */
     protected function getIdentifierForObject($object): string
     {
         $id = array_map(function ($field) use ($object) {
             $field = is_array($object) ? '['.$field.']' : $field;
+
             return $this->propertyAccessor->getValue($object, $field);
         }, (array) $this->getIdentifierField());
 

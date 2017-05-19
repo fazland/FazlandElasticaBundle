@@ -3,12 +3,10 @@
 namespace Fazland\ElasticaBundle\Elastica;
 
 use Elastica;
-use Elasticsearch\Endpoints\Cat\Aliases;
 use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\RequestEvent;
 use Fazland\ElasticaBundle\Event\ResponseEvent;
 use Fazland\ElasticaBundle\Exception\UnknownIndexException;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

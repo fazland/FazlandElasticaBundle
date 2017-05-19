@@ -4,8 +4,6 @@ namespace Fazland\ElasticaBundle\Doctrine;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Util\ClassUtils;
 use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Fazland\ElasticaBundle\Provider\IndexableInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -34,23 +32,23 @@ class Listener implements EventSubscriber
     /**
      * Objects scheduled for insertion.
      *
-     * @var array
+     * @var \SplObjectStorage
      */
-    public $scheduledForInsertion = [];
+    public $scheduledForInsertion;
 
     /**
      * Objects scheduled to be updated or removed.
      *
-     * @var array
+     * @var \SplObjectStorage
      */
-    public $scheduledForUpdate = [];
+    public $scheduledForUpdate;
 
     /**
      * IDs of objects scheduled for removal.
      *
-     * @var array
+     * @var \SplObjectStorage
      */
-    public $scheduledForDeletion = [];
+    public $scheduledForDeletion;
 
     /**
      * PropertyAccessor instance.
@@ -80,6 +78,10 @@ class Listener implements EventSubscriber
         $this->indexable = $indexable;
         $this->objectPersister = $objectPersister;
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
+
+        $this->scheduledForInsertion = new \SplObjectStorage();
+        $this->scheduledForUpdate = new \SplObjectStorage();
+        $this->scheduledForDeletion = new \SplObjectStorage();
     }
 
     /**
@@ -92,7 +94,7 @@ class Listener implements EventSubscriber
         $entity = $eventArgs->getObject();
 
         if ($this->objectPersister->handlesObject($entity) && $this->isObjectIndexable($entity)) {
-            $this->scheduledForInsertion[] = $entity;
+            $this->scheduledForInsertion->attach($entity);
         }
     }
 
@@ -107,10 +109,10 @@ class Listener implements EventSubscriber
 
         if ($this->objectPersister->handlesObject($entity)) {
             if ($this->isObjectIndexable($entity)) {
-                $this->scheduledForUpdate[] = $entity;
+                $this->scheduledForUpdate->attach($entity);
             } else {
                 // Delete if no longer indexable
-                $this->scheduleForDeletion($entity, $eventArgs->getObjectManager());
+                $this->scheduleForDeletion($entity);
             }
         }
     }
@@ -126,7 +128,7 @@ class Listener implements EventSubscriber
         $entity = $eventArgs->getObject();
 
         if ($this->objectPersister->handlesObject($entity)) {
-            $this->scheduleForDeletion($entity, $eventArgs->getObjectManager());
+            $this->scheduleForDeletion($entity);
         }
     }
 
@@ -152,43 +154,32 @@ class Listener implements EventSubscriber
      */
     private function persistScheduled()
     {
-        if (count($this->scheduledForInsertion)) {
+        if ($this->scheduledForInsertion->count()) {
             $this->objectPersister->persist(...$this->scheduledForInsertion);
-            $this->scheduledForInsertion = [];
+            $this->scheduledForInsertion = new \SplObjectStorage();
         }
 
-        if (count($this->scheduledForUpdate)) {
+        if ($this->scheduledForUpdate->count()) {
             $this->objectPersister->persist(...$this->scheduledForUpdate);
-            $this->scheduledForUpdate = [];
+            $this->scheduledForUpdate = new \SplObjectStorage();
         }
 
-        if (count($this->scheduledForDeletion)) {
-            $this->objectPersister->deleteById(...$this->scheduledForDeletion);
-            $this->scheduledForDeletion = [];
+        if ($this->scheduledForDeletion->count()) {
+            $this->objectPersister->unpersist(...$this->scheduledForDeletion);
+            $this->scheduledForDeletion = new \SplObjectStorage();
         }
     }
 
     /**
      * Record the specified identifier to delete. Do not need to entire object.
      *
-     * @param object        $object
-     * @param ObjectManager $om
+     * @param object $object
      */
-    private function scheduleForDeletion($object, ObjectManager $om)
+    private function scheduleForDeletion($object)
     {
-        if (! isset($this->config['identifier'])) {
-            $metadata = $om->getClassMetadata(ClassUtils::getClass($object));
-            $identifier = $metadata->getIdentifierValues($object);
-        } else {
-            $identifierFields = (array) $this->config['identifier'];
-            $identifier = [];
-
-            foreach ($identifierFields as $field) {
-                $identifier[] = $this->propertyAccessor->getValue($object, $field);
-            }
+        if ($this->objectPersister->handlesObject($object)) {
+            $this->scheduledForDeletion->attach($object);
         }
-
-        $this->scheduledForDeletion[] = implode(' ', $identifier);
     }
 
     /**
