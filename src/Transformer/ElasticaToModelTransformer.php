@@ -83,7 +83,7 @@ class ElasticaToModelTransformer implements ElasticaToModelTransformerInterface
             $objects = iterator_to_array($objects);
         }
 
-        $objectsCnt = count($objects);
+        $objectsCnt = count(array_filter($objects));
         $elasticaObjectsCnt = count($results);
         if (! $this->options['ignore_missing'] && $objectsCnt < $elasticaObjectsCnt) {
             throw ObjectMissingException::create($objectsCnt, $ids);
