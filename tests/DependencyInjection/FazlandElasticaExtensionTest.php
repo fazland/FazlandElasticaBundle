@@ -53,4 +53,18 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
         $extension = new FazlandElasticaExtension();
         $extension->load($config, $containerBuilder);
     }
+
+    public function testExtensionShouldLoadSerializerForSingleTypeWhereEnabled()
+    {
+        $config = Yaml::parse(file_get_contents(__DIR__.'/fixtures/serializer_per_type.yml'));
+
+        $containerBuilder = new ContainerBuilder();
+        $containerBuilder->setParameter('kernel.debug', true);
+
+        $extension = new FazlandElasticaExtension();
+        $extension->load($config, $containerBuilder);
+
+        $this->assertTrue($containerBuilder->hasDefinition('fazland_elastica.index.test_index.test.serializer.callback'));
+        $this->assertFalse($containerBuilder->hasDefinition('fazland_elastica.index.test_index.foo.serializer.callback'));
+    }
 }

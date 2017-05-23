@@ -514,6 +514,7 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('serializer');
 
         $node
+            ->treatNullLike([])
             ->children()
                 ->arrayNode('groups')
                     ->treatNullLike([])

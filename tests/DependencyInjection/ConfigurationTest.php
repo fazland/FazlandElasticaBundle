@@ -392,6 +392,38 @@ class ConfigurationTest extends TestCase
         }
     }
 
+    public function testEnableSerializerPerType()
+    {
+        $configuration = $this->getConfigs([
+            'clients' => [
+                'default' => ['url' => 'http://localhost:9200'],
+            ],
+            'serializer' => [],
+            'indexes' => [
+                'test' => [
+                    'types' => [
+                        'test' => [
+                            'serializer' => [],
+                            'properties' => [
+                                'title' => [],
+                                'published' => ['type' => 'datetime'],
+                                'body' => null,
+                            ],
+                        ],
+                        'foo' => [
+                            'properties' => [
+                                'title' => [],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertArrayHasKey('serializer', $configuration['indexes']['test']['types']['test']);
+        $this->assertArrayNotHasKey('serializer', $configuration['indexes']['test']['types']['foo']);
+    }
+
     private function getConfigs(array $configArray)
     {
         $configuration = new Configuration(true);

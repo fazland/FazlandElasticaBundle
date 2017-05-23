@@ -115,6 +115,11 @@ class TypeConfig
     public $finder;
 
     /**
+     * @var bool
+     */
+    public $serializerEnabled;
+
+    /**
      * @var array
      */
     public $serializerOptions;
@@ -134,6 +139,7 @@ class TypeConfig
 
         $this->mapping = [];
         $this->config = [];
+        $this->serializerEnabled = isset($config['serializer']);
         $this->serializerOptions = $config['serializer'] ?? [];
 
         $this->loadMapping($config);

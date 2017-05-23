@@ -1,0 +1,22 @@
+fazland_elastica:
+    serializer: ~
+    clients:
+        default:
+            url: http://localhost:9200
+    indexes:
+        test_index:
+            client: default
+            types:
+                test:
+                    serializer: ~
+                    properties:
+                        text: ~
+                    persistence:
+                        driver: orm
+                        model: foo_model
+                foo:
+                    properties:
+                        text: ~
+                    persistence:
+                        driver: orm
+                        model: foo_model

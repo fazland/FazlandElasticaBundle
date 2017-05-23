@@ -321,7 +321,7 @@ class FazlandElasticaExtension extends Extension
             $prefix = 'fazland_elastica.propel.';
         }
 
-        $abstractId = $prefix.($container->hasDefinition('fazland_elastica.serializer_callback_prototype') ? 'model_to_elastica_serializer_transformer' : 'model_to_elastica_transformer');
+        $abstractId = $prefix.($typeConfig->serializerEnabled ? 'model_to_elastica_serializer_transformer' : 'model_to_elastica_transformer');
 
         $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $typeConfig->index->name, $typeConfig->name);
         $serviceDef = new DefinitionDecorator($abstractId);
@@ -338,7 +338,7 @@ class FazlandElasticaExtension extends Extension
             $serviceDef->addMethodCall('setDoctrine', [new Reference('doctrine_phpcr')]);
         }
 
-        if ($container->hasDefinition('fazland_elastica.serializer_callback_prototype')) {
+        if ($typeConfig->serializerEnabled) {
             $typeSerializerId = sprintf('%s.serializer.callback', $typeConfig->service);
             $typeSerializerDef = new DefinitionDecorator('fazland_elastica.serializer_callback_prototype');
 
