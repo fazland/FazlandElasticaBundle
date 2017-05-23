@@ -23,32 +23,25 @@ class Listener implements EventSubscriber
     protected $objectPersister;
 
     /**
-     * Configuration for the listener.
-     *
-     * @var array
-     */
-    private $config;
-
-    /**
      * Objects scheduled for insertion.
      *
      * @var \SplObjectStorage
      */
-    public $scheduledForInsertion;
+    protected $scheduledForInsertion;
 
     /**
      * Objects scheduled to be updated or removed.
      *
      * @var \SplObjectStorage
      */
-    public $scheduledForUpdate;
+    protected $scheduledForUpdate;
 
     /**
      * IDs of objects scheduled for removal.
      *
      * @var \SplObjectStorage
      */
-    public $scheduledForDeletion;
+    protected $scheduledForDeletion;
 
     /**
      * PropertyAccessor instance.
@@ -56,6 +49,13 @@ class Listener implements EventSubscriber
      * @var PropertyAccessorInterface
      */
     protected $propertyAccessor;
+
+    /**
+     * Configuration for the listener.
+     *
+     * @var array
+     */
+    private $config;
 
     /**
      * @var IndexableInterface

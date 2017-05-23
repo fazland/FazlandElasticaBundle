@@ -27,10 +27,7 @@ abstract class ListenerTest extends TestCase
         $listener = $this->createListener($persister->reveal(), $indexable->reveal(), ['indexName' => 'index', 'typeName' => 'type']);
         $listener->postPersist($eventArgs);
 
-        $listener->scheduledForInsertion->rewind();
-        $this->assertEquals($entity, $listener->scheduledForInsertion->current());
-
-        $persister->persist(...$listener->scheduledForInsertion)->shouldBeCalled();
+        $persister->persist($entity)->shouldBeCalled();
         $listener->postFlush($eventArgs);
     }
 
@@ -43,8 +40,6 @@ abstract class ListenerTest extends TestCase
 
         $listener = $this->createListener($persister->reveal(), $indexable->reveal(), ['indexName' => 'index', 'typeName' => 'type']);
         $listener->postPersist($eventArgs);
-
-        $this->assertEmpty($listener->scheduledForInsertion);
 
         $persister->persist(Argument::cetera())->shouldNotBeCalled();
         $persister->persist(Argument::cetera())->shouldNotBeCalled();
@@ -62,10 +57,7 @@ abstract class ListenerTest extends TestCase
         $listener = $this->createListener($persister->reveal(), $indexable->reveal(), ['indexName' => 'index', 'typeName' => 'type']);
         $listener->postUpdate($eventArgs);
 
-        $listener->scheduledForUpdate->rewind();
-        $this->assertEquals($entity, $listener->scheduledForUpdate->current());
-
-        $persister->persist(...$listener->scheduledForUpdate)->shouldBeCalled();
+        $persister->persist($entity)->shouldBeCalled();
         $persister->unpersist(Argument::cetera())->shouldNotBeCalled();
 
         $listener->postFlush($eventArgs);
@@ -86,10 +78,6 @@ abstract class ListenerTest extends TestCase
 
         $listener = $this->createListener($persister->reveal(), $indexable->reveal(), ['indexName' => 'index', 'typeName' => 'type']);
         $listener->postUpdate($eventArgs);
-
-        $listener->scheduledForDeletion->rewind();
-        $this->assertEmpty($listener->scheduledForUpdate);
-        $this->assertEquals($entity, $listener->scheduledForDeletion->current());
 
         $persister->persist(Argument::cetera())->shouldNotBeCalled();
         $persister->unpersist($entity)->shouldBeCalledTimes(1);
@@ -113,9 +101,6 @@ abstract class ListenerTest extends TestCase
         $listener = $this->createListener($persister->reveal(), $indexable->reveal(), ['indexName' => 'index', 'typeName' => 'type']);
         $listener->preRemove($eventArgs);
 
-        $listener->scheduledForDeletion->rewind();
-        $this->assertEquals($entity, $listener->scheduledForDeletion->current());
-
         $persister->unpersist($entity)->shouldBeCalledTimes(1);
         $listener->postFlush($eventArgs);
     }
@@ -136,9 +121,6 @@ abstract class ListenerTest extends TestCase
 
         $listener = $this->createListener($persister->reveal(), $indexable->reveal(), ['identifier' => 'identifier', 'indexName' => 'index', 'typeName' => 'type']);
         $listener->preRemove($eventArgs);
-
-        $listener->scheduledForDeletion->rewind();
-        $this->assertEquals($entity, $listener->scheduledForDeletion->current());
 
         $persister->unpersist($entity)->shouldBeCalledTimes(1);
         $listener->postFlush($eventArgs);
