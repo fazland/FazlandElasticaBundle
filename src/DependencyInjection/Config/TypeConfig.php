@@ -15,6 +15,11 @@ class TypeConfig
     public $name;
 
     /**
+     * @var string
+     */
+    public $class;
+
+    /**
      * @var IndexConfig
      */
     public $index;
@@ -123,6 +128,7 @@ class TypeConfig
     {
         $this->name = $name;
         $this->index = $index;
+        $this->class = $config['class'];
         $this->service = sprintf('%s.%s', $index->service, $this->name);
         $this->indexableCallback = $config['indexable_callback'] ?? null;
 

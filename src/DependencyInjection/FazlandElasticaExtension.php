@@ -202,6 +202,7 @@ class FazlandElasticaExtension extends Extension
         $indexConfig = $type->index;
 
         $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
+        $typeDef->setClass($type->class);
         $typeDef->replaceArgument(0, $type->index->getReference());
         $typeDef->replaceArgument(1, $type->configurationDefinition);
 

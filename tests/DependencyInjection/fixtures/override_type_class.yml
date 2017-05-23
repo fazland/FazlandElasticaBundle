@@ -1,0 +1,17 @@
+fazland_elastica:
+    clients:
+        default:
+            url: http://localhost:9200
+    indexes:
+        test_index:
+            client: default
+            types:
+                driverless:
+                    class: 'Fazland\ElasticaBundle\Tests\Functional\SubtypeType'
+                    properties:
+                        text: ~
+                    persistence:
+                        elastica_to_model_transformer:
+                            service: 'custom.transformer.service'
+                        persister:
+                            service: 'custom.persist.service'

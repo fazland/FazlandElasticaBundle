@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\DependencyInjection;
 
+use Fazland\ElasticaBundle\Elastica\Type;
 use Fazland\ElasticaBundle\Serializer\Callback;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -245,6 +246,13 @@ class Configuration implements ConfigurationInterface
                     })
                 ->end()
                 ->children()
+                    ->scalarNode('class')
+                        ->defaultValue(Type::class)
+                        ->validate()
+                            ->ifTrue(function ($val) { return $val !== Type::class && ! is_subclass_of($val, Type::class, true); })
+                            ->thenInvalid('%s is not a valid type class. Must be a subclass of '.Type::class)
+                        ->end()
+                    ->end()
                     ->booleanNode('date_detection')->end()
                     ->arrayNode('dynamic_date_formats')
                         ->prototype('scalar')->end()
