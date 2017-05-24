@@ -49,6 +49,10 @@ class UpdateMappingCommand extends Command
         $type = $input->getArgument('type');
 
         $index = $this->indexManager->getIndex($index);
+
+        $io->note('Sending request...');
         $index->getType($type)->sendMapping();
+
+        $io->success('OK');
     }
 }
