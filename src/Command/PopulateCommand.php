@@ -119,6 +119,7 @@ class PopulateCommand extends ContainerAwareCommand
             $index = $this->indexManager->getIndex($index);
 
             if (null !== $type) {
+                unset($options['no-reset']);
                 $index->getType($type)->populate($options);
             } else {
                 $index->populate($options);
