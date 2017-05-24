@@ -249,7 +249,9 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('class')
                         ->defaultValue(Type::class)
                         ->validate()
-                            ->ifTrue(function ($val) { return $val !== Type::class && ! is_subclass_of($val, Type::class, true); })
+                            ->ifTrue(function ($val) {
+                                return $val !== Type::class && ! is_subclass_of($val, Type::class, true);
+                            })
                             ->thenInvalid('%s is not a valid type class. Must be a subclass of '.Type::class)
                         ->end()
                     ->end()

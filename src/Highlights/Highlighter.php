@@ -2,8 +2,6 @@
 
 namespace Fazland\ElasticaBundle\Highlights;
 
-
-
 final class Highlighter implements HighlighterInterface
 {
     public function setHighlights(array $objects, array $highlights)
