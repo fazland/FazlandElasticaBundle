@@ -66,6 +66,20 @@ class IndexableTest extends TestCase
         $this->indexable->isObjectIndexable('index', 'type', new Entity());
     }
 
+    public function testSubsequentIndexableCallbackCalls()
+    {
+        $obj1 = new IndexableEntity();
+        $obj2 = new IndexableEntity();
+        $obj2->indexable = false;
+        $obj3 = new IndexableEntity();
+
+        $this->indexable->addCallback('index/type', 'object.isIndexable()');
+
+        $this->assertTrue($this->indexable->isObjectIndexable('index', 'type', $obj1));
+        $this->assertFalse($this->indexable->isObjectIndexable('index', 'type', $obj2));
+        $this->assertTrue($this->indexable->isObjectIndexable('index', 'type', $obj3));
+    }
+
     public function provideInvalidIsIndexableCallbacks()
     {
         return [
@@ -108,6 +122,16 @@ class Entity
     public function maybeIndex()
     {
         return true;
+    }
+}
+
+class IndexableEntity
+{
+    public $indexable = true;
+
+    public function isIndexable()
+    {
+        return $this->indexable;
     }
 }
 
