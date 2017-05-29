@@ -115,7 +115,7 @@ class Indexable implements IndexableInterface, DI\ContainerAwareInterface
         }
 
         if (is_string($callback)) {
-            return function () use ($callback, $object) {
+            return function ($object) use ($callback) {
                 return (bool) $this->getExpressionLanguage()->evaluate($callback, [
                     'object' => $object,
                     'container' => $this->container,
