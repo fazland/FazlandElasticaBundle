@@ -108,6 +108,10 @@ class Type extends Elastica\Type
 
                 $provider->clear();
             }
+
+            if ($options['sleep']) {
+                sleep($options['sleep']);
+            }
         }
 
         if (count($objects) > 0) {
