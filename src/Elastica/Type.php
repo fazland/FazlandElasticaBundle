@@ -107,10 +107,10 @@ class Type extends Elastica\Type
                 $objects = [];
 
                 $provider->clear();
-            }
 
-            if ($options['sleep']) {
-                sleep($options['sleep']);
+                if ($options['sleep']) {
+                    sleep($options['sleep']);
+                }
             }
         }
 
