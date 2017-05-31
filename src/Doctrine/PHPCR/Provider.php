@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Doctrine\PHPCR;
 
+use Doctrine\ODM\PHPCR\DocumentManager;
 use Doctrine\ODM\PHPCR\Query\Builder\QueryBuilder;
 use Doctrine\ODM\PHPCR\Query\Query;
 use Fazland\ElasticaBundle\Doctrine\AbstractProvider;
@@ -44,6 +45,13 @@ class Provider extends AbstractProvider
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function clear()
+    {
+        // Do nothing.
+        // Clearing PHPCR on each cycle will break up references in uninitialized proxies
+        // and the Query `iterate` method has been not implemented as of PHPCR-ODM v1.4.2
     }
 
     /**
