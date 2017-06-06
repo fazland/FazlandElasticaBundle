@@ -82,6 +82,7 @@ abstract class ListenerTest extends TestCase
         $persister->persist(Argument::cetera())->shouldNotBeCalled();
         $persister->unpersist($entity)->shouldBeCalledTimes(1);
 
+        $listener->onFlush($eventArgs);
         $listener->postFlush($eventArgs);
     }
 
@@ -102,6 +103,8 @@ abstract class ListenerTest extends TestCase
         $listener->preRemove($eventArgs);
 
         $persister->unpersist($entity)->shouldBeCalledTimes(1);
+
+        $listener->onFlush($eventArgs);
         $listener->postFlush($eventArgs);
     }
 
@@ -123,6 +126,8 @@ abstract class ListenerTest extends TestCase
         $listener->preRemove($eventArgs);
 
         $persister->unpersist($entity)->shouldBeCalledTimes(1);
+
+        $listener->onFlush($eventArgs);
         $listener->postFlush($eventArgs);
     }
 

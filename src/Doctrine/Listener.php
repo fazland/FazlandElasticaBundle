@@ -118,8 +118,7 @@ class Listener implements EventSubscriber
     }
 
     /**
-     * Delete objects preRemove instead of postRemove so that we have access to the id.  Because this is called
-     * preRemove, first check that the entity is managed by Doctrine.
+     * Delete objects preRemove instead of postRemove so that we have access to the id.
      *
      * @param LifecycleEventArgs $eventArgs
      */
@@ -133,26 +132,22 @@ class Listener implements EventSubscriber
     }
 
     /**
+     * Executes scheduled deletions. This must be done before the postFlush
+     * as the auto-generated id of the entities will be null'd at commit.
+     */
+    public function onFlush()
+    {
+        if ($this->scheduledForDeletion->count()) {
+            $this->objectPersister->unpersist(...$this->scheduledForDeletion);
+            $this->scheduledForDeletion = new \SplObjectStorage();
+        }
+    }
+
+    /**
      * Iterating through scheduled actions *after* flushing ensures that the
      * ElasticSearch index will be affected only if the query is successful.
      */
     public function postFlush()
-    {
-        $this->persistScheduled();
-    }
-
-    public function getSubscribedEvents()
-    {
-        return [
-            'postFlush',
-        ];
-    }
-
-    /**
-     * Persist scheduled objects to ElasticSearch
-     * After persisting, clear the scheduled queue to prevent multiple data updates when using multiple flush calls.
-     */
-    private function persistScheduled()
     {
         if ($this->scheduledForInsertion->count()) {
             $this->objectPersister->persist(...$this->scheduledForInsertion);
@@ -163,11 +158,14 @@ class Listener implements EventSubscriber
             $this->objectPersister->persist(...$this->scheduledForUpdate);
             $this->scheduledForUpdate = new \SplObjectStorage();
         }
+    }
 
-        if ($this->scheduledForDeletion->count()) {
-            $this->objectPersister->unpersist(...$this->scheduledForDeletion);
-            $this->scheduledForDeletion = new \SplObjectStorage();
-        }
+    public function getSubscribedEvents()
+    {
+        return [
+            'postFlush',
+            'onFlush',
+        ];
     }
 
     /**
