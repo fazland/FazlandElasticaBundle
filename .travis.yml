@@ -37,7 +37,8 @@ before_script:
   - sh -c 'if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;'
   - sh -c 'if [ "$TRAVIS_PHP_VERSION" = "hhvm" ]; then echo "hhvm.php7.all = 1" >> /etc/hhvm/php.ini; fi;'
   - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require --dev --no-update symfony/symfony=$SYMFONY_VERSION; fi;'
-  - composer install --prefer-dist --no-progress --no-suggest --ignore-platform-reqs $COMPOSER_FLAGS
+  - composer install --prefer-dist --no-progress --no-suggest --ignore-platform-reqs
+  - composer update --prefer-dist --no-progress --no-suggest --ignore-platform-reqs $COMPOSER_FLAGS
 
 script:
   - vendor/bin/phpunit --coverage-clover=coverage.clover
