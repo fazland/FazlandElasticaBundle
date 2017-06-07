@@ -41,21 +41,16 @@ class Client extends Elastica\Client implements ContainerAwareInterface
     private $eventDispatcher;
 
     /**
-     * @param string $path
-     * @param string $method
-     * @param array  $data
-     * @param array  $query
-     *
-     * @return \Elastica\Response
+     * @inheritDoc
      */
-    public function request($path, $method = Elastica\Request::GET, $data = [], array $query = [])
+    public function request($path, $method = Elastica\Request::GET, $data = [], array $query = [], $contentType = 'application/json')
     {
-        $event = new RequestEvent($path, $method, $data, $query);
+        $event = new RequestEvent($path, $method, $data, $query, $contentType);
         if (null !== $this->eventDispatcher) {
             $this->eventDispatcher->dispatch(Events::REQUEST, $event);
         }
 
-        $response = parent::request($event->getPath(), $event->getMethod(), $event->getData(), $event->getQuery());
+        $response = parent::request($event->getPath(), $event->getMethod(), $event->getData(), $event->getQuery(), $event->getContentType());
 
         if (null !== $this->eventDispatcher) {
             $this->eventDispatcher->dispatch(Events::RESPONSE, new ResponseEvent($this->_lastRequest, $this->_lastResponse));
