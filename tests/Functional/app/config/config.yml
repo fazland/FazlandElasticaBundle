@@ -6,8 +6,8 @@ framework:
     test: ~
     default_locale: en
     translator: ~
-#    templating:
-#        engines: ['php']
+    templating:
+        engines: ['php']
 
 services:
     logger: { class: Psr\Log\NullLogger }

@@ -4,7 +4,7 @@ namespace Fazland\ElasticaBundle\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 
-class RequestEvent extends Event
+final class RequestEvent extends Event
 {
     /**
      * @var string
@@ -26,12 +26,18 @@ class RequestEvent extends Event
      */
     private $query;
 
-    public function __construct(string $path, string $method, $data, array $query)
+    /**
+     * @var string
+     */
+    private $contentType;
+
+    public function __construct(string $path, string $method, $data, array $query, string $contentType)
     {
         $this->path = $path;
         $this->method = $method;
         $this->data = $data;
         $this->query = $query;
+        $this->contentType = $contentType;
     }
 
     public function getPath(): string
@@ -78,6 +84,18 @@ class RequestEvent extends Event
     public function setQuery(array $query): RequestEvent
     {
         $this->query = $query;
+
+        return $this;
+    }
+
+    public function getContentType(): string
+    {
+        return $this->contentType;
+    }
+
+    public function setContentType(string $contentType): RequestEvent
+    {
+        $this->contentType = $contentType;
 
         return $this;
     }
