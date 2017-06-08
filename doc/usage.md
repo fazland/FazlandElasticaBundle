@@ -146,7 +146,7 @@ fazland_elastica:
                                 language: English
             types:
                 article:
-                    mappings:
+                    properties:
                         title: { boost: 10, analyzer: my_analyzer }
                         tags:
                         categoryIds:

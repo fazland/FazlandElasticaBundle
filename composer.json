@@ -10,7 +10,8 @@
         { "name": "Tim Nagel", "email": "tim@nagel.com.au" },
         { "name": "Richard Miller", "email": "richard.miller@limethinking.co.uk" },
         { "name": "Jeremy Mikola", "email": "jmikola@gmail.com" },
-        { "name": "Giovanni Albero", "email": "giovanni.albero@fazland.com" }
+        { "name": "Giovanni Albero", "email": "giovanni.albero@fazland.com" },
+        { "name": "Alessandro Chitolina", "email": "alekitto@gmail.com" }
     ],
     "require": {
         "php": "^7.0",

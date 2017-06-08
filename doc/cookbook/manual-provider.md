@@ -10,7 +10,7 @@ services:
     acme.search_provider.user:
         class: Acme\UserBundle\Provider\UserProvider
         arguments:
-            - @fazland_elastica.index.app.user
+            - '@fazland_elastica.index.app.user'
         tags:
             - { name: fazland_elastica.provider, index: app, type: user }
 ```

@@ -41,7 +41,7 @@ class Client extends Elastica\Client implements ContainerAwareInterface
     private $eventDispatcher;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function request($path, $method = Elastica\Request::GET, $data = [], array $query = [], $contentType = 'application/json')
     {

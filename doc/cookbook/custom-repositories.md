@@ -1,5 +1,8 @@
 ##### Custom Repositories
 
+> ! __WARNING__ Usage of custom repositories is descouraged. Please use a custom Type class
+> to encapsulate logic for particular searches.
+
 As well as the default repository you can create a custom repository for an entity and add
 methods for particular searches. These need to extend `Fazland\ElasticaBundle\Repository` to have
 access to the finder:
@@ -21,8 +24,6 @@ class UserRepository extends Repository
 }
 ```
 
-To use the custom repository specify it in the mapping for the entity:
-
 ```yaml
 fazland_elastica:
     clients:
@@ -32,7 +33,7 @@ fazland_elastica:
             client: default
             types:
                 user:
-                    mappings:
+                    properties:
                         # your mappings
                     persistence:
                         driver: orm
@@ -49,7 +50,7 @@ Then the custom queries will be available when using the repository returned fro
 $repositoryManager = $container->get('fazland_elastica.manager');
 
 /** var Fazland\ElasticaBundle\Repository */
-$repository = $repositoryManager->getRepository('UserBundle:User');
+$repository = $repositoryManager->getRepository('app/user');
 
 /** var array of Acme\UserBundle\Entity\User */
 $users = $repository->findWithCustomQuery('bob');

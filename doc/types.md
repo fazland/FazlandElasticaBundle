@@ -9,7 +9,7 @@ to be used for data retrieval from the underlying model.
 
 ```yaml
     user:
-        mappings:
+        properties:
             username:
                 property_path: indexableUsername
             firstName:
@@ -75,7 +75,7 @@ fazland_elastica:
                             mapping:
                                 type: string
                                 index: not_analyzed
-                    mappings:
+                    properties:
                         username: { type: string }
 ```
 
@@ -90,7 +90,7 @@ fazland_elastica:
         app:
             types:
                 post:
-                    mappings:
+                    properties:
                         date: { boost: 5 }
                         title: { boost: 3 }
                         content: ~
@@ -116,7 +116,7 @@ fazland_elastica:
         app:
             types:
                 comment:
-                    mappings:
+                    properties:
                         date: { boost: 5 }
                         content: ~
                     _parent:
@@ -143,7 +143,7 @@ If you want to specify a [date format](https://www.elastic.co/guide/en/elasticse
 
 ```yaml
     user:
-        mappings:
+        properties:
             username: { type: string }
             lastlogin: { type: date, format: basic_date_time }
             birthday: { type: date, format: "yyyy-MM-dd" }
@@ -159,7 +159,7 @@ the [dynamic](https://www.elastic.co/guide/en/elasticsearch/reference/current/dy
 ```yaml
     user:
         dynamic: strict
-        mappings:
+        properties:
             username: { type: string }
             addresses: { type: object, dynamic: true }
 ```
@@ -190,7 +190,7 @@ analyzer, you could write:
                                 max_gram: 5
             types:
                 blog:
-                    mappings:
+                    properties:
                         title: { boost: 8, analyzer: my_analyzer }
 ```
 

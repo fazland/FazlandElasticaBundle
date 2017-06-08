@@ -33,7 +33,7 @@ class ElasticaToModelTransformer extends AbstractElasticaToModelTransformer
 
         $qb = $this->getEntityQueryBuilder();
         if (count($identifierFields) === 1) {
-            $qb->andWhere($qb->expr()->in(static::ENTITY_ALIAS.'.'.$identifierFields[0], array(':values')))
+            $qb->andWhere($qb->expr()->in(static::ENTITY_ALIAS.'.'.$identifierFields[0], [':values']))
                 ->setParameter('values', $identifierValues);
         } else {
             $conditions = [];
