@@ -201,7 +201,7 @@ class Type extends Elastica\Type
                 return $doc;
             }
 
-            return $this->modelTransformer->transform($doc, $this->typeConfig->getMapping());
+            return $this->modelTransformer->transform($doc, []);
         }, $objects);
 
         $this->deleteDocuments($docs);
