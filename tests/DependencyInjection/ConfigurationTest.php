@@ -444,7 +444,7 @@ class ConfigurationTest extends TestCase
                                     'related' => [
                                         'NS\\TestRelatedObj' => [
                                             'test',
-                                            'test.anotherTest'
+                                            'test.anotherTest',
                                         ],
                                     ],
                                 ],

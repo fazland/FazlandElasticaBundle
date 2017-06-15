@@ -5,7 +5,6 @@ namespace Fazland\ElasticaBundle\Tests\Doctrine\MongoDB;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Fazland\ElasticaBundle\Doctrine\Listener;
 use Fazland\ElasticaBundle\Tests\Doctrine\ListenerTest as BaseListenerTest;
 
 class ListenerTest extends BaseListenerTest

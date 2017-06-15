@@ -194,7 +194,7 @@ class Listener implements EventSubscriber
     }
 
     /**
-     * Handles a related object
+     * Handles a related object.
      *
      * @param $entity
      */

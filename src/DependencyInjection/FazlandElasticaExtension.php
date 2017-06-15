@@ -488,7 +488,7 @@ class FazlandElasticaExtension extends Extension
                 }
             }
 
-            $listenerDef->addMethodCall('setRelated', [ $typeConfig->listenerOptions['related'] ]);
+            $listenerDef->addMethodCall('setRelated', [$typeConfig->listenerOptions['related']]);
         }
 
         $container->setDefinition($listenerId, $listenerDef);
