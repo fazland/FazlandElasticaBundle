@@ -20,7 +20,6 @@
             <argument /> <!-- object persister -->
             <argument type="service" id="fazland_elastica.indexable" />
             <argument type="collection" /> <!-- configuration -->
-            <argument>null</argument> <!-- logger -->
         </service>
 
         <service id="fazland_elastica.elastica_to_model_transformer.prototype.mongodb" class="Fazland\ElasticaBundle\Doctrine\MongoDB\ElasticaToModelTransformer" public="false" abstract="true">

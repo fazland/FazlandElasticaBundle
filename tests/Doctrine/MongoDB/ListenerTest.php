@@ -2,6 +2,10 @@
 
 namespace Fazland\ElasticaBundle\Tests\Doctrine\MongoDB;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Fazland\ElasticaBundle\Doctrine\Listener;
 use Fazland\ElasticaBundle\Tests\Doctrine\ListenerTest as BaseListenerTest;
 
 class ListenerTest extends BaseListenerTest
@@ -15,21 +19,16 @@ class ListenerTest extends BaseListenerTest
 
     protected function getClassMetadataClass()
     {
-        return 'Doctrine\ODM\MongoDB\Mapping\ClassMetadata';
+        return ClassMetadata::class;
     }
 
     protected function getLifecycleEventArgsClass()
     {
-        return 'Doctrine\ODM\MongoDB\Event\LifecycleEventArgs';
-    }
-
-    protected function getListenerClass()
-    {
-        return 'Fazland\ElasticaBundle\Doctrine\Listener';
+        return LifecycleEventArgs::class;
     }
 
     protected function getObjectManagerClass()
     {
-        return 'Doctrine\ODM\MongoDB\DocumentManager';
+        return DocumentManager::class;
     }
 }

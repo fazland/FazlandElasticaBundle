@@ -6,6 +6,7 @@ namespace Fazland\ElasticaBundle\Tests\Doctrine;
 
 use Fazland\ElasticaBundle\Persister\ObjectPersister;
 use Fazland\ElasticaBundle\Provider\IndexableInterface;
+use Fazland\ElasticaBundle\Tests\Doctrine\Listener\RelatedEntity;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -131,9 +132,31 @@ abstract class ListenerTest extends TestCase
         $listener->postFlush($eventArgs);
     }
 
-    abstract protected function getLifecycleEventArgsClass();
+    public function testHandlesRelatedObjectsUpdate()
+    {
+        $entity = new Listener\Entity(1);
+        $related = new Listener\RelatedEntity($entity);
 
-    abstract protected function getListenerClass();
+        $persister = $this->getMockPersister($entity);
+        $persister->handlesObject($related)->willReturn(false);
+        $eventArgs = $this->createLifecycleEventArgs($related, $this->getMockObjectManager()->reveal());
+        $indexable = $this->getMockIndexable('index', 'type', $entity, true);
+
+        $listener = $this->createListener($persister->reveal(), $indexable->reveal(), ['indexName' => 'index', 'typeName' => 'type']);
+        $listener->setRelated([
+            RelatedEntity::class => [
+                'related',
+            ],
+        ]);
+        $listener->postPersist($eventArgs);
+
+        $persister->persist($entity)->shouldBeCalled();
+        $persister->unpersist(Argument::cetera())->shouldNotBeCalled();
+
+        $listener->postFlush($eventArgs);
+    }
+
+    abstract protected function getLifecycleEventArgsClass();
 
     /**
      * @return string
@@ -152,11 +175,9 @@ abstract class ListenerTest extends TestCase
         return new $class(...$args);
     }
 
-    private function createListener(...$args)
+    private function createListener(...$args): \Fazland\ElasticaBundle\Doctrine\Listener
     {
-        $class = $this->getListenerClass();
-
-        return new $class(...$args);
+        return new \Fazland\ElasticaBundle\Doctrine\Listener(...$args);
     }
 
     private function getMockClassMetadata(): ObjectProphecy
@@ -210,5 +231,15 @@ class Entity
     public function getId()
     {
         return $this->id;
+    }
+}
+
+class RelatedEntity
+{
+    public $related;
+
+    public function __construct(Entity $entity)
+    {
+        $this->related = $entity;
     }
 }

@@ -4,6 +4,7 @@ namespace Fazland\ElasticaBundle\Doctrine;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Common\Util\ClassUtils;
 use Fazland\ElasticaBundle\Persister\ObjectPersisterInterface;
 use Fazland\ElasticaBundle\Provider\IndexableInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -51,6 +52,14 @@ class Listener implements EventSubscriber
     protected $propertyAccessor;
 
     /**
+     * Array of related objects with property paths
+     * to target entities.
+     *
+     * @var array
+     */
+    private $relatedPaths;
+
+    /**
      * Configuration for the listener.
      *
      * @var array
@@ -96,6 +105,8 @@ class Listener implements EventSubscriber
         if ($this->objectPersister->handlesObject($entity) && $this->isObjectIndexable($entity)) {
             $this->scheduledForInsertion->attach($entity);
         }
+
+        $this->handleRelated($entity);
     }
 
     /**
@@ -115,6 +126,8 @@ class Listener implements EventSubscriber
                 $this->scheduleForDeletion($entity);
             }
         }
+
+        $this->handleRelated($entity);
     }
 
     /**
@@ -129,6 +142,8 @@ class Listener implements EventSubscriber
         if ($this->objectPersister->handlesObject($entity)) {
             $this->scheduleForDeletion($entity);
         }
+
+        $this->handleRelated($entity);
     }
 
     /**
@@ -166,6 +181,46 @@ class Listener implements EventSubscriber
             'postFlush',
             'onFlush',
         ];
+    }
+
+    /**
+     * Sets the related objects map.
+     *
+     * @param array $related
+     */
+    public function setRelated(array $related)
+    {
+        $this->relatedPaths = $related;
+    }
+
+    /**
+     * Handles a related object
+     *
+     * @param $entity
+     */
+    private function handleRelated($entity)
+    {
+        $className = ClassUtils::getClass($entity);
+        if (! isset($this->relatedPaths[$className])) {
+            return;
+        }
+
+        foreach ($this->relatedPaths[$className] as $path) {
+            $object = $this->propertyAccessor->getValue($entity, $path);
+            if (null === $object) {
+                continue;
+            }
+
+            if (! $this->objectPersister->handlesObject($object)) {
+                continue;
+            }
+
+            if ($this->isObjectIndexable($object)) {
+                $this->scheduledForUpdate->attach($object);
+            } else {
+                $this->scheduledForDeletion->attach($object);
+            }
+        }
     }
 
     /**

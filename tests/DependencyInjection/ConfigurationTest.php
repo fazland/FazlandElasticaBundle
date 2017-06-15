@@ -424,6 +424,42 @@ class ConfigurationTest extends TestCase
         $this->assertArrayNotHasKey('serializer', $configuration['indexes']['test']['types']['foo']);
     }
 
+    public function testListenerRelatedConfiguration()
+    {
+        $config = $this->getConfigs([
+            'clients' => [
+                'default' => ['url' => 'http://localhost:9200'],
+            ],
+            'indexes' => [
+                'test' => [
+                    'types' => [
+                        'test' => [
+                            'properties' => [
+                                'title' => [],
+                                'published' => ['type' => 'datetime'],
+                                'body' => null,
+                            ],
+                            'persistence' => [
+                                'listener' => [
+                                    'related' => [
+                                        'NS\\TestRelatedObj' => [
+                                            'test',
+                                            'test.anotherTest'
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertArrayHasKey('related', $config['indexes']['test']['types']['test']['persistence']['listener']);
+        $this->assertCount(1, $config['indexes']['test']['types']['test']['persistence']['listener']['related']);
+        $this->assertCount(2, $config['indexes']['test']['types']['test']['persistence']['listener']['related']['NS\\TestRelatedObj']);
+    }
+
     private function getConfigs(array $configArray)
     {
         $configuration = new Configuration(true);

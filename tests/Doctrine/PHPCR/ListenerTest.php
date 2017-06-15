@@ -2,6 +2,9 @@
 
 namespace Fazland\ElasticaBundle\Tests\Doctrine\PHPCR;
 
+use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\ODM\PHPCR\DocumentManager;
+use Doctrine\ODM\PHPCR\Mapping\ClassMetadata;
 use Fazland\ElasticaBundle\Tests\Doctrine\ListenerTest as BaseListenerTest;
 
 class ListenerTest extends BaseListenerTest
@@ -15,21 +18,16 @@ class ListenerTest extends BaseListenerTest
 
     protected function getClassMetadataClass()
     {
-        return 'Doctrine\ODM\PHPCR\Mapping\ClassMetadata';
+        return ClassMetadata::class;
     }
 
     protected function getLifecycleEventArgsClass()
     {
-        return 'Doctrine\Common\Persistence\Event\LifecycleEventArgs';
-    }
-
-    protected function getListenerClass()
-    {
-        return 'Fazland\ElasticaBundle\Doctrine\Listener';
+        return LifecycleEventArgs::class;
     }
 
     protected function getObjectManagerClass()
     {
-        return 'Doctrine\ODM\PHPCR\DocumentManager';
+        return DocumentManager::class;
     }
 }

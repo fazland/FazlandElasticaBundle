@@ -481,6 +481,16 @@ class FazlandElasticaExtension extends Extension
 
         $listenerDef->addTag('doctrine.event_subscriber', ['priority' => 50]);
 
+        if (isset($typeConfig->listenerOptions['related'])) {
+            foreach (array_keys($typeConfig->listenerOptions['related']) as $className) {
+                if (! class_exists($className)) {
+                    throw new InvalidConfigurationException('Related class "'.$className.'" does not exists');
+                }
+            }
+
+            $listenerDef->addMethodCall('setRelated', [ $typeConfig->listenerOptions['related'] ]);
+        }
+
         $container->setDefinition($listenerId, $listenerDef);
         $typeConfig->listener = $listenerId;
     }

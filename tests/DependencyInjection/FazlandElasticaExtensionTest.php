@@ -54,6 +54,21 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
         $extension->load($config, $containerBuilder);
     }
 
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     * @expectedExceptionMessage Related class "Fazland\ElasticaBundle\Tests\Functional\NonExistent" does not exists
+     */
+    public function testExtensionShouldThrowIfRelatedObjectIsNotAValidClass()
+    {
+        $config = Yaml::parse(file_get_contents(__DIR__.'/fixtures/related_class_invalid.yml'));
+
+        $containerBuilder = new ContainerBuilder();
+        $containerBuilder->setParameter('kernel.debug', true);
+
+        $extension = new FazlandElasticaExtension();
+        $extension->load($config, $containerBuilder);
+    }
+
     public function testExtensionShouldLoadSerializerForSingleTypeWhereEnabled()
     {
         $config = Yaml::parse(file_get_contents(__DIR__.'/fixtures/serializer_per_type.yml'));
