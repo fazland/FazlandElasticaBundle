@@ -13,6 +13,7 @@ use Fazland\ElasticaBundle\Doctrine\ObjectFetcher;
 use InvalidArgumentException;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -22,6 +23,10 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+
+if (! class_exists(ChildDefinition::class)) {
+    class_alias(DefinitionDecorator::class, ChildDefinition::class);
+}
 
 class FazlandElasticaExtension extends Extension
 {
@@ -105,7 +110,7 @@ class FazlandElasticaExtension extends Extension
         foreach ($clients as $name => $clientConfig) {
             $clientId = sprintf('fazland_elastica.client.%s', $name);
 
-            $clientDef = new DefinitionDecorator('fazland_elastica.client_prototype');
+            $clientDef = new ChildDefinition('fazland_elastica.client_prototype');
             $clientDef->replaceArgument(0, $clientConfig);
 
             $logger = $clientConfig['connections'][0]['logger'];
@@ -143,7 +148,7 @@ class FazlandElasticaExtension extends Extension
 
         foreach ($this->indexConfigs as $name => $indexConfig) {
             $indexConfig->buildConfigDefinition();
-            $indexDef = new DefinitionDecorator('fazland_elastica.index_prototype');
+            $indexDef = new ChildDefinition('fazland_elastica.index_prototype');
             $indexDef->replaceArgument(0, $this->getClient($indexConfig->client));
             $indexDef->replaceArgument(1, $indexConfig->configurationDefinition);
 
@@ -179,12 +184,12 @@ class FazlandElasticaExtension extends Extension
          */
 
         $transformerId = sprintf('fazland_elastica.elastica_to_model_transformer.collection.%s', $indexConfig->name);
-        $transformerDef = new DefinitionDecorator('fazland_elastica.elastica_to_model_transformer.collection');
+        $transformerDef = new ChildDefinition('fazland_elastica.elastica_to_model_transformer.collection');
         $container->setDefinition($transformerId, $transformerDef);
 
         $finderId = sprintf('fazland_elastica.finder.%s', $indexConfig->name);
 
-        $finderDef = new DefinitionDecorator('fazland_elastica.finder');
+        $finderDef = new ChildDefinition('fazland_elastica.finder');
         $finderDef->replaceArgument(0, $indexConfig->getReference());
         $finderDef->replaceArgument(1, new Reference($transformerId));
 
@@ -201,7 +206,7 @@ class FazlandElasticaExtension extends Extension
     {
         $indexConfig = $type->index;
 
-        $typeDef = new DefinitionDecorator('fazland_elastica.type_prototype');
+        $typeDef = new ChildDefinition('fazland_elastica.type_prototype');
         $typeDef->setClass($type->class);
         $typeDef->replaceArgument(0, $type->index->getReference());
         $typeDef->replaceArgument(1, $type->configurationDefinition);
@@ -279,14 +284,14 @@ class FazlandElasticaExtension extends Extension
          * the index and type names were "prototype" and a driver, respectively.
          */
         $serviceId = sprintf('fazland_elastica.elastica_to_model_transformer.%s.%s', $typeConfig->index->name, $typeConfig->name);
-        $serviceDef = new DefinitionDecorator('fazland_elastica.elastica_to_model_transformer.prototype');
+        $serviceDef = new ChildDefinition('fazland_elastica.elastica_to_model_transformer.prototype');
         $serviceDef->addTag('fazland_elastica.elastica_to_model_transformer', ['type' => $typeConfig->name, 'index' => $typeConfig->index->name]);
 
         $fetcher = $options['fetcher'] ?? null;
         if (null !== $fetcher) {
             $fetcher = new Reference($fetcher);
         } elseif (in_array($typeConfig->persistenceDriver, ['orm', 'mongodb', 'phpcr'])) {
-            $fetcher = new DefinitionDecorator('fazland_elastica.object_fetcher.prototype.doctrine');
+            $fetcher = new ChildDefinition('fazland_elastica.object_fetcher.prototype.doctrine');
             $fetcher->setClass(ObjectFetcher::class);
             $fetcher->replaceArgument(0, new Reference('orm' === $typeConfig->persistenceDriver ? 'doctrine' : 'doctrine_'.$typeConfig->persistenceDriver));
             $fetcher->replaceArgument(1, $typeConfig->model);
@@ -324,7 +329,7 @@ class FazlandElasticaExtension extends Extension
         $abstractId = $prefix.($typeConfig->serializerEnabled ? 'model_to_elastica_serializer_transformer' : 'model_to_elastica_transformer');
 
         $serviceId = sprintf('fazland_elastica.model_to_elastica_transformer.%s.%s', $typeConfig->index->name, $typeConfig->name);
-        $serviceDef = new DefinitionDecorator($abstractId);
+        $serviceDef = new ChildDefinition($abstractId);
         $serviceDef->addMethodCall('setType', [$typeConfig->getReference()]);
         $serviceDef->replaceArgument(0, [
             'identifier' => $typeConfig->modelIdentifier,
@@ -340,7 +345,7 @@ class FazlandElasticaExtension extends Extension
 
         if ($typeConfig->serializerEnabled) {
             $typeSerializerId = sprintf('%s.serializer.callback', $typeConfig->service);
-            $typeSerializerDef = new DefinitionDecorator('fazland_elastica.serializer_callback_prototype');
+            $typeSerializerDef = new ChildDefinition('fazland_elastica.serializer_callback_prototype');
 
             if (isset($typeConfig->serializerOptions['groups'])) {
                 $typeSerializerDef->addMethodCall('setGroups', [$typeConfig->serializerOptions['groups']]);
@@ -386,7 +391,7 @@ class FazlandElasticaExtension extends Extension
         ];
 
         $serviceId = sprintf('fazland_elastica.object_persister.%s.%s', $typeConfig->index->name, $typeConfig->name);
-        $serviceDef = new DefinitionDecorator('fazland_elastica.object_persister');
+        $serviceDef = new ChildDefinition('fazland_elastica.object_persister');
         foreach ($arguments as $i => $argument) {
             $serviceDef->replaceArgument($i, $argument);
         }
@@ -417,7 +422,7 @@ class FazlandElasticaExtension extends Extension
          */
         $providerId = sprintf('fazland_elastica.provider.%s.%s', $typeConfig->index->name, $typeConfig->name);
 
-        $providerDef = new DefinitionDecorator('fazland_elastica.provider.prototype.'.$typeConfig->persistenceDriver);
+        $providerDef = new ChildDefinition('fazland_elastica.provider.prototype.'.$typeConfig->persistenceDriver);
         $providerDef->replaceArgument(0, $typeConfig->index->name);
         $providerDef->replaceArgument(1, $typeConfig->name);
         $providerDef->replaceArgument(2, $typeConfig->model);
@@ -450,7 +455,7 @@ class FazlandElasticaExtension extends Extension
          */
         $abstractListenerId = sprintf('fazland_elastica.listener.prototype.%s', $typeConfig->persistenceDriver);
         $listenerId = sprintf('fazland_elastica.listener.%s.%s', $typeConfig->index->name, $typeConfig->name);
-        $listenerDef = new DefinitionDecorator($abstractListenerId);
+        $listenerDef = new ChildDefinition($abstractListenerId);
         $listenerDef->replaceArgument(0, new Reference($typeConfig->persister));
         $listenerDef->replaceArgument(2, [
             'identifier' => $typeConfig->modelIdentifier,
@@ -551,7 +556,7 @@ class FazlandElasticaExtension extends Extension
 
         if (null === $typeConfig->finder) {
             $typeConfig->finder = sprintf('fazland_elastica.finder.%s.%s', $indexName, $typeName);
-            $finderDef = new DefinitionDecorator('fazland_elastica.finder');
+            $finderDef = new ChildDefinition('fazland_elastica.finder');
             $finderDef->replaceArgument(0, $typeConfig->getReference());
             $finderDef->replaceArgument(1, new Reference($typeConfig->elasticaToModelTransformer));
             $container->setDefinition($typeConfig->finder, $finderDef);
@@ -681,7 +686,7 @@ class FazlandElasticaExtension extends Extension
 
         switch ($indexConfig->alias) {
             case 'simple':
-                $definition = new DefinitionDecorator(sprintf('fazland_elastica.%s_alias_strategy_prototype', $indexConfig->alias));
+                $definition = new ChildDefinition(sprintf('fazland_elastica.%s_alias_strategy_prototype', $indexConfig->alias));
                 $container->setDefinition($serviceId, $definition);
 
                 $indexDef->addMethodCall('setAliasStrategy', [new Reference($serviceId)]);
