@@ -173,6 +173,11 @@ class Listener implements EventSubscriber
             $this->objectPersister->persist(...$this->scheduledForUpdate);
             $this->scheduledForUpdate = new \SplObjectStorage();
         }
+
+        if ($this->scheduledForDeletion->count()) {
+            $this->objectPersister->unpersist(...$this->scheduledForDeletion);
+            $this->scheduledForDeletion = new \SplObjectStorage();
+        }
     }
 
     public function getSubscribedEvents()
