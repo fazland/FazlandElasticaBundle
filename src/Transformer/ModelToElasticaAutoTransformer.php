@@ -201,7 +201,16 @@ class ModelToElasticaAutoTransformer implements ModelToElasticaTransformerInterf
                 continue;
             }
 
-            $value = $this->propertyAccessor->getValue($object, $path);
+            try {
+                $value = $this->propertyAccessor->getValue($object, $path);
+            } catch (\Throwable $e) {
+                if (! array_key_exists('onInvalidPath', $mapping)) {
+                    throw $e;
+                }
+
+                $value = $mapping['onInvalidPath'];
+            }
+
             $type = $mapping['type'] ?? 'string';
 
             if (('nested' === $type || 'object' === $type) && ! empty($mapping['properties'])) {

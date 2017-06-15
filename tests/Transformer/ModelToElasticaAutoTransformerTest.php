@@ -421,6 +421,24 @@ class ModelToElasticaAutoTransformerTest extends TestCase
         );
     }
 
+    public function testTransformShouldHandleOnErrorProperty()
+    {
+        $document = $this->transformer->transform(
+            new POPO(),
+            [
+                'properties' => [
+                    'foo' => [
+                        'type' => 'string',
+                        'property_path' => 'nestedObject.foo_key',
+                        'onInvalidPath' => 'def_foo',
+                    ],
+                ],
+            ]
+        );
+
+        $this->assertEquals('def_foo', $document->get('foo'));
+    }
+
     public function testParentMapping()
     {
         $document = $this->transformer->transform(new POPO(), [
