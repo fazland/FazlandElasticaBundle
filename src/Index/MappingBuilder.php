@@ -117,7 +117,7 @@ class MappingBuilder
         }
 
         foreach ($properties as $name => &$property) {
-            unset($property['property_path']);
+            unset($property['property_path'], $property['onInvalidPath']);
 
             if (! isset($property['type'])) {
                 $property['type'] = 'text';
