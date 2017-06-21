@@ -464,17 +464,21 @@ class FazlandElasticaExtension extends Extension
         ]);
 
         $tagName = null;
+        $subscriberTagName = null;
         switch ($typeConfig->persistenceDriver) {
             case 'orm':
                 $tagName = 'doctrine.event_listener';
+                $subscriberTagName = 'doctrine.event_subscriber';
                 break;
 
             case 'phpcr':
                 $tagName = 'doctrine_phpcr.event_listener';
+                $subscriberTagName = 'doctrine_phpcr.event_subscriber';
                 break;
 
             case 'mongodb':
                 $tagName = 'doctrine_mongodb.odm.event_listener';
+                $subscriberTagName = 'doctrine_mongodb.event_subscriber';
                 break;
         }
 
@@ -484,7 +488,9 @@ class FazlandElasticaExtension extends Extension
             }
         }
 
-        $listenerDef->addTag('doctrine.event_subscriber', ['priority' => 50]);
+        if (null !== $subscriberTagName) {
+            $listenerDef->addTag($subscriberTagName, ['priority' => 50]);
+        }
 
         if (isset($typeConfig->listenerOptions['related'])) {
             foreach (array_keys($typeConfig->listenerOptions['related']) as $className) {

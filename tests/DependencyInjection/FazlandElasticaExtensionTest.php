@@ -82,4 +82,77 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($containerBuilder->hasDefinition('fazland_elastica.index.test_index.test.serializer.callback'));
         $this->assertFalse($containerBuilder->hasDefinition('fazland_elastica.index.test_index.foo.serializer.callback'));
     }
+
+    public function testExtensionRegistersCorrectDoctrineSubscribers()
+    {
+        $config = [
+            'fazland_elastica' => [
+                'clients' => [
+                    'default' => [
+                        'url' => 'http://localhost:9200',
+                    ],
+                ],
+                'indexes' => [
+                    'test_index_orm' => [
+                        'types' => [
+                            'test' => [
+                                'persistence' => [
+                                    'driver' => 'orm',
+                                    'model' => 'orm_model',
+                                    'listener' => [
+                                        'insert' => true,
+                                        'update' => true,
+                                        'delete' => true,
+                                    ],
+                                ]
+                            ]
+                        ],
+                    ],
+                    'test_index_mongodb' => [
+                        'types' => [
+                            'test' => [
+                                'persistence' => [
+                                    'driver' => 'mongodb',
+                                    'model' => 'mongodb_model',
+                                    'listener' => [
+                                        'insert' => true,
+                                        'update' => true,
+                                        'delete' => true,
+                                    ],
+                                ]
+                            ]
+                        ],
+                    ],
+                    'test_index_phpcr' => [
+                        'types' => [
+                            'test' => [
+                                'persistence' => [
+                                    'driver' => 'phpcr',
+                                    'model' => 'phpcr_model',
+                                    'listener' => [
+                                        'insert' => true,
+                                        'update' => true,
+                                        'delete' => true,
+                                    ],
+                                ]
+                            ]
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $containerBuilder = new ContainerBuilder();
+        $containerBuilder->setParameter('kernel.debug', true);
+
+        $extension = new FazlandElasticaExtension();
+        $extension->load($config, $containerBuilder);
+
+        $this->assertTrue($containerBuilder->hasDefinition('fazland_elastica.listener.test_index_orm.test'));
+        $this->assertTrue($containerBuilder->getDefinition('fazland_elastica.listener.test_index_orm.test')->hasTag('doctrine.event_subscriber'));
+        $this->assertTrue($containerBuilder->hasDefinition('fazland_elastica.listener.test_index_mongodb.test'));
+        $this->assertTrue($containerBuilder->getDefinition('fazland_elastica.listener.test_index_mongodb.test')->hasTag('doctrine_mongodb.event_subscriber'));
+        $this->assertTrue($containerBuilder->hasDefinition('fazland_elastica.listener.test_index_phpcr.test'));
+        $this->assertTrue($containerBuilder->getDefinition('fazland_elastica.listener.test_index_phpcr.test')->hasTag('doctrine_phpcr.event_subscriber'));
+    }
 }
