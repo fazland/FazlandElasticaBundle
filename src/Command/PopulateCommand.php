@@ -41,7 +41,8 @@ class PopulateCommand extends ContainerAwareCommand
     {
         $this
             ->setName('fazland:elastica:populate')
-            ->addOption('index', null, InputOption::VALUE_OPTIONAL, 'The index to repopulate')
+            ->addOption('index', null, InputOption::VALUE_REQUIRED, 'The index to repopulate')
+            ->addOption('no-index', null, InputOption::VALUE_IS_ARRAY|InputOption::VALUE_REQUIRED, 'Exclude index from population')
             ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'The type to repopulate')
             ->addOption('no-reset', null, InputOption::VALUE_NONE, 'Do not reset index before populating')
             ->addOption('offset', null, InputOption::VALUE_REQUIRED, 'Start indexing at offset')
@@ -125,7 +126,10 @@ class PopulateCommand extends ContainerAwareCommand
                 $index->populate($options);
             }
         } else {
-            foreach ($this->indexManager->getAllIndexes() as $index) {
+            foreach ($this->indexManager->getAllIndexes() as $name => $index) {
+                if (in_array($name, $input->getOption('no-index'))) {
+                    continue;
+                }
                 $index->populate($options);
             }
         }
