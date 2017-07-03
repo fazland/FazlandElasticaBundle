@@ -83,6 +83,82 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($containerBuilder->hasDefinition('fazland_elastica.index.test_index.foo.serializer.callback'));
     }
 
+    public function testExtensionCorrectlyProcessesMagicAllIndexSettings()
+    {
+        $config = [
+            'fazland_elastica' => [
+                'clients' => [
+                    'default' => [
+                        'url' => 'http://localhost:9200',
+                    ],
+                ],
+                'indexes' => [
+                    '_all' => [
+                        'settings' => [
+                            'index.number_of_replicas' => 2,
+                            'index.number_of_shards' => 4,
+                        ],
+                    ],
+                    'test_index' => [
+                        'settings' => [
+                            'index.version' => 50149,
+                        ],
+                        'types' => [
+                            'test' => []
+                        ],
+                    ],
+                    'test_index_1' => [
+                        'settings' => [
+                            'index.number_of_shards' => 5,
+                        ],
+                        'types' => [
+                            'test' => []
+                        ],
+                    ],
+                    'test_index_2' => [
+                        'types' => [
+                            'test' => []
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $containerBuilder = new ContainerBuilder();
+        $containerBuilder->setParameter('kernel.debug', true);
+
+        $extension = new FazlandElasticaExtension();
+        $extension->load($config, $containerBuilder);
+
+        $definition = $containerBuilder->getDefinition('fazland_elastica.index.test_index');
+        $settings = $definition->getArgument(1)->getArgument(2)['settings'];
+
+        $this->assertInternalType('array', $settings);
+        $this->assertEquals([
+            'index.number_of_replicas' => 2,
+            'index.number_of_shards' => 4,
+            'index.version' => 50149,
+        ], $settings);
+
+        $definition = $containerBuilder->getDefinition('fazland_elastica.index.test_index_1');
+        $settings = $definition->getArgument(1)->getArgument(2)['settings'];
+
+        $this->assertInternalType('array', $settings);
+        $this->assertEquals([
+            'index.number_of_replicas' => 2,
+            'index.number_of_shards' => 5,
+        ], $settings);
+
+        $definition = $containerBuilder->getDefinition('fazland_elastica.index.test_index_2');
+        $settings = $definition->getArgument(1)->getArgument(2)['settings'];
+
+        $this->assertInternalType('array', $settings);
+        $this->assertEquals([
+            'index.number_of_replicas' => 2,
+            'index.number_of_shards' => 4,
+        ], $settings);
+    }
+
     public function testExtensionRegistersCorrectDoctrineSubscribers()
     {
         $config = [

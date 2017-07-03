@@ -139,7 +139,15 @@ class FazlandElasticaExtension extends Extension
      */
     private function loadIndexes(array $indexes, ContainerBuilder $container)
     {
+        $allSettings = [];
+        if (isset($indexes['_all']['settings'])) {
+            $allSettings = $indexes['_all']['settings'];
+        }
+
+        unset($indexes['_all']);
+
         foreach ($indexes as $name => $index) {
+            $index['settings'] = array_merge($allSettings, $index['settings'] ?? []);
             $indexConfig = new IndexConfig($name, $index);
             $this->indexConfigs[$name] = $indexConfig;
         }
