@@ -139,15 +139,9 @@ class FazlandElasticaExtension extends Extension
      */
     private function loadIndexes(array $indexes, ContainerBuilder $container)
     {
-        $allSettings = [];
-        if (isset($indexes['_all']['settings'])) {
-            $allSettings = $indexes['_all']['settings'];
-        }
-
-        unset($indexes['_all']);
+        $this->processAllSettings($indexes);
 
         foreach ($indexes as $name => $index) {
-            $index['settings'] = array_merge($allSettings, $index['settings'] ?? []);
             $indexConfig = new IndexConfig($name, $index);
             $this->indexConfigs[$name] = $indexConfig;
         }
@@ -743,5 +737,36 @@ class FazlandElasticaExtension extends Extension
         }
 
         return $this->getMappingReference($referenced->types[$ref[1]]->mapping['properties']);
+    }
+
+    private function processAllSettings(array &$indexes)
+    {
+        $allSettings = [];
+        if (isset($indexes['_all']['settings'])) {
+            $allSettings = $indexes['_all']['settings'];
+        }
+
+        unset($indexes['_all']);
+
+        $mergeFn = null;
+        $mergeFn = function (array $array1, array $array2) use (&$mergeFn) {
+            $merged = $array1;
+
+            if (is_array($array2)) {
+                foreach ($array2 as $key => $val) {
+                    if (isset($merged[$key]) && is_array($array2[$key])) {
+                        $merged[$key] = is_array($merged[$key]) ? $mergeFn($merged[$key], $array2[$key]) : $array2[$key];
+                    } else {
+                        $merged[$key] = $val;
+                    }
+                }
+            }
+
+            return $merged;
+        };
+
+        foreach ($indexes as &$index) {
+            $index['settings'] = $mergeFn($allSettings, $index['settings'] ?? []);
+        }
     }
 }

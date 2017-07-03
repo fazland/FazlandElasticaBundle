@@ -97,6 +97,9 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
                         'settings' => [
                             'index.number_of_replicas' => 2,
                             'index.number_of_shards' => 4,
+                            'index' => [
+                                'foo_setting' => 'bar',
+                            ]
                         ],
                     ],
                     'test_index' => [
@@ -104,7 +107,7 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
                             'index.version' => 50149,
                         ],
                         'types' => [
-                            'test' => []
+                            'test' => [],
                         ],
                     ],
                     'test_index_1' => [
@@ -112,12 +115,22 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
                             'index.number_of_shards' => 5,
                         ],
                         'types' => [
-                            'test' => []
+                            'test' => [],
                         ],
                     ],
                     'test_index_2' => [
                         'types' => [
-                            'test' => []
+                            'test' => [],
+                        ],
+                    ],
+                    'test_index_3' => [
+                        'settings' => [
+                            'index' => [
+                                'bar_setting' => 'foo',
+                            ],
+                        ],
+                        'types' => [
+                            'test' => [],
                         ],
                     ],
                 ],
@@ -138,6 +151,9 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
             'index.number_of_replicas' => 2,
             'index.number_of_shards' => 4,
             'index.version' => 50149,
+            'index' => [
+                'foo_setting' => 'bar',
+            ],
         ], $settings);
 
         $definition = $containerBuilder->getDefinition('fazland_elastica.index.test_index_1');
@@ -147,6 +163,9 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'index.number_of_replicas' => 2,
             'index.number_of_shards' => 5,
+            'index' => [
+                'foo_setting' => 'bar',
+            ],
         ], $settings);
 
         $definition = $containerBuilder->getDefinition('fazland_elastica.index.test_index_2');
@@ -156,6 +175,22 @@ class FazlandElasticaExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             'index.number_of_replicas' => 2,
             'index.number_of_shards' => 4,
+            'index' => [
+                'foo_setting' => 'bar',
+            ],
+        ], $settings);
+
+        $definition = $containerBuilder->getDefinition('fazland_elastica.index.test_index_3');
+        $settings = $definition->getArgument(1)->getArgument(2)['settings'];
+
+        $this->assertInternalType('array', $settings);
+        $this->assertEquals([
+            'index.number_of_replicas' => 2,
+            'index.number_of_shards' => 4,
+            'index' => [
+                'foo_setting' => 'bar',
+                'bar_setting' => 'foo',
+            ],
         ], $settings);
     }
 
