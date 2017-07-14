@@ -2,6 +2,7 @@
 
 namespace Fazland\ElasticaBundle\Command;
 
+use Fazland\ElasticaBundle\Console\ConsoleStyle;
 use Fazland\ElasticaBundle\Elastica\Type;
 use Fazland\ElasticaBundle\Event\Events;
 use Fazland\ElasticaBundle\Event\TypePopulateEvent;
@@ -11,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -59,7 +59,7 @@ class PopulateCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
+        $io = new ConsoleStyle($input, $output);
 
         $io->title('ES Populate');
 
@@ -104,11 +104,11 @@ class PopulateCommand extends ContainerAwareCommand
                 $io->note(sprintf('Populating %s/%s', $type->getIndex()->getName(), $type->getName()));
 
                 $provider = $type->getProvider();
-                $io->progressStart($provider instanceof CountAwareProviderInterface ? $provider->count($options['offset'], $options['size']) : null);
+                $io->progressStart($provider instanceof CountAwareProviderInterface ? $provider->count($options['offset'], $options['size']) : null, 'Populating...');
             }, -100);
         $this->eventDispatcher
-            ->addListener(Events::POST_TYPE_POPULATE, function (TypePopulateEvent $event) use ($io) {
-                $io->progressFinish();
+            ->addListener(Events::POST_TYPE_POPULATE, function () use ($io) {
+                $io->progressFinish('Refreshing...');
                 $io->note('Refreshing index');
             });
         $this->eventDispatcher
