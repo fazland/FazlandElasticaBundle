@@ -58,4 +58,22 @@ class ResetCommandTest extends TestCase
 
         $this->command->run(new ArrayInput(['--index' => 'index1']), new NullOutput());
     }
+
+    public function testResetNoIndex()
+    {
+        $this->indexManager->getAllIndexes()
+            ->willReturn([
+                'index1' => $index1 = $this->prophesize(Index::class),
+                'index2' => $index2 = $this->prophesize(Index::class),
+                'index3' => $index3 = $this->prophesize(Index::class),
+            ]);
+
+        $index1->getName()->willReturn('index1');
+        $index1->reset()->shouldBeCalled();
+        $index2->getName()->willReturn('index2');
+        $index2->reset()->shouldBeCalled();
+        $index3->reset()->shouldNotBeCalled();
+
+        $this->command->run(new ArrayInput(['--no-index' => ['index3']]), new NullOutput());
+    }
 }

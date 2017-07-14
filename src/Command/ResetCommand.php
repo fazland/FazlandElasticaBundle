@@ -31,7 +31,8 @@ class ResetCommand extends Command
     {
         $this
             ->setName('fazland:elastica:reset')
-            ->addOption('index', null, InputOption::VALUE_OPTIONAL, 'The index to reset')
+            ->addOption('index', null, InputOption::VALUE_REQUIRED, 'The index to reset')
+            ->addOption('no-index', null, InputOption::VALUE_REQUIRED|InputOption::VALUE_IS_ARRAY, 'The index to reset')
             ->setDescription('Reset search indexes')
         ;
     }
@@ -40,11 +41,20 @@ class ResetCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $index = $input->getOption('index');
-        $indexes = null === $index ? $this->indexManager->getAllIndexes() : [$this->indexManager->getIndex($index)];
+        if (null !== ($index = $input->getOption('index'))) {
+            $indexes = [ $index => $this->indexManager->getIndex($index) ];
+            $exclude = [];
+        } else {
+            $indexes = $this->indexManager->getAllIndexes();
+            $exclude = $input->getOption('no-index');
+        }
 
         /** @var Index $index */
-        foreach ($indexes as $index) {
+        foreach ($indexes as $name => $index) {
+            if (in_array($name, $exclude)) {
+                continue;
+            }
+
             $io->note('Resetting '.$index->getName());
             $index->reset();
         }
