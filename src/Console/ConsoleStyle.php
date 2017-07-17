@@ -36,6 +36,9 @@ class ConsoleStyle extends SymfonyStyle
     {
         if (null !== $this->progress) {
             $this->progress->finish($message);
+            $this->newLine(2);
+
+            $this->progress = null;
         } else {
             parent::progressFinish();
         }
