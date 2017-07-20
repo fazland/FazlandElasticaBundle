@@ -141,6 +141,7 @@ class Listener implements EventSubscriber
 
         if ($this->objectPersister->handlesObject($entity)) {
             $this->scheduleForDeletion($entity);
+
         }
 
         $this->handleRelated($entity);
@@ -237,6 +238,8 @@ class Listener implements EventSubscriber
     {
         if ($this->objectPersister->handlesObject($object)) {
             $this->scheduledForDeletion->attach($object);
+            $this->scheduledForInsertion->detach($object);
+            $this->scheduledForUpdate->detach($object);
         }
     }
 
