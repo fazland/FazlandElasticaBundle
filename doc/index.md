@@ -6,6 +6,7 @@ Available documentation for FazlandElasticaBundle
 
 * [Setup](setup.md)
 * [Usage](usage.md)
+* [Configuration](configuration.md)
 * [Using a Serializer](serializer.md)
 * [Types](types.md)
 
